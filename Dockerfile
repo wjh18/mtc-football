@@ -7,6 +7,8 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /code
 # Install dependencies
 COPY Pipfile Pipfile.lock /code/
+RUN apt-get -y update
+RUN apt-get -y install graphviz graphviz-dev
 RUN pip install pipenv && pipenv install --system
 # Copy project
 COPY . /code/

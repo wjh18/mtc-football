@@ -35,10 +35,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'allauth',
     'allauth.account',
+    'django_extensions',
 
     # Local
     'accounts',
     'pages',
+    'leagues',
 ]
 
 # django-crispy-forms
