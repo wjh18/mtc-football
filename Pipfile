@@ -11,6 +11,7 @@ django-crispy-forms = "*"
 django-allauth = "*"
 django-extensions = "*"
 pygraphviz = "*"
+crispy-bootstrap5 = "*"
 
 [dev-packages]
 

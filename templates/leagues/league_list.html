@@ -6,30 +6,32 @@
   <h2>Active Leagues &middot; {{ user }}</h2>
   <br>
   <a href="{% url 'league_create' %}">
-    <button class="btn btn-primary" type="submit">New League</button>
+    <button class="btn btn-warning" type="submit">New League</button>
   </a>
   <hr>
   {% if not league_list %}
   <p>No leagues to display. Please create one above.</p>
   {% else %}
-  <table class="table table-dark table-striped">
+  <table class="table table-striped">
     <thead>
       <tr>
+        <th scope="col"></th>        
         <th scope="col">League Name</th>
+        <th scope="col"></th>
         <th scope="col">Created</th>
         <th scope="col">Commissioner</th>
-        <th scope="col">Edit</th>
-        <th scope="col">Load</th>
+        <th scope="col">Delete</th>
       </tr>
     </thead>
       <tbody>
       {% for league in league_list %}
         <tr>
-          <th scope="row"><h3>{{ league.name }}</h3></th>          
+          <td><a href="{{ league.get_absolute_url }}"><button class="btn btn-primary" type="submit">Load</button></a></td>
+          <th scope="row">{{ league.name }}</th>
+          <td><a href="{% url 'league_edit' league.pk %}">Edit Info</a></td>
           <td>{{ league.creation_date }}</td>
           <td>{{ league.commissioner_name }}</td>
-          <td><a href="{% url 'league_edit' league.pk %}">Edit League</a></td>
-          <td><a href="{{ league.get_absolute_url }}"><button class="btn btn-primary" type="submit">Load</button></a></td>
+          <td><a href="{% url 'league_delete' league.pk %}"><button class="btn btn-danger" type="submit">Delete</button></a></td>
         </tr>    
       {% endfor %}
       </tbody>

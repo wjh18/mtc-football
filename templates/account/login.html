@@ -4,12 +4,16 @@
 {% block title %}Log In{% endblock title %}
 
 {% block content %}
-  <h2>Log In</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button class="btn btn-primary" type="submit">Log In</button>
-  </form>
-  <br>
-  <a href="{% url 'account_reset_password' %}">Forgot Password?</a>
+  <div class="d-flex flex-row justify-content-center">
+    <div style="width: 400px;">
+      <h2>Log In</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-primary" type="submit">Log In</button>
+      </form>
+      <br>
+      <a href="{% url 'account_reset_password' %}">Forgot Password?</a>
+    </div>
+  </div>
 {% endblock content %}

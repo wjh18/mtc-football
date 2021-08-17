@@ -4,11 +4,17 @@
 
 {% block content %}
   {% if user.is_authenticated %}
-  
+    <h2>Dashboard</h2>
   {% else %}
-  <p>You are not logged in.</p>
-    <a href="{% url 'account_login' %}">Log In</a>
-    <br>
-    <a href="{% url 'account_signup' %}">Sign Up</a>
+    <div class="d-flex flex-row justify-content-center">
+      <div style="width: 450px;">
+        <div>
+          <h2>Welcome to Pigskin Prowess!</h2>
+          <p>The premier web-based American football simulation game. Sign up or login below to get started.</p>
+          <a href="{% url 'account_login' %}"><button type="button" class="btn btn-outline-dark me-2">Login</button></a>
+          <a href="{% url 'account_signup' %}"><button type="button" class="btn btn-warning">Sign-up</button></a>
+        </div>
+      </div>
+    </div>
   {% endif %}
 {% endblock content %}
