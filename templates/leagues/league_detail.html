@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block title %}{{ league.name }}{% endblock title %}
+
+{% block content %}
+  <div class="book-detail">
+    <h2>{{ league.name }} &middot; {{ user }}</h2>
+    <a href="{% url 'league_list' %}">&larr; Back to Leagues</a>
+    <hr>
+    <h3>League Info</h3>
+    <a href="{% url 'league_edit' league.pk %}">Edit</a>
+    <p>Commissioner: {{ league.commissioner_name }}</p>
+    <p><em>Created: {{ league.creation_date }}</em></p>
+  </div>
+{% endblock content %}

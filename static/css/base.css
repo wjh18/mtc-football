@@ -1,3 +1,17 @@
-h1 {
-    color: red;
+.logo {
+    font-size: 30px;
+    margin-right: 20px;
+}
+
+table,
+thead,
+tr,
+tbody,
+th,
+td {
+  text-align: center;
+}
+
+.table td {
+  text-align: center;
 }
