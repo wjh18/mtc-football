@@ -59,6 +59,6 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
-    #     return reverse("team_detail", args=[str(self.id)])
+    def get_absolute_url(self):
+        return reverse("team_detail", args=[str(self.id)])
     

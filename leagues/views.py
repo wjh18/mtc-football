@@ -12,7 +12,9 @@ from django.http import HttpResponse
 
 # Custom Mixins
 
-class IsLeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
+## Permissions Mixins
+
+class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
     
     def test_func(self):
         return self.request.user == self.get_object().commissioner
@@ -21,6 +23,14 @@ class IsLeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
         return HttpResponse(
             'Sorry, only league owners have access to this page.'
         )
+
+
+class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        league = League.objects.get(id=self.kwargs['league'])
+        return self.request.user == league.commissioner
+
 
 # League Views
 
@@ -34,7 +44,7 @@ class LeagueListView(LoginRequiredMixin, ListView):
         return League.objects.filter(commissioner=self.request.user)
 
 
-class LeagueDetailView(IsLeagueOwnerMixin, DetailView):
+class LeagueDetailView(LeagueOwnerMixin, DetailView):
     model = League
     context_object_name = 'league'
     template_name = 'leagues/league/league_detail.html'
@@ -51,13 +61,13 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class LeagueUpdateView(IsLeagueOwnerMixin, UpdateView):
+class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
     model = League
     fields = ['name', 'commissioner_name']
     template_name = 'leagues/league/league_update.html'
 
 
-class LeagueDeleteView(IsLeagueOwnerMixin, DeleteView):
+class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     model = League
     success_url = reverse_lazy('league_list')
     template_name = 'leagues/league/league_delete.html'
@@ -65,15 +75,11 @@ class LeagueDeleteView(IsLeagueOwnerMixin, DeleteView):
 
 # Team Views
 
-class TeamListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team
     context_object_name = 'team_list'
     template_name = 'leagues/team/team_list.html'
     login_url = 'account_login'
-
-    def test_func(self):
-        league = League.objects.get(id=self.kwargs['league'])
-        return self.request.user == league.commissioner
 
     def get_queryset(self):
         return Team.objects.filter(league=self.kwargs['league'])
@@ -84,3 +90,20 @@ class TeamListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         league_uuid = self.kwargs.get('league')
         context['league'] = League.objects.get(id=league_uuid)
         return context
+
+    
+class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/team_roster.html'
+    login_url = 'account_login'
+
+    def get_context_data(self, **kwargs):
+        # Get context data from URL kwargs for the teams' league
+        context = super(TeamRosterView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        team_uuid = self.kwargs['pk']
+        context['league'] = League.objects.get(id=league_uuid)
+        context['team'] = Team.objects.get(id=team_uuid)
+        return context
+        # team_uuid = Team.objects.get(id=self.kwargs['pk'])

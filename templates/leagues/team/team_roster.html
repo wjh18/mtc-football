@@ -1,0 +1,9 @@
+{% extends '_base.html' %}
+
+{% block title %}Team Roster | {{ team.location }} {{ team.name }}{% endblock title %}
+
+{% block content %}
+  <h2>Team Roster &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }})</h2>
+  <a href="{% url 'team_list' league.pk %}">&larr; Team Home</a>
+  <hr>
+{% endblock content %}

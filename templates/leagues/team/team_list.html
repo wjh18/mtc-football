@@ -1,6 +1,6 @@
 {% extends '_base.html' %}
 
-{% block title %}Teams{% endblock title %}
+{% block title %}Teams {{ league.name }}{% endblock title %}
 
 {% block content %}
   <h2>Teams &middot; {{ league.name }}</h2>
@@ -10,12 +10,14 @@
     <thead>
       <tr>
         <th scope="col">Team</th>
+        <th scope="col">Roster</th>
       </tr>
     </thead>
       <tbody>
       {% for team in team_list %}
         <tr>
           <th scope="row">{{ team.location }} {{ team.name }} ({{ team.abbreviation }})</th>
+          <td><a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a></td>
         </tr>
       {% endfor %}
       </tbody>
