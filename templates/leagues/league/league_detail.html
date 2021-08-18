@@ -5,11 +5,23 @@
 {% block content %}
   <div class="book-detail">
     <h2>{{ league.name }} &middot; {{ user }}</h2>
-    <a href="{% url 'league_list' %}">&larr; Back to Leagues</a>
+    <a href="{% url 'league_list' %}">&larr; Return to Leagues</a>
     <hr>
-    <h3>League Info</h3>
-    <a href="{% url 'league_edit' league.pk %}">Edit</a>
-    <p>Commissioner: {{ league.commissioner_name }}</p>
-    <p><em>Created: {{ league.creation_date }}</em></p>
+    <div>
+      <h3>League Info</h3>      
+      <p>Commissioner: {{ league.commissioner_name }}</p>
+      <p><em>Created: {{ league.creation_date }}</em></p>
+      <a href="{% url 'league_edit' league.pk %}"><button class="btn btn-primary" type="submit">Edit Info</button></a>
+    </div>
+    <br>
+    <div>
+      <h3>Teams</h3>
+      <a href="{% url 'team_list' league.pk %}"><button class="btn btn-primary" type="submit">View Teams</button></a>
+    </div>
+    <br>
+    <div>
+      <h3>Delete League</h3>
+      <a href="{% url 'league_delete' league.pk %}"><button class="btn btn-danger" type="submit">Delete</button></a>
+    </div>
   </div>
 {% endblock content %}

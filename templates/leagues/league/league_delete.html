@@ -5,7 +5,7 @@
 
 {% block content %}
   <h2>Delete League</h2>
-  <a href="{% url 'league_list' %}">&larr; Back to Leagues</a>
+  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <p>Are you sure you want to delete <i>{{ object.name }}</i>?<br>
   <strong>This action is irreversible</strong> and all league data will be lost.</p>

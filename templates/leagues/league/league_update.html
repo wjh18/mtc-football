@@ -5,7 +5,7 @@
 
 {% block content %}
   <h2>Edit League</h2>
-  <a href="{% url 'league_list' %}">&larr; Back to Leagues</a>
+  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <div style="width: 450px;">
     <form method="post">

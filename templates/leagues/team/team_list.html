@@ -4,6 +4,7 @@
 
 {% block content %}
   <h2>Teams &middot; {{ league.name }}</h2>
+  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <table class="table table-striped">
     <thead>
