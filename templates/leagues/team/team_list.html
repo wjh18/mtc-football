@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+
+{% block title %}Teams{% endblock title %}
+
+{% block content %}
+  <h2>Teams &middot; {{ league.name }}</h2>
+  <hr>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Team</th>
+      </tr>
+    </thead>
+      <tbody>
+      {% for team in team_list %}
+        <tr>
+          <th scope="row">{{ team.location }} {{ team.name }} ({{ team.abbreviation }})</th>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endblock content %}

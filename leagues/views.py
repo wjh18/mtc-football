@@ -5,8 +5,10 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
 from django.urls import reverse
-from .models import League
+from .models import League, Team
 
+
+# League Views
 
 class LeagueListView(LoginRequiredMixin, ListView):
     model = League
@@ -54,3 +56,22 @@ class LeagueDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user == self.get_object().commissioner
+
+
+# Team Views
+
+class TeamListView(LoginRequiredMixin, ListView):
+    model = Team
+    context_object_name = 'team_list'
+    template_name = 'leagues/team/team_list.html'
+    login_url = 'account_login'
+
+    def get_queryset(self):
+        return Team.objects.filter(league=self.kwargs['league'])
+
+    def get_context_data(self, **kwargs):
+        # Get context data from URL kwargs for the teams' league
+        context = super(TeamListView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        context['league'] = League.objects.get(id=league_uuid)
+        return context

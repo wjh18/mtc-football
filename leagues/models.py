@@ -30,3 +30,20 @@ class League(models.Model):
     def get_absolute_url(self):
         return reverse("league_detail", args=[str(self.id)])
     
+
+class Team(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    location = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    abbreviation = models.CharField(max_length=3)
+    league = models.ForeignKey(
+        League, on_delete=models.CASCADE,
+        related_name='teams',
+    )
+
+    def __str__(self):
+        return self.name
