@@ -22,6 +22,6 @@ def read_team_info_from_csv():
     # Store in dict w/ team locations as keys, list of mascots / acronyms as values
     with open(os.path.join(os.path.dirname(__file__), 'data/nfl-teams.csv'), 'r') as team_data_file:
         team_reader = csv.reader(team_data_file, delimiter=',')
-        team_info = {row[1]: [row[2], row[3]] for row in team_reader if row[1] != 'Name'}
+        team_info = {row[3]: [row[1], row[2]] for row in team_reader if row[1] != 'Name'}
 
     return team_info

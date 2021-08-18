@@ -13,7 +13,7 @@ from .models import League, Team
 class LeagueListView(LoginRequiredMixin, ListView):
     model = League
     context_object_name = 'league_list'
-    template_name = 'leagues/league_list.html'
+    template_name = 'leagues/league/league_list.html'
     login_url = 'account_login'
 
     def get_queryset(self):
@@ -23,7 +23,7 @@ class LeagueListView(LoginRequiredMixin, ListView):
 class LeagueDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = League
     context_object_name = 'league'
-    template_name = 'leagues/league_detail.html'
+    template_name = 'leagues/league/league_detail.html'
     login_url = 'account_login'
 
     def test_func(self):
@@ -33,7 +33,7 @@ class LeagueDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class LeagueCreateView(LoginRequiredMixin, CreateView):
     model = League
     fields = ['name', 'commissioner_name']
-    template_name = 'leagues/league_create.html'
+    template_name = 'leagues/league/league_create.html'
 
     def form_valid(self, form):
         form.instance.commissioner = self.request.user
@@ -43,7 +43,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
 class LeagueUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = League
     fields = ['name', 'commissioner_name']
-    template_name = 'leagues/league_update.html'
+    template_name = 'leagues/league/league_update.html'
 
     def test_func(self):
         return self.request.user == self.get_object().commissioner
@@ -52,7 +52,7 @@ class LeagueUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class LeagueDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = League
     success_url = reverse_lazy('league_list')
-    template_name = 'leagues/league_delete.html'
+    template_name = 'leagues/league/league_delete.html'
 
     def test_func(self):
         return self.request.user == self.get_object().commissioner
