@@ -85,7 +85,7 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         return Team.objects.filter(league=self.kwargs['league'])
 
     def get_context_data(self, **kwargs):
-        # Get context data from URL kwargs for the teams' league
+        # Add context data from URL kwargs for the teams' league
         context = super(TeamListView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
         context['league'] = League.objects.get(id=league_uuid)
@@ -98,6 +98,15 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
     template_name = 'leagues/team/team_detail.html'
     login_url = 'account_login'
 
+    def get_context_data(self, **kwargs):
+        # Add context data from URL kwargs for the teams' league
+        context = super(TeamDetailView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        team_uuid = self.kwargs['pk']
+        context['league'] = League.objects.get(id=league_uuid)
+        context['team'] = Team.objects.get(id=team_uuid)
+        return context
+
     
 class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team
@@ -106,11 +115,10 @@ class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
     login_url = 'account_login'
 
     def get_context_data(self, **kwargs):
-        # Get context data from URL kwargs for the teams' league
+        # Add context data from URL kwargs for the teams' league
         context = super(TeamRosterView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
         team_uuid = self.kwargs['pk']
         context['league'] = League.objects.get(id=league_uuid)
         context['team'] = Team.objects.get(id=team_uuid)
         return context
-        # team_uuid = Team.objects.get(id=self.kwargs['pk'])

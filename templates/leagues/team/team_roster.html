@@ -4,7 +4,7 @@
 
 {% block content %}
   <h2>Team Roster &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }})</h2>
-  <a href="{% url 'team_list' league.pk %}">&larr; Teams Home</a>
+  <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
   <hr>
   <table class="table table-striped">
     <thead>

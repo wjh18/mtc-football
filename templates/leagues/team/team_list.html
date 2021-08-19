@@ -16,7 +16,7 @@
       <tbody>
       {% for team in team_list %}
         <tr>
-          <th scope="row">{{ team.location }} {{ team.name }} ({{ team.abbreviation }})</th>
+          <th scope="row"><a href="{% url 'team_detail' league.pk team.pk %}">{{ team.location }} {{ team.name }} ({{ team.abbreviation }})</a></th>
           <td><a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a></td>
         </tr>
       {% endfor %}

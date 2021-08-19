@@ -5,11 +5,10 @@
 {% block content %}
   <div>
     <h2>{{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ team.league.name }}</h2>
-    <a href="{% url 'league_detail' team.league.pk %}">&larr; Return to League</a>
+    <a href="{% url 'team_list' league.pk %}">&larr; Return to Teams</a>
     <hr>
-    <div>
-      <h3>Team Roster</h3>            
-      <a href="{% url 'team_roster' team.pk %}"><button class="btn btn-primary" type="submit">View Roster</button></a>
+    <div>           
+      <a href="{% url 'team_roster' league.pk team.pk %}"><button class="btn btn-primary" type="submit">View Roster</button></a>
     </div>
   </div>
 {% endblock content %}
