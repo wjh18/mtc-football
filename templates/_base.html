@@ -28,7 +28,9 @@
           <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
         </form>
         {% if user.is_authenticated %}
-        <a href="{% url 'league_create' %}"><button type="button" class="btn btn-warning">New League</button></a>
+        <a href="{% url 'league_create' %}" class="btn btn-warning" role="button">
+          New League
+        </a>
         {% else %}
         <div class="text-end">
           <a href="{% url 'account_login' %}"><button type="button" class="btn btn-outline-light me-2">Login</button></a>
@@ -48,13 +50,37 @@
           </a>
           <ul class="list-unstyled ps-0">
             <li class="mb-1">
-              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                Leagues
+              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+                Start
               </button>
-              <div class="collapse show" id="home-collapse">
+              <div class="collapse show" id="start-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li><a href="{% url 'league_list' %}" class="link-dark rounded">Active Leagues</a></li>
                   <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="border-top my-3"></li>
+            <li class="mb-1">
+              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="false">
+                League
+              </button>
+              <div class="collapse" id="league-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+                  <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">My League</a></li>
+                  <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Teams</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="border-top my-3"></li>
+            <li class="mb-1">
+              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="false">
+                Team
+              </button>
+              <div class="collapse" id="team-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+                  <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">My Team</a></li>
+                  <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Roster</a></li>
                 </ul>
               </div>
             </li>
@@ -65,8 +91,6 @@
               </button>
               <div class="collapse" id="account-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-                  <li><a href="#" class="link-dark rounded">Profile</a></li>
-                  <li><a href="#" class="link-dark rounded">Settings</a></li>
                   <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
                   <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>
                 </ul>

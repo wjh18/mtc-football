@@ -9,9 +9,15 @@
     <hr>
     <div class="col-6">
       <div class="pt-2 pb-3">
-        <a href="{% url 'team_list' league.pk %}"><button class="btn btn-primary" type="submit">View Teams</button></a>
-        <a href="{% url 'league_edit' league.pk %}"><button class="btn btn-primary" type="submit">Edit Info</button></a>
-        <a href="{% url 'league_delete' league.pk %}"><button class="btn btn-danger" type="submit">Delete League</button></a>
+        <a href="{% url 'team_list' league.pk %}" class="btn btn-primary" role="button">
+          View Teams
+        </a>
+        <a href="{% url 'league_edit' league.pk %}" class="btn btn-primary" role="button">
+          Edit Info
+        </a>
+        <a href="{% url 'league_delete' league.pk %}" class="btn btn-danger" role="button">
+          Delete League
+        </a>
       </div>
       <h3>League Info</h3>
       
