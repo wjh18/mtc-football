@@ -4,13 +4,20 @@
 
 {% block content %}
   {% if user.is_authenticated %}
-    <h2>Dashboard</h2>
+  <div class="d-flex flex-row">
+    <div style="width: 450px;">
+    <h2>Welcome to Pigskin Prowess!</h2>
+    <p>Get started by creating a league.</p>
+    <a href="{% url 'league_create' %}">
+      <button class="btn btn-warning" type="submit">New League</button>
+    </a>
+    </div>
+    </div>
   {% else %}
     <div class="d-flex flex-row justify-content-center">
       <div style="width: 450px;">
         <div>
           <h2>Welcome to Pigskin Prowess!</h2>
-          <p>The premier web-based American football simulation game. Sign up or login below to get started.</p>
           <a href="{% url 'account_login' %}"><button type="button" class="btn btn-outline-dark me-2">Login</button></a>
           <a href="{% url 'account_signup' %}"><button type="button" class="btn btn-warning">Sign-up</button></a>
         </div>

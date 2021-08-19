@@ -91,6 +91,13 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         context['league'] = League.objects.get(id=league_uuid)
         return context
 
+
+class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/team_detail.html'
+    login_url = 'account_login'
+
     
 class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team

@@ -1,27 +1,25 @@
 {% extends '_base.html' %}
 
-{% block title %}{{ league.name }}{% endblock title %}
+{% block title %}League | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <div class="book-detail">
-    <h2>{{ league.name }} &middot; {{ user }}</h2>
-    <a href="{% url 'league_list' %}">&larr; Return to Leagues</a>
+  <div class="row">
+    <h2>League &middot; {{ league.name }}</h2>
+    <p><a href="{% url 'league_list' %}">&larr; Return to Leagues</a></p>
     <hr>
-    <div>
-      <h3>League Info</h3>      
-      <p>Commissioner: {{ league.commissioner_name }}</p>
-      <p><em>Created: {{ league.creation_date }}</em></p>
-      <a href="{% url 'league_edit' league.pk %}"><button class="btn btn-primary" type="submit">Edit Info</button></a>
-    </div>
-    <br>
-    <div>
-      <h3>Teams</h3>
-      <a href="{% url 'team_list' league.pk %}"><button class="btn btn-primary" type="submit">View Teams</button></a>
-    </div>
-    <br>
-    <div>
-      <h3>Delete League</h3>
-      <a href="{% url 'league_delete' league.pk %}"><button class="btn btn-danger" type="submit">Delete</button></a>
+    <div class="col-6">
+      <div class="pt-2 pb-3">
+        <a href="{% url 'team_list' league.pk %}"><button class="btn btn-primary" type="submit">View Teams</button></a>
+        <a href="{% url 'league_edit' league.pk %}"><button class="btn btn-primary" type="submit">Edit Info</button></a>
+        <a href="{% url 'league_delete' league.pk %}"><button class="btn btn-danger" type="submit">Delete League</button></a>
+      </div>
+      <h3>League Info</h3>
+      
+      <ul>
+        <li>Commissioner: {{ league.commissioner_name }}</li>
+        <li>Created: {{ league.creation_date }}</li>
+      </ul>
+      
     </div>
   </div>
 {% endblock content %}

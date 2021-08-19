@@ -1,9 +1,63 @@
 {% extends '_base.html' %}
 
-{% block title %}Team Roster | {{ team.location }} {{ team.name }}{% endblock title %}
+{% block title %}Team Roster | {{ team.location }} {{ team.name }} | {{ league.name }}{% endblock title %}
 
 {% block content %}
   <h2>Team Roster &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }})</h2>
-  <a href="{% url 'team_list' league.pk %}">&larr; Team Home</a>
+  <a href="{% url 'team_list' league.pk %}">&larr; Teams Home</a>
   <hr>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">NAME</th>
+        <th scope="col">AGE</th>
+        <th scope="col">EXP</th>
+        <th scope="col">POS</th>
+        <th scope="col">PRO</th>
+        <th scope="col">OVR</th>
+        <th scope="col">POT</th>
+        <th scope="col">CON</th>
+        <th scope="col">IQ</th>
+        <th scope="col">SPD</th>
+        <th scope="col">STR</th>
+        <th scope="col">AGL</th>
+        <th scope="col">AWR</th>
+        <th scope="col">STA</th>
+        <th scope="col">AGI</th>
+        <th scope="col">RUNOFF</th>
+        <th scope="col">PASSOFF</th>
+        <th scope="col">RUNDEF</th>
+        <th scope="col">PASSDEF</th>
+        <th scope="col">SPECOFF</th>
+        <th scope="col">SPECDEF</th>
+      </tr>
+    </thead>
+    <tbody>
+  {% for player in team.players.all %}
+    <tr>
+      <th scope="row">{{ player.first_name }} {{ player.last_name }}</th>
+      <td>{{ player.age }}</td>
+      <td>{{ player.experience }}</td>
+      <td>{{ player.position }}</td>
+      <td>{{ player.prototype }}</td>
+      <td>{{ player.overall_rating }}</td>
+      <td>{{ player.potential }}</td>
+      <td>{{ player.confidence }}</td>
+      <td>{{ player.iq }}</td>
+      <td>{{ player.speed }}</td>
+      <td>{{ player.strength }}</td>
+      <td>{{ player.agility }}</td>
+      <td>{{ player.awareness }}</td>
+      <td>{{ player.stamina }}</td>
+      <td>{{ player.agility }}</td>
+      <td>{{ player.run_off }}</td>
+      <td>{{ player.pass_off }}</td>
+      <td>{{ player.run_def }}</td>
+      <td>{{ player.pass_def }}</td>
+      <td>{{ player.special_off }}</td>
+      <td>{{ player.special_def }}</td>
+    </tr>    
+  {% endfor %}
+    </tbody>
+  </table>
 {% endblock content %}

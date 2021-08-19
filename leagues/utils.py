@@ -8,12 +8,14 @@ def read_player_names_from_csv():
     # Store in dict with first names as keys, last names as values
     with open(os.path.join(os.path.dirname(__file__), 'data/retired-players.csv'), 'r') as player_name_file:
         name_reader = csv.reader(player_name_file, delimiter=',')
-        player_names = {row[1]: row[2] for row in name_reader}
+        player_names = [[row[1], row[2]] for row in name_reader if ('last_name' or '.') not in row[2]]
 
         # Shuffle first and last names
-        first_names = list(player_names.keys())
+        first_names = [names[0] for names in player_names]
+        last_names = [names[1] for names in player_names]
         random.shuffle(first_names)
-        player_names = dict(zip(first_names, player_names))
+        random.shuffle(last_names)
+        player_names = list(zip(first_names, last_names))
 
     return player_names
 
