@@ -44,7 +44,7 @@
     <div class="container-fluid">
       <div class="row">
         {% if user.is_authenticated %}
-        <div class="col-2 flex-shrink-0 p-3 bg-white">
+        <div class="col-2 flex-shrink-0 mt-5 bg-white">
           <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
             <span class="fs-5 fw-semibold">Welcome, {{ user }}</span>
           </a>
@@ -55,7 +55,7 @@
               </button>
               <div class="collapse show" id="start-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><a href="{% url 'league_list' %}" class="link-dark rounded">Active Leagues</a></li>
+                  <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
                   <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
                 </ul>
               </div>
@@ -99,7 +99,7 @@
           </ul>
         </div>
         {% endif %}
-        <div class="col-10 p-5">
+        <div class="col-10 mt-5">
           {% block content %}
           {% endblock content %}
         </div>

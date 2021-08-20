@@ -4,7 +4,7 @@
 
 {% block content %}
   <div class="row">
-    <h2>League &middot; {{ league.name }}</h2>
+    <h2>Home &middot; {{ league.name }}</h2>
     <p><a href="{% url 'league_list' %}">&larr; Return to Leagues</a></p>
     <hr>
     <div class="col-6">
@@ -12,7 +12,7 @@
         <a href="{% url 'team_list' league.pk %}" class="btn btn-primary" role="button">
           View Teams
         </a>
-        <a href="{% url 'league_edit' league.pk %}" class="btn btn-primary" role="button">
+        <a href="{% url 'league_edit' league.pk %}" class="btn btn-dark" role="button">
           Edit Info
         </a>
         <a href="{% url 'league_delete' league.pk %}" class="btn btn-danger" role="button">

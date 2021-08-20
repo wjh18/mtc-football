@@ -1,10 +1,11 @@
-from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
-from django.urls import reverse
 from .models import League, Team
 
 from django.http import HttpResponse
@@ -59,6 +60,9 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.commissioner = self.request.user
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('team_list', args=[self.object.pk])
 
 
 class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
@@ -122,3 +126,21 @@ class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
         context['league'] = League.objects.get(id=league_uuid)
         context['team'] = Team.objects.get(id=team_uuid)
         return context
+
+
+def update_user_team(request, league):
+    
+    if request.method == 'POST':
+        league = get_object_or_404(League, pk=league)
+        try:
+            selected_team = league.teams.get(pk=request.POST['teams'])
+        except (KeyError, Team.DoesNotExist):
+            # Redisplay the team selection page with an error.
+            return render(request, 'leagues/team/team_list.html', {
+                'league': league,
+                'error_message': "You didn't select a team.",
+            })
+        else:
+            selected_team.user = request.user
+            selected_team.save()
+            return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))

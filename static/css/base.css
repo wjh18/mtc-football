@@ -2,3 +2,25 @@
     font-size: 30px;
     margin-right: 20px;
 }
+
+.team-list-wrapper {
+    height: 150px;
+    width: 350px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    padding-left: 30px;
+}
+
+.team-list-wrapper a {
+    text-decoration: none;
+}
+
+.team-list-name {
+    margin-top: 25px;
+    font-size: 25px;
+    text-decoration: none;
+    color: black;
+}
+
+#team-select {
+    width: 300px;
+}

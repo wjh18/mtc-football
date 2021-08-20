@@ -4,7 +4,7 @@
 {% block title %}Delete League | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Delete League</h2>
+  <h2>Delete &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <p>Are you sure you want to delete <i>{{ league.name }}</i>?<br>

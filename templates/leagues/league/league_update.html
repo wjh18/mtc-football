@@ -4,7 +4,7 @@
 {% block title %}Edit League | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Edit League</h2>
+  <h2>Edit &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <div style="width: 450px;">
