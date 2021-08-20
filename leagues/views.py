@@ -18,7 +18,7 @@ from django.http import HttpResponse
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
     
     def test_func(self):
-        return self.request.user == self.get_object().commissioner
+        return self.request.user == self.get_object().user
 
     def handle_no_permission(self):
         return HttpResponse(
@@ -30,7 +30,7 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         league = League.objects.get(id=self.kwargs['league'])
-        return self.request.user == league.commissioner
+        return self.request.user == league.user
 
 
 # League Views
@@ -42,7 +42,7 @@ class LeagueListView(LoginRequiredMixin, ListView):
     login_url = 'account_login'
 
     def get_queryset(self):
-        return League.objects.filter(commissioner=self.request.user)
+        return League.objects.filter(user=self.request.user)
 
 
 class LeagueDetailView(LeagueOwnerMixin, DetailView):
@@ -54,11 +54,11 @@ class LeagueDetailView(LeagueOwnerMixin, DetailView):
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
     model = League
-    fields = ['name', 'commissioner_name']
+    fields = ['name', 'gm_name']
     template_name = 'leagues/league/league_create.html'
 
     def form_valid(self, form):
-        form.instance.commissioner = self.request.user
+        form.instance.user = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -67,7 +67,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
 
 class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
     model = League
-    fields = ['name', 'commissioner_name']
+    fields = ['name', 'gm_name']
     template_name = 'leagues/league/league_update.html'
 
 

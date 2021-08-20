@@ -16,13 +16,13 @@ class LeagueViewTest(TestCase):
         )
         self.league = League.objects.create(
             name='Test League',
-            commissioner=self.user,
-            commissioner_name='Test Commissioner',
+            user=self.user,
+            gm_name='Test GM',
         )
 
     def test_league_list(self):
         self.assertEqual(f'{self.league.name}', 'Test League')
-        self.assertEqual(f'{self.league.commissioner_name}', 'Test Commissioner')
+        self.assertEqual(f'{self.league.gm_name}', 'Test GM')
 
     def test_league_list_view_for_logged_in_user(self):
         self.client.login(email='leagueuser@email.com', password='testpass123')

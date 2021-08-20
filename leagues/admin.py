@@ -4,7 +4,7 @@ from .models import League, Team, Player
 
 
 class LeagueAdmin(admin.ModelAdmin):
-    list_display = ("name", "commissioner", "commissioner_name", "creation_date",)
+    list_display = ("name", "user", "gm_name", "creation_date",)
     readonly_fields = ('id',)
 
 

@@ -6,8 +6,10 @@
 .team-list-wrapper {
     height: 150px;
     width: 350px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     padding-left: 30px;
+    border: 1px solid rgb(123, 123, 123);
+    border-radius: 10px;
 }
 
 .team-list-wrapper a {
@@ -21,6 +23,18 @@
     color: black;
 }
 
+.team-list-welcome {
+    width: 500px;
+}
+
 #team-select {
     width: 300px;
+}
+
+.my-team-tag {
+    font-size: 14px;
+    padding: 6px;
+    border-radius: 4px;
+    background-color: green;
+    color: white;
 }

@@ -5,7 +5,8 @@ from django.db import models
 from django.urls import reverse
 from .utils import (
     read_team_info_from_csv,
-    read_player_names_from_csv
+    read_player_names_from_csv,
+    generate_player_attributes,
 )
 
 
@@ -16,12 +17,12 @@ class League(models.Model):
         editable=False,
     )
     name = models.CharField(max_length=300)
+    gm_name = models.CharField(max_length=300)
     creation_date = models.DateTimeField(default=timezone.now)
-    commissioner = models.ForeignKey(
+    user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
     )
-    commissioner_name = models.CharField(max_length=300)
 
     class Meta:
         ordering = ['-creation_date']
