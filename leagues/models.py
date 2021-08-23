@@ -89,36 +89,15 @@ class Team(models.Model):
         # Save Team instance before referencing it for Player creation
         super().save(*args, **kwargs)
 
-        # Read player names from CSV and create X players per Team
+        # Read player names from CSV, generate attributes and create players
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
-            player_names = read_player_names_from_csv() 
-            for player in range(0, 53):
+            player_attributes = generate_player_attributes()
+            for player in player_attributes:
                 Player.objects.create(
-                    first_name=player_names[player][0],
-                    last_name=player_names[player][1],
-                    age=25,
-                    experience=3,
-                    position='RB',
-                    prototype="Power",
-                    overall_rating=99.99,
-                    potential=99.99,
-                    confidence=99.99,
-                    iq=120,
-                    speed=99.99,
-                    strength=99.99,
-                    agility=99.99,
-                    awareness=99.99,
-                    stamina=99.99,
-                    injury=99.99,
-                    run_off=99.99,
-                    pass_off=99.99,
-                    special_off=99.99,
-                    run_def=99.99,
-                    pass_def=99.99,
-                    special_def=99.99,
                     team=self,
-                    league=self.league)
+                    league=self.league,
+                    **player)
 
     def get_absolute_url(self):
         return reverse("team_detail", args=[str(self.id)])
@@ -135,9 +114,9 @@ class Person(models.Model):
     age = models.PositiveSmallIntegerField()
     experience = models.PositiveSmallIntegerField()
     prototype = models.CharField(max_length=50)
-    overall_rating = models.DecimalField(max_digits=4, decimal_places=2)
-    potential = models.DecimalField(max_digits=4, decimal_places=2)
-    confidence = models.DecimalField(max_digits=4, decimal_places=2)
+    overall_rating = models.PositiveSmallIntegerField()
+    potential = models.PositiveSmallIntegerField()
+    confidence = models.PositiveSmallIntegerField()
     iq = models.PositiveSmallIntegerField()
     team = models.ForeignKey(
         Team, blank=True, null=True,

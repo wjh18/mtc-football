@@ -92,7 +92,15 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         # Add context data from URL kwargs for the teams' league
         context = super(TeamListView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
-        context['league'] = League.objects.get(id=league_uuid)
+        league = League.objects.get(id=league_uuid)
+        context['league'] = league
+        for team in league.teams.all():
+            if team.user == self.request.user:
+                context['user_has_team'] = True
+                break
+        else:
+            context['user_has_team'] = False
+            
         return context
 
 
