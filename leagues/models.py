@@ -1,4 +1,5 @@
 import uuid
+import datetime
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -156,3 +157,104 @@ class Player(Person):
 
     def __str__(self):
         return f'{self.first_name}' + '.' + f' {self.last_name}'
+
+
+class Season(models.Model):
+    league = models.ForeignKey(
+        League, on_delete=models.CASCADE,
+        related_name='seasons',
+    )
+    start_date = models.DateField(default=datetime.date(2021, 8, 29))
+    duration = models.DurationField(default=datetime.timedelta(weeks=52))
+    phase = models.PositiveSmallIntegerField(default=1)
+    is_current = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'Season #{str(self.pk)} - {self.league.name}'
+
+
+class Match(models.Model):
+    home_team = models.ForeignKey(
+        Team, on_delete=models.CASCADE,
+        related_name='home_matches',
+    )
+    away_team = models.ForeignKey(
+        Team, on_delete=models.CASCADE,
+        related_name='away_matches',
+    )
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE,
+        related_name='matches',
+    )
+    
+    def __str__(self):
+        return f'Season #{str(self.season.pk)} - {self.home_team} vs. {self.away_team}'
+
+
+class PlayerStats(models.Model):
+    player = models.ForeignKey(
+        Player, on_delete=models.CASCADE,
+        related_name='player_stats',
+    )
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE,
+        related_name='player_stats',
+    )
+    match = models.ForeignKey(
+        Match, on_delete=models.CASCADE,
+        related_name='player_stats',
+    )
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE,
+        related_name='player_stats',
+    )
+    # Passing Offense
+    passing_comps = models.IntegerField(default=0)
+    passing_atts = models.IntegerField(default=0)
+    passing_yds = models.IntegerField(default=0)
+    passing_tds = models.IntegerField(default=0)
+    passing_ints = models.IntegerField(default=0)
+    passing_fds = models.IntegerField(default=0)
+    times_sacked = models.IntegerField(default=0)
+    # Rushing Offense
+    rushing_atts = models.IntegerField(default=0)
+    rushing_yds = models.IntegerField(default=0)
+    rushing_tds = models.IntegerField(default=0)
+    rushing_fds = models.IntegerField(default=0)
+    fumbles_lost = models.IntegerField(default=0)
+    # Defensive
+    def_ints = models.IntegerField(default=0)
+    forced_fumbles = models.IntegerField(default=0)
+    def_tds = models.IntegerField(default=0)
+    def_return_yds = models.IntegerField(default=0)
+    tackles = models.IntegerField(default=0)
+    tackles_for_loss = models.IntegerField(default=0)
+    qb_hits = models.IntegerField(default=0)
+    sacks = models.IntegerField(default=0)
+    safeties = models.IntegerField(default=0)
+    # Kicker Scoring
+    field_goals = models.IntegerField(default=0)
+    field_goal_atts = models.IntegerField(default=0)
+    field_goal_long = models.IntegerField(default=0)
+    extra_points = models.IntegerField(default=0)
+    extra_point_atts = models.IntegerField(default=0)
+    # Kicking & Punting
+    kickoffs = models.IntegerField(default=0)
+    kickoff_yds = models.IntegerField(default=0)
+    touchbacks = models.IntegerField(default=0)
+    punts = models.IntegerField(default=0)
+    punt_yds = models.IntegerField(default=0)
+    punt_long = models.IntegerField(default=0)
+    punt_blocks = models.IntegerField(default=0)
+    # Returning
+    punt_returns = models.IntegerField(default=0)
+    punt_return_yds = models.IntegerField(default=0)
+    punt_return_tds = models.IntegerField(default=0)
+    punt_return_long = models.IntegerField(default=0)
+    kick_returns = models.IntegerField(default=0)
+    kick_return_yds = models.IntegerField(default=0)
+    kick_return_tds = models.IntegerField(default=0)
+    kick_return_long = models.IntegerField(default=0)
+    # Penalties
+    penalties = models.IntegerField(default=0)
+    penalty_yds = models.IntegerField(default=0)
