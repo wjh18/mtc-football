@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from .utils import (
-    conference_data,
-    division_data,
+    get_conference_data,
+    get_division_data,
     read_team_info_from_csv,
     generate_player_attributes,
 )
@@ -18,19 +18,19 @@ class League(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    name = models.CharField(max_length=300)
-    gm_name = models.CharField(max_length=300)
-    creation_date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
     )
-
+    name = models.CharField(max_length=300)
+    gm_name = models.CharField(max_length=300)
+    creation_date = models.DateTimeField(default=timezone.now)
+    
     class Meta:
         ordering = ['-creation_date']
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.gm_name}'
 
     def save(self, *args, **kwargs):
 
@@ -42,18 +42,18 @@ class League(models.Model):
 
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
-            # Get conference and division data from utils and create them
-            conferences = conference_data()
-            divisions = division_data()
+            # Get conference and division data and create them
+            conferences = get_conference_data()
+            divisions = get_division_data()
             Conference.objects.bulk_create([Conference(league=self, **c) for c in conferences])
             afc = Conference.objects.get(name='AFC', league=self)
             nfc = Conference.objects.get(name='NFC', league=self)
             for division in divisions:
                 division_name = division['name']
                 if division_name[:3] == 'AFC':
-                    Division.objects.create(league=self, conference=afc, **division)
+                    Division.objects.create(conference=afc, **division)
                 elif division_name[:3] == 'NFC':
-                    Division.objects.create(league=self, conference=nfc, **division)
+                    Division.objects.create(conference=nfc, **division)
             # Read team data from CSV and create 32 teams in League
             team_info = read_team_info_from_csv()
             abbreviations = [*team_info.keys()]
@@ -63,16 +63,15 @@ class League(models.Model):
                     name=other_team_info[team][2], league=self
                 )
                 team_division = Division.objects.get(
-                    name=other_team_info[team][3], league=self
+                    name=other_team_info[team][3], conference=team_conference
                 )
                 Team.objects.create(
                     location=other_team_info[team][0],
                     name=other_team_info[team][1],
                     abbreviation=abbreviations[team],
-                    conference=team_conference,
                     division=team_division,
                     league=self)
-            # Start first season automatically
+            # Create first season in league automatically
             Season.objects.create(
                 league=self
             )
@@ -83,16 +82,21 @@ class League(models.Model):
 
 class Conference(models.Model):
     name = models.CharField(max_length=200)
-    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='conferences')
+    league = models.ForeignKey(
+        League, on_delete=models.CASCADE,
+        related_name='conferences'
+    )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.league.name}'
 
 
 class Division(models.Model):
     name = models.CharField(max_length=200)
-    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='divisions')
-    conference = models.ForeignKey(Conference, on_delete=models.CASCADE, default=None, related_name='divisions')
+    conference = models.ForeignKey(
+        Conference, on_delete=models.CASCADE,
+        related_name='divisions'
+    )
 
     def __str__(self):
         return self.name
@@ -104,27 +108,17 @@ class Team(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    location = models.CharField(max_length=100)
-    name = models.CharField(max_length=100)
-    abbreviation = models.CharField(max_length=3)
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='teams',
-    )
-    conference = models.ForeignKey(
-        Conference, on_delete=models.CASCADE,
-        related_name='teams', default=None
     )
     division = models.ForeignKey(
         Division, on_delete=models.CASCADE,
         related_name='teams', default=None
     )
-    user = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
+    location = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    abbreviation = models.CharField(max_length=3)
 
     class Meta:
         ordering = ['location']
@@ -160,13 +154,33 @@ class Team(models.Model):
 
     def get_absolute_url(self):
         return reverse("team_detail", args=[str(self.id)])
-    
+
+
+class UserTeam(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE
+    )
+    team = models.OneToOneField(
+        Team, on_delete=models.CASCADE
+    )
+    is_active_team = models.BooleanField(default=True)
+
 
 class Person(models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
+    )
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE,
+        related_name='players',
+        blank=True, null=True
+    )
+    league = models.ForeignKey(
+        League, on_delete=models.CASCADE,
+        related_name='players'
     )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -177,21 +191,14 @@ class Person(models.Model):
     potential = models.PositiveSmallIntegerField()
     confidence = models.PositiveSmallIntegerField()
     iq = models.PositiveSmallIntegerField()
-    team = models.ForeignKey(
-        Team, blank=True, null=True,
-        on_delete=models.CASCADE, related_name='players'
-    )
-    league = models.ForeignKey(
-        League, blank=True, null=True,
-        on_delete=models.CASCADE, related_name='players'
-    )
+    is_free_agent = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
 
 
 class Player(Person):
-    position = models.CharField(default='QB', max_length=50)
+    position = models.CharField(max_length=50)
     speed = models.PositiveSmallIntegerField()
     strength = models.PositiveSmallIntegerField()
     agility = models.PositiveSmallIntegerField()
@@ -248,16 +255,8 @@ class PlayerStats(models.Model):
         Player, on_delete=models.CASCADE,
         related_name='player_stats',
     )
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='player_stats',
-    )
     match = models.ForeignKey(
         Match, on_delete=models.CASCADE,
-        related_name='player_stats',
-    )
-    season = models.ForeignKey(
-        Season, on_delete=models.CASCADE,
         related_name='player_stats',
     )
     # Passing Offense
@@ -310,3 +309,6 @@ class PlayerStats(models.Model):
     # Penalties
     penalties = models.IntegerField(default=0)
     penalty_yds = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'Single Statline for {self.player.first_name} ' + f'{self.player.last_name}'

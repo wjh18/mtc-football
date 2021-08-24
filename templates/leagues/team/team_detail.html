@@ -31,7 +31,7 @@
         </ul>
       </div>
     </li>
-    {% if team.user %}
+    {% if team.userteam %}
       <li class="border-top my-3"></li>
       <li class="mb-1">
         <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="false">
@@ -65,12 +65,12 @@
   <div>
     <h2>{{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ team.league.name }}</h2>
     <a href="{% url 'team_list' league.pk %}">&larr; Return to Teams</a>
-    {% if team.user %}
+    {% if team.userteam %}
         <span class="my-team-tag">{{ user }}</span>
     {% endif %}
     <hr>
     <div>
-      {% if team.user %}
+      {% if team.userteam %}
         <p>You're the GM of this team.</p>
       {% endif %}
       <p>Overall: {{ team.calc_team_overall }}</p>

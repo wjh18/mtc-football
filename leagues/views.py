@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
-from .models import League, Team
+from .models import League, Team, UserTeam
 
 from django.http import HttpResponse
 
@@ -95,11 +95,13 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         league = League.objects.get(id=league_uuid)
         context['league'] = league
         for team in league.teams.all():
-            if team.user == self.request.user:
-                context['user_has_team'] = True
+            try:
+                UserTeam.objects.get(user=self.request.user, team=team)
+            except (KeyError, UserTeam.DoesNotExist):
+                context['user_has_team'] = False
                 break
-        else:
-            context['user_has_team'] = False
+            else:
+                context['user_has_team'] = True
             
         return context
 
@@ -115,6 +117,7 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         context = super(TeamDetailView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
         context['league'] = League.objects.get(id=league_uuid)
+        context['user_team'] = UserTeam.objects.get(user=self.request.user, team=self.object)
         return context
 
     
@@ -147,6 +150,5 @@ def update_user_team(request, league):
                 'error_message': "You didn't select a team.",
             })
         else:
-            selected_team.user = request.user
-            selected_team.save()
+            UserTeam.objects.create(user=request.user, team=selected_team)
             return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))
