@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import League, Team, Player
+from .models import (
+    League, Conference, Division,
+    Team, Player, Season, Match, PlayerStats
+)
 
 
 class LeagueAdmin(admin.ModelAdmin):
@@ -19,5 +22,10 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ('first_name',)
 
 admin.site.register(League, LeagueAdmin)
+admin.site.register(Conference)
+admin.site.register(Division)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Player, PlayerAdmin)
+admin.site.register(Season)
+admin.site.register(Match)
+admin.site.register(PlayerStats)

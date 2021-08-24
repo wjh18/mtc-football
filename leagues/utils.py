@@ -28,7 +28,7 @@ def read_team_info_from_csv():
     """
     with open(os.path.join(os.path.dirname(__file__), 'data/nfl-teams.csv'), 'r') as team_data_file:
         team_reader = csv.reader(team_data_file, delimiter=',')
-        team_info = {row[3]: [row[1], row[2]] for row in team_reader if row[1] != 'Name'}
+        team_info = {row[3]: [row[1], row[2], row[4], f'{row[4]}' + ' ' + f'{row[5]}'] for row in team_reader if row[1] != 'Name'}
 
     return team_info
 
@@ -193,3 +193,24 @@ def generate_player_attributes():
 
     return player_list
     
+def conference_data():
+    conferences = [
+        {'name': 'AFC'},
+        {'name': 'NFC'}
+    ]
+
+    return conferences
+
+def division_data():
+    divisions = [
+        {'name': 'AFC East'},
+        {'name': 'AFC North'},
+        {'name': 'AFC South'},
+        {'name': 'AFC West'},
+        {'name': 'NFC East'},
+        {'name': 'NFC North'},
+        {'name': 'NFC South'},
+        {'name': 'NFC West'},
+    ]
+
+    return divisions

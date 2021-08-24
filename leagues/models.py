@@ -5,8 +5,9 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from .utils import (
+    conference_data,
+    division_data,
     read_team_info_from_csv,
-    read_player_names_from_csv,
     generate_player_attributes,
 )
 
@@ -39,22 +40,63 @@ class League(models.Model):
         # Save League instance before referencing it for Team creation
         super().save(*args, **kwargs)
 
-        # Read team data from CSV and create 32 teams in League
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
+            # Get conference and division data from utils and create them
+            conferences = conference_data()
+            divisions = division_data()
+            Conference.objects.bulk_create([Conference(league=self, **c) for c in conferences])
+            afc = Conference.objects.get(name='AFC', league=self)
+            nfc = Conference.objects.get(name='NFC', league=self)
+            for division in divisions:
+                division_name = division['name']
+                if division_name[:3] == 'AFC':
+                    Division.objects.create(league=self, conference=afc, **division)
+                elif division_name[:3] == 'NFC':
+                    Division.objects.create(league=self, conference=nfc, **division)
+            # Read team data from CSV and create 32 teams in League
             team_info = read_team_info_from_csv()
             abbreviations = [*team_info.keys()]
-            locations_and_names = [*team_info.values()]
+            other_team_info = [*team_info.values()]
             for team in range(0, 32):
+                team_conference = Conference.objects.get(
+                    name=other_team_info[team][2], league=self
+                )
+                team_division = Division.objects.get(
+                    name=other_team_info[team][3], league=self
+                )
                 Team.objects.create(
-                    location=locations_and_names[team][0],
-                    name=locations_and_names[team][1],
+                    location=other_team_info[team][0],
+                    name=other_team_info[team][1],
                     abbreviation=abbreviations[team],
+                    conference=team_conference,
+                    division=team_division,
                     league=self)
+            # Start first season automatically
+            Season.objects.create(
+                league=self
+            )
 
     def get_absolute_url(self):
         return reverse("league_detail", args=[str(self.id)])
-    
+
+
+class Conference(models.Model):
+    name = models.CharField(max_length=200)
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='conferences')
+
+    def __str__(self):
+        return self.name
+
+
+class Division(models.Model):
+    name = models.CharField(max_length=200)
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='divisions')
+    conference = models.ForeignKey(Conference, on_delete=models.CASCADE, default=None, related_name='divisions')
+
+    def __str__(self):
+        return self.name
+
 
 class Team(models.Model):
     id = models.UUIDField(
@@ -68,6 +110,14 @@ class Team(models.Model):
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='teams',
+    )
+    conference = models.ForeignKey(
+        Conference, on_delete=models.CASCADE,
+        related_name='teams', default=None
+    )
+    division = models.ForeignKey(
+        Division, on_delete=models.CASCADE,
+        related_name='teams', default=None
     )
     user = models.ForeignKey(
         get_user_model(),
@@ -165,8 +215,10 @@ class Season(models.Model):
         related_name='seasons',
     )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
+    current_date = models.DateField(default=datetime.date(2021, 8, 29))
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
     phase = models.PositiveSmallIntegerField(default=1)
+    season_number = models.PositiveSmallIntegerField(default=1)
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
