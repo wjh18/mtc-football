@@ -99,6 +99,14 @@ class Team(models.Model):
                     league=self.league,
                     **player)
 
+    def calc_team_overall(self):
+        team_overall = 0
+        for player in self.players.all():
+            team_overall += player.overall_rating
+        team_overall /= 53
+
+        return int(team_overall)
+
     def get_absolute_url(self):
         return reverse("team_detail", args=[str(self.id)])
     

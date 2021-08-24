@@ -114,9 +114,7 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         # Add context data from URL kwargs for the teams' league
         context = super(TeamDetailView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
-        team_uuid = self.kwargs['pk']
         context['league'] = League.objects.get(id=league_uuid)
-        context['team'] = Team.objects.get(id=team_uuid)
         return context
 
     

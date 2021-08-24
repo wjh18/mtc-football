@@ -2,6 +2,51 @@
 
 {% block title %}Teams | {{ league.name }}{% endblock title %}
 
+{% block sidebar %}
+<div class="col-2 flex-shrink-0 mt-5 bg-white">
+  <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+    <span class="fs-5 fw-semibold">Welcome, {{ user }}</span>
+  </a>
+  <ul class="list-unstyled ps-0">
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+        Start
+      </button>
+      <div class="collapse show" id="start-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
+          <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="false">
+        League: {{ league.name }}
+      </button>
+      <div class="collapse" id="league-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+          <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
+          <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+        Account
+      </button>
+      <div class="collapse" id="account-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+          <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
+          <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+{% endblock sidebar %}
+
 {% block content %}
   <h2>Teams &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
@@ -29,6 +74,7 @@
       {% for team in team_list %}
       <div class="col-4 m-3 team-list-wrapper">
         <h3 class="team-list-name"><a href="{% url 'team_detail' league.pk team.pk %}">{{ team.location }} {{ team.name }}</a></h3>
+        <p>Overall: {{ team.calc_team_overall }}</p>
         <a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a>
       </div> 
       {% endfor %}

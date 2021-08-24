@@ -165,12 +165,12 @@ def generate_player_attributes():
             player['experience'] = 0
 
         # Generate attributes based on weights and normal distribution
-        base_rating = int(random.gauss(50, 10))
+        base_rating = int(random.gauss(70, 20))
         weights = attr_dist[player['position']][player['prototype']]
         after_weights = []
         for i in range(len(weights)):
             after_weights.append(weights[i] + base_rating)
-        sigmas = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+        sigmas = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
         final_ratings = list(map(random.gauss, after_weights, sigmas))
 
         # Assign attributes to player dict
