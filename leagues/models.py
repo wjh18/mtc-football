@@ -30,7 +30,7 @@ class League(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-        return f'{self.name} - {self.gm_name}'
+        return f'{self.name}'
 
     def save(self, *args, **kwargs):
 
@@ -99,7 +99,7 @@ class Division(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.conference.league.name}'
 
 
 class Team(models.Model):
@@ -124,7 +124,7 @@ class Team(models.Model):
         ordering = ['location']
 
     def __str__(self):
-        return self.name
+        return f'{self.location} {self.name}'
 
     def save(self, *args, **kwargs):
 
@@ -139,10 +139,15 @@ class Team(models.Model):
         if no_instance_exists:
             player_attributes = generate_player_attributes()
             for player in player_attributes:
-                Player.objects.create(
-                    team=self,
-                    league=self.league,
-                    **player)
+                p = Player.objects.create(
+                        league=self.league,
+                        **player
+                    )
+                p.team.add(self)
+                # Contract.objects.create(
+                #     team=self,
+                #     player=p
+                # )
 
     def calc_team_overall(self):
         team_overall = 0
@@ -211,7 +216,7 @@ class Player(Person):
     special_def = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return f'{self.first_name}' + '.' + f' {self.last_name}'
+        return f'{self.first_name} ' + f' {self.last_name}'
 
 
 class Contract(models.Model):
@@ -224,6 +229,9 @@ class Contract(models.Model):
         related_name='contracts'
     )
     is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.player.first_name} {self.player.last_name} - {self.team.location} {self.team.name} (Contract)'
 
 
 class Season(models.Model):
@@ -239,7 +247,7 @@ class Season(models.Model):
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'Season #{str(self.pk)} - {self.league.name}'
+        return f'Season {str(self.pk)} - {self.league.name}'
 
 
 class Match(models.Model):
