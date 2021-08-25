@@ -63,11 +63,13 @@
 
 {% block content %}
   <div>
-    <h2>{{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ team.league.name }}</h2>
-    <a href="{% url 'team_list' league.pk %}">&larr; Return to Teams</a>
-    {% if team.userteam %}
+    <h2>
+      {{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ team.league.name }}
+      {% if team.userteam %}
         <span class="my-team-tag">{{ user }}</span>
-    {% endif %}
+      {% endif %}
+    </h2>
+    <a href="{% url 'team_list' league.pk %}">&larr; Return to Teams</a>
     <hr>
     <div>
       {% if team.userteam %}

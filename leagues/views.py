@@ -94,14 +94,12 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
         context['league'] = league
-        for team in league.teams.all():
-            try:
-                UserTeam.objects.get(user=self.request.user, team=team)
-            except (KeyError, UserTeam.DoesNotExist):
-                context['user_has_team'] = False
-                break
-            else:
-                context['user_has_team'] = True
+        try:
+            UserTeam.objects.get(league=league)
+        except (KeyError, UserTeam.DoesNotExist):
+            context['user_has_team'] = False
+        else:
+            context['user_has_team'] = True
             
         return context
 
@@ -116,8 +114,9 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         # Add context data from URL kwargs for the teams' league
         context = super(TeamDetailView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
-        context['league'] = League.objects.get(id=league_uuid)
-        context['user_team'] = UserTeam.objects.get(user=self.request.user, team=self.object)
+        league = League.objects.get(id=league_uuid)
+        context['league'] = league
+        context['user_team'] = UserTeam.objects.get(league=league, team=self.object)
         return context
 
     
@@ -150,5 +149,5 @@ def update_user_team(request, league):
                 'error_message': "You didn't select a team.",
             })
         else:
-            UserTeam.objects.create(user=request.user, team=selected_team)
+            UserTeam.objects.create(league=league, team=selected_team)
             return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))

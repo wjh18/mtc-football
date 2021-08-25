@@ -157,9 +157,9 @@ class Team(models.Model):
 
 
 class UserTeam(models.Model):
-    user = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.CASCADE
+    league = models.OneToOneField(
+        League, on_delete=models.CASCADE,
+        blank=True, null=True
     )
     team = models.OneToOneField(
         Team, on_delete=models.CASCADE

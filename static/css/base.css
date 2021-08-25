@@ -37,4 +37,6 @@
     border-radius: 4px;
     background-color: green;
     color: white;
+    margin-left: 15px;
+    position: absolute;
 }
