@@ -144,14 +144,11 @@ class Team(models.Model):
                         **player
                     )
                 p.team.add(self)
-                # Contract.objects.create(
-                #     team=self,
-                #     player=p
-                # )
 
     def calc_team_overall(self):
         team_overall = 0
-        for player in self.players.all():
+        for contract in self.contracts.all():
+            player = contract.player
             team_overall += player.overall_rating
         team_overall /= 53
 

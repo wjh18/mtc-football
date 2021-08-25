@@ -78,7 +78,7 @@
           <th scope="col">AGE</th>
           <th scope="col">EXP</th>
           <th scope="col">POS</th>
-          <th scope="col">PRO</th>
+          <th scope="col">PROTOTYPE</th>
           <th scope="col">OVR</th>
           <th scope="col">POT</th>
           <th scope="col">CON</th>
@@ -98,29 +98,29 @@
         </tr>
       </thead>
       <tbody>
-    {% for player in team.players.all %}
+    {% for contract in contracts %}
       <tr>
-        <th scope="row"><a href="{% url 'player_detail' league.pk team.pk player.pk %}">{{ player.first_name }} {{ player.last_name }}</a></th>
-        <td>{{ player.age }}</td>
-        <td>{{ player.experience }}</td>
-        <td>{{ player.position }}</td>
-        <td>{{ player.prototype }}</td>
-        <td>{{ player.overall_rating }}</td>
-        <td>{{ player.potential }}</td>
-        <td>{{ player.confidence }}</td>
-        <td>{{ player.iq }}</td>
-        <td>{{ player.speed }}</td>
-        <td>{{ player.strength }}</td>
-        <td>{{ player.agility }}</td>
-        <td>{{ player.awareness }}</td>
-        <td>{{ player.stamina }}</td>
-        <td>{{ player.injury }}</td>
-        <td>{{ player.run_off }}</td>
-        <td>{{ player.pass_off }}</td>
-        <td>{{ player.run_def }}</td>
-        <td>{{ player.pass_def }}</td>
-        <td>{{ player.special_off }}</td>
-        <td>{{ player.special_def }}</td>
+        <th scope="row"><a href="{% url 'player_detail' league.pk team.pk contract.player.pk %}">{{ contract.player.first_name }} {{ contract.player.last_name }}</a></th>
+        <td>{{ contract.player.age }}</td>
+        <td>{{ contract.player.experience }}</td>
+        <td>{{ contract.player.position }}</td>
+        <td>{{ contract.player.prototype }}</td>
+        <td>{{ contract.player.overall_rating }}</td>
+        <td>{{ contract.player.potential }}</td>
+        <td>{{ contract.player.confidence }}</td>
+        <td>{{ contract.player.iq }}</td>
+        <td>{{ contract.player.speed }}</td>
+        <td>{{ contract.player.strength }}</td>
+        <td>{{ contract.player.agility }}</td>
+        <td>{{ contract.player.awareness }}</td>
+        <td>{{ contract.player.stamina }}</td>
+        <td>{{ contract.player.injury }}</td>
+        <td>{{ contract.player.run_off }}</td>
+        <td>{{ contract.player.pass_off }}</td>
+        <td>{{ contract.player.run_def }}</td>
+        <td>{{ contract.player.pass_def }}</td>
+        <td>{{ contract.player.special_off }}</td>
+        <td>{{ contract.player.special_def }}</td>
       </tr>    
     {% endfor %}
       </tbody>

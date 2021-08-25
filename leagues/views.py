@@ -139,6 +139,7 @@ class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
         team_uuid = self.kwargs['pk']
         context['league'] = League.objects.get(id=league_uuid)
         context['team'] = Team.objects.get(id=team_uuid)
+        context['contracts'] = Team.objects.get(id=team_uuid).contracts.all()
         return context
 
 
