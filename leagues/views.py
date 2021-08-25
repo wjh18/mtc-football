@@ -94,12 +94,10 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
         context['league'] = league
-        try:
-            UserTeam.objects.get(league=league)
-        except (KeyError, UserTeam.DoesNotExist):
-            context['user_has_team'] = False
+        if UserTeam.objects.filter(league=league).exists():
+            context['user_team'] = True
         else:
-            context['user_has_team'] = True
+            context['user_team'] = False
             
         return context
 
@@ -116,7 +114,10 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
         context['league'] = league
-        context['user_team'] = UserTeam.objects.get(league=league, team=self.object)
+        if UserTeam.objects.filter(league=league, team=self.object).exists():
+            context['user_team'] = UserTeam.objects.get(league=league, team=self.object)
+        else:
+            context['user_team'] = False
         return context
 
     

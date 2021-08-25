@@ -9,10 +9,10 @@
   </a>
   <ul class="list-unstyled ps-0">
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="false">
         Start
       </button>
-      <div class="collapse show" id="start-collapse">
+      <div class="collapse" id="start-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
           <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
@@ -31,16 +31,16 @@
         </ul>
       </div>
     </li>
-    {% if team.user %}
+    {% if league.userteam %}
       <li class="border-top my-3"></li>
       <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="false">
-          Team: {{ team.name }}
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="true">
+          Team: {{ league.userteam.team.name }}
         </button>
-        <div class="collapse" id="team-collapse">
+        <div class="collapse show" id="team-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-            <li><a href="{% url 'team_detail' league.pk team.pk %}" class="link-dark rounded">My Team</a></li>
-            <li><a href="{% url 'team_roster' league.pk team.pk %}" class="link-dark rounded">Roster</a></li>
+            <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
+            <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
           </ul>
         </div>
       </li>
@@ -62,7 +62,12 @@
 {% endblock sidebar %}
 
 {% block content %}
-  <h2>Team Roster &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ league.name }}</h2>
+  <h2>
+    Team Roster &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ league.name }}
+    {% if team.userteam %}
+      <span class="my-team-tag">GM</span>
+    {% endif %}
+  </h2>
   <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
   <hr>
   <div class="table-responsive">

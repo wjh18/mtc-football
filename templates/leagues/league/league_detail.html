@@ -9,10 +9,10 @@
   </a>
   <ul class="list-unstyled ps-0">
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="false">
         Start
       </button>
-      <div class="collapse show" id="start-collapse">
+      <div class="collapse" id="start-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
           <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
@@ -21,16 +21,30 @@
     </li>
     <li class="border-top my-3"></li>
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="false">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="true">
         League: {{ league.name }}
       </button>
-      <div class="collapse" id="league-collapse">
+      <div class="collapse show" id="league-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
           <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
           <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
         </ul>
       </div>
     </li>
+    {% if league.userteam %}
+      <li class="border-top my-3"></li>
+      <li class="mb-1">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="false">
+          Team: {{ league.userteam.team.name }}
+        </button>
+        <div class="collapse" id="team-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+            <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
+            <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
+          </ul>
+        </div>
+      </li>
+    {% endif %}
     <li class="border-top my-3"></li>
     <li class="mb-1">
       <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
@@ -70,7 +84,6 @@
         <li>GM: {{ league.gm_name }}</li>
         <li>Created: {{ league.creation_date }}</li>
       </ul>
-      
     </div>
   </div>
 {% endblock content %}
