@@ -173,14 +173,12 @@ class Person(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='players',
-        blank=True, null=True
-    )
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='players'
+    )
+    team = models.ManyToManyField(
+        Team, through='Contract'
     )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -214,6 +212,18 @@ class Player(Person):
 
     def __str__(self):
         return f'{self.first_name}' + '.' + f' {self.last_name}'
+
+
+class Contract(models.Model):
+    player = models.ForeignKey(
+        Player, on_delete=models.CASCADE,
+        related_name='contracts',
+    )
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE,
+        related_name='contracts'
+    )
+    is_active = models.BooleanField(default=True)
 
 
 class Season(models.Model):

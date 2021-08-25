@@ -35,20 +35,20 @@ class DivisionAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
 
 
-class PlayerInline(admin.TabularInline):
-    model = Player
+# class PlayerInline(admin.TabularInline):
+#     model = Player
 
 
 class TeamAdmin(admin.ModelAdmin):
-    inlines = [
-        PlayerInline
-    ]
+    # inlines = [
+    #     PlayerInline
+    # ]
     list_display = ('__str__', 'location', 'name', 'abbreviation', 'league',)
     list_filter = ('league',)
 
 
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'first_name', 'last_name', 'team', 'league',)
+    list_display = ('__str__', 'first_name', 'last_name', 'league',)
     list_filter = ('league',)
     search_fields = ('first_name',)
 
