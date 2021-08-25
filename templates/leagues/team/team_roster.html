@@ -100,7 +100,7 @@
       <tbody>
     {% for player in team.players.all %}
       <tr>
-        <th scope="row">{{ player.first_name }} {{ player.last_name }}</th>
+        <th scope="row"><a href="{% url 'player_detail' league.pk team.pk player.pk %}">{{ player.first_name }} {{ player.last_name }}</a></th>
         <td>{{ player.age }}</td>
         <td>{{ player.experience }}</td>
         <td>{{ player.position }}</td>

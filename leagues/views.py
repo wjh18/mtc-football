@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
-from .models import League, Team, UserTeam
+from .models import League, Player, Team, UserTeam
 
 from django.http import HttpResponse
 
@@ -31,6 +31,11 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         league = League.objects.get(id=self.kwargs['league'])
         return self.request.user == league.user
+
+    def handle_no_permission(self):
+        return HttpResponse(
+            'Sorry, only league owners have access to this page.'
+        )
 
 
 # League Views
@@ -152,3 +157,18 @@ def update_user_team(request, league):
         else:
             UserTeam.objects.create(league=league, team=selected_team)
             return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))
+
+
+class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
+    model = Player
+    context_object_name = 'player'
+    template_name = 'leagues/player/player_detail.html'
+    login_url = 'account_login'
+
+    def get_context_data(self, **kwargs):
+        context = super(PlayerDetailView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        team_uuid = self.kwargs['team']
+        context['league'] = League.objects.get(id=league_uuid)
+        context['team'] = Team.objects.get(id=team_uuid)
+        return context

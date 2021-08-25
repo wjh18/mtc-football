@@ -1,0 +1,163 @@
+{% extends '_base.html' %}
+
+{% block title %}{{ team.location }} {{ team.name }} ({{ team.abbreviation }}) | {{ league.name }}{% endblock title %}
+
+{% block sidebar %}
+<div class="col-2 flex-shrink-0 mt-5 bg-white">
+  <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+    <span class="fs-5 fw-semibold">Welcome, {{ user }}</span>
+  </a>
+  <ul class="list-unstyled ps-0">
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="false">
+        Start
+      </button>
+      <div class="collapse" id="start-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
+          <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="false">
+        League: {{ league.name }}
+      </button>
+      <div class="collapse" id="league-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+          <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
+          <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
+        </ul>
+      </div>
+    </li>
+    {% if league.userteam %}
+      <li class="border-top my-3"></li>
+      <li class="mb-1">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="true">
+          Team: {{ league.userteam.team.name }}
+        </button>
+        <div class="collapse show" id="team-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+            <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
+            <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
+          </ul>
+        </div>
+      </li>
+    {% endif %}
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+        Account
+      </button>
+      <div class="collapse" id="account-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+          <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
+          <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+{% endblock sidebar %}
+
+{% block content %}
+  <div>
+    <h2>
+      {{ player.first_name }} {{ player.last_name }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }})
+      {% if team.userteam %}
+        <span class="my-team-tag">GM</span>
+      {% endif %}
+    </h2>
+    <a href="{% url 'team_roster' league.pk team.pk %}">&larr; Return to Roster</a>
+    <hr>
+    <div>
+      {% if team.userteam %}
+        <h3>Manage</h3>
+        <p>This player is signed to your team.</p>
+        <a href="" class="btn btn-primary" role="button">
+          Contract
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          Trade
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          Release
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          Train
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          Stats
+        </a>
+      {% else %}
+        <h3>Actions</h3>
+        <p>You don't own this player.</p>
+        <a href="" class="btn btn-primary" role="button">
+          Offer Trade
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          View Contract
+        </a>
+        <a href="" class="btn btn-primary" role="button">
+          Stats
+        </a>
+      {% endif %}
+      <h3 class="mt-5">Attributes</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">NAME</th>
+              <th scope="col">AGE</th>
+              <th scope="col">EXP</th>
+              <th scope="col">POS</th>
+              <th scope="col">PRO</th>
+              <th scope="col">OVR</th>
+              <th scope="col">POT</th>
+              <th scope="col">CON</th>
+              <th scope="col">IQ</th>
+              <th scope="col">SPD</th>
+              <th scope="col">STR</th>
+              <th scope="col">AGI</th>
+              <th scope="col">AWR</th>
+              <th scope="col">STA</th>
+              <th scope="col">INJ</th>
+              <th scope="col">ROFF</th>
+              <th scope="col">POFF</th>
+              <th scope="col">RDEF</th>
+              <th scope="col">PDEF</th>
+              <th scope="col">SPOFF</th>
+              <th scope="col">SPDEF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="{% url 'player_detail' league.pk team.pk player.pk %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+              <td>{{ player.age }}</td>
+              <td>{{ player.experience }}</td>
+              <td>{{ player.position }}</td>
+              <td>{{ player.prototype }}</td>
+              <td>{{ player.overall_rating }}</td>
+              <td>{{ player.potential }}</td>
+              <td>{{ player.confidence }}</td>
+              <td>{{ player.iq }}</td>
+              <td>{{ player.speed }}</td>
+              <td>{{ player.strength }}</td>
+              <td>{{ player.agility }}</td>
+              <td>{{ player.awareness }}</td>
+              <td>{{ player.stamina }}</td>
+              <td>{{ player.injury }}</td>
+              <td>{{ player.run_off }}</td>
+              <td>{{ player.pass_off }}</td>
+              <td>{{ player.run_def }}</td>
+              <td>{{ player.pass_def }}</td>
+              <td>{{ player.special_off }}</td>
+              <td>{{ player.special_def }}</td>
+            </tr>    
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
