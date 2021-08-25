@@ -236,6 +236,10 @@ class Season(models.Model):
         League, on_delete=models.CASCADE,
         related_name='seasons',
     )
+    schedule = models.OneToOneField(
+        'Schedule', on_delete=models.CASCADE,
+        blank=True, null=True
+    )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
@@ -247,18 +251,22 @@ class Season(models.Model):
         return f'Season {str(self.pk)} - {self.league.name}'
 
 
-class Match(models.Model):
+class Schedule(models.Model):
+    pass
+
+
+class Matchup(models.Model):
     home_team = models.ForeignKey(
         Team, on_delete=models.CASCADE,
-        related_name='home_matches',
+        related_name='home_matchups',
     )
     away_team = models.ForeignKey(
         Team, on_delete=models.CASCADE,
-        related_name='away_matches',
+        related_name='away_matchups',
     )
     season = models.ForeignKey(
         Season, on_delete=models.CASCADE,
-        related_name='matches',
+        related_name='matchups',
     )
     
     def __str__(self):
@@ -270,9 +278,10 @@ class PlayerStats(models.Model):
         Player, on_delete=models.CASCADE,
         related_name='player_stats',
     )
-    match = models.ForeignKey(
-        Match, on_delete=models.CASCADE,
+    matchup = models.ForeignKey(
+        Matchup, on_delete=models.CASCADE,
         related_name='player_stats',
+        default=None
     )
     # Passing Offense
     passing_comps = models.IntegerField(default=0)

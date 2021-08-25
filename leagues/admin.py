@@ -3,7 +3,8 @@ from django.contrib import admin
 from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
-    Season, Match, PlayerStats
+    Season, Schedule, Matchup,
+    PlayerStats
 )
 
 
@@ -66,9 +67,10 @@ admin.site.register(League, LeagueAdmin)
 admin.site.register(Conference, ConferenceAdmin)
 admin.site.register(Division, DivisionAdmin)
 admin.site.register(Team, TeamAdmin)
+admin.site.register(UserTeam)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Contract)
 admin.site.register(Season)
-admin.site.register(Match)
+admin.site.register(Schedule)
+admin.site.register(Matchup)
 admin.site.register(PlayerStats)
-admin.site.register(UserTeam)

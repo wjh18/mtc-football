@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'pages',
     'leagues',
+    'simulation',
 ]
 
 # django-crispy-forms
