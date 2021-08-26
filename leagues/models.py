@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from .utils import (
+from .utils.utils import (
     get_conference_data,
     get_division_data,
     read_team_info_from_csv,
@@ -144,6 +144,7 @@ class Team(models.Model):
                         league=self.league,
                         **player
                     )
+                # Creates a contract b/w team and player instance
                 p.team.add(self)
 
     def calc_team_overall(self):
@@ -244,7 +245,30 @@ class Season(models.Model):
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'Season {str(self.pk)} - {self.league.name}'
+        return f'Season {str(self.season_number)} - {self.league.name}'
+
+    def save(self, *args, **kwargs):
+
+        # True if no instance exists, false if editing existing instance
+        no_instance_exists = self._state.adding
+
+        # Save Season instance before referencing it for schedule / Matchup creation
+        super().save(*args, **kwargs)
+
+        # Generate schedule from utils and create Matchup instances
+        # Only perform if instance doesn't exist yet (initial save)
+        if no_instance_exists:
+            from .utils.schedule import create_schedule
+            league_uuid = self.league.pk
+            matchups = create_schedule(str(league_uuid))
+            for week_num in range(1, len(matchups) + 1):
+                for matchup in matchups[week_num - 1]:
+                    Matchup.objects.create(
+                        home_team=matchup[0],
+                        away_team=matchup[1],
+                        season=self,
+                        week_number=week_num,
+                    )
 
 
 class Matchup(models.Model):
@@ -265,7 +289,7 @@ class Matchup(models.Model):
     is_preseason = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Season #{str(self.season.pk)} - {self.home_team} vs. {self.away_team}'
+        return f'Season {str(self.season.season_number)} Week {str(self.week_number)} - {self.home_team} vs. {self.away_team}'
 
 
 class PlayerStats(models.Model):

@@ -12,6 +12,7 @@ django-allauth = "*"
 django-extensions = "*"
 pygraphviz = "*"
 crispy-bootstrap5 = "*"
+algorithm-x = "*"
 
 [dev-packages]
 
