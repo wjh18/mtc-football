@@ -21,6 +21,7 @@ class League(models.Model):
     user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
+        related_name='leagues'
     )
     name = models.CharField(max_length=300)
     gm_name = models.CharField(max_length=300)
@@ -114,7 +115,7 @@ class Team(models.Model):
     )
     division = models.ForeignKey(
         Division, on_delete=models.CASCADE,
-        related_name='teams', default=None
+        related_name='teams',
     )
     location = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
@@ -161,7 +162,6 @@ class Team(models.Model):
 class UserTeam(models.Model):
     league = models.OneToOneField(
         League, on_delete=models.CASCADE,
-        blank=True, null=True
     )
     team = models.OneToOneField(
         Team, on_delete=models.CASCADE
@@ -238,7 +238,7 @@ class Season(models.Model):
     )
     schedule = models.OneToOneField(
         'Schedule', on_delete=models.CASCADE,
-        blank=True, null=True
+        default=None, blank=True, null=True
     )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
@@ -281,7 +281,6 @@ class PlayerStats(models.Model):
     matchup = models.ForeignKey(
         Matchup, on_delete=models.CASCADE,
         related_name='player_stats',
-        default=None
     )
     # Passing Offense
     passing_comps = models.IntegerField(default=0)
