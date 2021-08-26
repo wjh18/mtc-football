@@ -236,10 +236,6 @@ class Season(models.Model):
         League, on_delete=models.CASCADE,
         related_name='seasons',
     )
-    schedule = models.OneToOneField(
-        'Schedule', on_delete=models.CASCADE,
-        default=None, blank=True, null=True
-    )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
@@ -249,10 +245,6 @@ class Season(models.Model):
 
     def __str__(self):
         return f'Season {str(self.pk)} - {self.league.name}'
-
-
-class Schedule(models.Model):
-    pass
 
 
 class Matchup(models.Model):
@@ -268,7 +260,10 @@ class Matchup(models.Model):
         Season, on_delete=models.CASCADE,
         related_name='matchups',
     )
-    
+    date = models.DateField(default=datetime.date(2021, 8, 29))
+    week_number = models.PositiveSmallIntegerField(default=1)
+    is_preseason = models.BooleanField(default=False)
+
     def __str__(self):
         return f'Season #{str(self.season.pk)} - {self.home_team} vs. {self.away_team}'
 
