@@ -125,7 +125,7 @@ class Team(models.Model):
         ordering = ['location']
 
     def __str__(self):
-        return f'{self.location} {self.name}'
+        return f'{self.location} {self.name} ({self.abbreviation})'
 
     def save(self, *args, **kwargs):
 
@@ -233,6 +233,16 @@ class Contract(models.Model):
 
 
 class Season(models.Model):
+    PHASES = (
+        (1, 'Re-signing'),
+        (2, 'Free Agent Signing'),
+        (3, 'Draft'),
+        (4, 'Training Camp'),
+        (5, 'Preseason'),
+        (6, 'Regular Season'),
+        (7, 'Playoffs'),
+        (8, 'Offseason'),
+    )
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='seasons',
@@ -240,7 +250,7 @@ class Season(models.Model):
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
-    phase = models.PositiveSmallIntegerField(default=1)
+    phase = models.PositiveSmallIntegerField(default=6, choices=PHASES)
     season_number = models.PositiveSmallIntegerField(default=1)
     is_current = models.BooleanField(default=True)
 
@@ -261,6 +271,8 @@ class Season(models.Model):
             from .utils.schedule import create_schedule
             league_uuid = self.league.pk
             matchups = create_schedule(str(league_uuid))
+            date = datetime.date(2021, 8, 29)
+            progress_week = datetime.timedelta(days=7)
             for week_num in range(1, len(matchups) + 1):
                 for matchup in matchups[week_num - 1]:
                     Matchup.objects.create(
@@ -268,7 +280,9 @@ class Season(models.Model):
                         away_team=matchup[1],
                         season=self,
                         week_number=week_num,
+                        date=date
                     )
+                date += progress_week
 
 
 class Matchup(models.Model):
@@ -292,7 +306,7 @@ class Matchup(models.Model):
         return f'Season {str(self.season.season_number)} Week {str(self.week_number)} - {self.home_team} vs. {self.away_team}'
 
 
-class PlayerStats(models.Model):
+class PlayerMatchStat(models.Model):
     player = models.ForeignKey(
         Player, on_delete=models.CASCADE,
         related_name='player_stats',
@@ -309,6 +323,12 @@ class PlayerStats(models.Model):
     passing_ints = models.IntegerField(default=0)
     passing_fds = models.IntegerField(default=0)
     times_sacked = models.IntegerField(default=0)
+    # Receiving Offense
+    receptions = models.IntegerField(default=0)
+    receiving_targets = models.IntegerField(default=0)
+    receiving_yds = models.IntegerField(default=0)
+    receiving_tds = models.IntegerField(default=0)
+    receiving_fds = models.IntegerField(default=0)
     # Rushing Offense
     rushing_atts = models.IntegerField(default=0)
     rushing_yds = models.IntegerField(default=0)

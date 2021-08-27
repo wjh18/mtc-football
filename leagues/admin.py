@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
-    Season, Matchup, PlayerStats
+    Season, Matchup, PlayerMatchStat
 )
 
 
@@ -27,12 +27,12 @@ class ConferenceAdmin(admin.ModelAdmin):
     inlines = [
         DivisionInline,
     ]
-    list_display = ('name', 'league')
+    list_display = ('__str__', 'league')
     readonly_fields = ('id',)
 
 
 class DivisionAdmin(admin.ModelAdmin):
-    list_display = ("name", "conference")
+    list_display = ("__str__", "conference")
     readonly_fields = ('id',)
 
 
@@ -71,4 +71,4 @@ admin.site.register(Player, PlayerAdmin)
 admin.site.register(Contract)
 admin.site.register(Season)
 admin.site.register(Matchup)
-admin.site.register(PlayerStats)
+admin.site.register(PlayerMatchStat)
