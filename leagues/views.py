@@ -13,10 +13,10 @@ from django.http import HttpResponse
 
 # Custom Mixins
 
-## Permissions Mixins
+# Permissions Mixins
 
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
-    
+
     def test_func(self):
         return self.request.user == self.get_object().user
 
@@ -103,7 +103,7 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
             context['user_team'] = True
         else:
             context['user_team'] = False
-            
+
         return context
 
 
@@ -120,12 +120,13 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         league = League.objects.get(id=league_uuid)
         context['league'] = league
         if UserTeam.objects.filter(league=league, team=self.object).exists():
-            context['user_team'] = UserTeam.objects.get(league=league, team=self.object)
+            context['user_team'] = UserTeam.objects.get(
+                league=league, team=self.object)
         else:
             context['user_team'] = False
         return context
 
-    
+
 class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team
     context_object_name = 'team'
@@ -143,8 +144,31 @@ class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
         return context
 
 
+class DepthChartView(LeagueOwnerCanViewTeamsMixin, ListView):
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/depth_chart.html'
+    login_url = 'account_login'
+
+    def get_context_data(self, **kwargs):
+        context = super(DepthChartView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        team_uuid = self.kwargs['pk']
+        context['league'] = League.objects.get(id=league_uuid)
+        context['team'] = Team.objects.get(id=team_uuid)
+        contracts = Team.objects.get(id=team_uuid).contracts.all()
+        position = self.kwargs.get('position', 'QB')
+        players = Player.objects.filter(
+            id__in=contracts.values('player_id'))
+        context['positions'] = list(dict.fromkeys(
+            [player.position for player in players]))
+        context['players'] = Player.objects.filter(
+            id__in=contracts.values('player_id'), position=position).order_by('-overall_rating')
+        return context
+
+
 def update_user_team(request, league):
-    
+
     if request.method == 'POST':
         league = get_object_or_404(League, pk=league)
         try:

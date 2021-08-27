@@ -77,7 +77,10 @@
       {% endif %}
       <p>Overall: {{ team.calc_team_overall }}</p>
       <a href="{% url 'team_roster' league.pk team.pk %}" class="btn btn-primary" role="button">
-        View Roster
+        Roster
+      </a>
+      <a href="{% url 'depth_chart' league.pk team.pk %}" class="btn btn-primary" role="button">
+        Depth Chart
       </a>
     </div>
   </div>

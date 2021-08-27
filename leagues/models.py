@@ -26,7 +26,7 @@ class League(models.Model):
     name = models.CharField(max_length=300)
     gm_name = models.CharField(max_length=300)
     creation_date = models.DateTimeField(default=timezone.now)
-    
+
     class Meta:
         ordering = ['-creation_date']
 
@@ -46,7 +46,8 @@ class League(models.Model):
             # Get conference and division data and create them
             conferences = get_conference_data()
             divisions = get_division_data()
-            Conference.objects.bulk_create([Conference(league=self, **c) for c in conferences])
+            Conference.objects.bulk_create(
+                [Conference(league=self, **c) for c in conferences])
             afc = Conference.objects.get(name='AFC', league=self)
             nfc = Conference.objects.get(name='NFC', league=self)
             for division in divisions:
@@ -141,9 +142,9 @@ class Team(models.Model):
             player_attributes = generate_player_attributes()
             for player in player_attributes:
                 p = Player.objects.create(
-                        league=self.league,
-                        **player
-                    )
+                    league=self.league,
+                    **player
+                )
                 # Creates a contract b/w team and player instance
                 p.team.add(self)
 
@@ -168,6 +169,9 @@ class UserTeam(models.Model):
         Team, on_delete=models.CASCADE
     )
     is_active_team = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'User team: {self.team.name}'
 
 
 class Person(models.Model):
@@ -215,6 +219,9 @@ class Player(Person):
 
     def __str__(self):
         return f'{self.first_name} ' + f' {self.last_name}'
+
+    def get_absolute_url(self):
+        return reverse("player_detail", args=[str(self.id)])
 
 
 class Contract(models.Model):
