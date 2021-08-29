@@ -41,6 +41,7 @@
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
             <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
+            <li><a href="{% url 'depth_chart' league.pk league.userteam.team.pk %}" class="link-dark rounded">Depth Chart</a></li>
           </ul>
         </div>
       </li>

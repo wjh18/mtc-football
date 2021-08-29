@@ -197,3 +197,7 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         context['league'] = League.objects.get(id=league_uuid)
         context['team'] = Team.objects.get(id=team_uuid)
         return context
+
+
+def simulate(request, days):
+    pass
