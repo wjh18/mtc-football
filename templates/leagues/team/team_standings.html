@@ -63,37 +63,137 @@
 {% endblock sidebar %}
 
 {% block content %}
+{{ type }}
   <h2>Team Standings &middot; Week {{ season.week_number }} Season {{ season.season_number }} &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
   <div class="container">
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Team</th>
-            <th scope="col">W</th>
-            <th scope="col">L</th>
-            <th scope="col">T</th>
-            <th scope="col">Streak</th>
-            <th scope="col">PF</th>
-            <th scope="col">PA</th>
-          </tr>
-        </thead>
-        <tbody>
-      {% for standing in standings %}
-        <tr>
-          <th scope="row"><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></th>
-          <td>{{ standing.wins }}</td>
-          <td>{{ standing.losses }}</td>
-          <td>{{ standing.ties }}</td>
-          <td>{{ standing.streak }}</td>
-          <td>{{ standing.points_for }}</td>
-          <td>{{ standing.points_against }}</td>
-        </tr>
+
+    <ul class="nav nav-tabs mb-5">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="{% url 'team_standings' league.pk %}">Division</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="{% url 'team_standings_type' league.pk "conference"|urlencode %}">Conference</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="{% url 'team_standings_type' league.pk "league"|urlencode %}">League</a>
+        </li>
+    </ul>
+
+    {% if not type %}
+      {% for conference in league.conferences.all %}
+        {% for division in conference.divisions.all %}
+          <h3>{{ division.name }}</h3>
+          <hr>
+            <div class="table-responsive mb-3">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">W</th>
+                    <th scope="col">L</th>
+                    <th scope="col">T</th>
+                    <th scope="col">Streak</th>
+                    <th scope="col">PF</th>
+                    <th scope="col">PA</th>
+                  </tr>
+                </thead>
+                <tbody>
+              {% for standing in standings %}
+                {% if standing.team in division.teams.all %}
+                <tr>
+                  <th scope="row">{{ forloop.counter }}</th>
+                  <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+                  <td>{{ standing.wins }}</td>
+                  <td>{{ standing.losses }}</td>
+                  <td>{{ standing.ties }}</td>
+                  <td>{{ standing.streak }}</td>
+                  <td>{{ standing.points_for }}</td>
+                  <td>{{ standing.points_against }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        {% endfor %}
       {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    {% endif %}
+
+    {% if type == "conference" %}
+      {% for conference in league.conferences.all %}
+        <h3>{{ conference.name }}</h3>
+        <hr>
+            <div class="table-responsive mb-3">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">W</th>
+                    <th scope="col">L</th>
+                    <th scope="col">T</th>
+                    <th scope="col">Streak</th>
+                    <th scope="col">PF</th>
+                    <th scope="col">PA</th>
+                  </tr>
+                </thead>
+                <tbody>
+              {% for standing in standings %}
+                {% if standing.team.division in conference.divisions.all %}
+                <tr>
+                  <th scope="row">{{ forloop.counter }}</th>
+                  <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+                  <td>{{ standing.wins }}</td>
+                  <td>{{ standing.losses }}</td>
+                  <td>{{ standing.ties }}</td>
+                  <td>{{ standing.streak }}</td>
+                  <td>{{ standing.points_for }}</td>
+                  <td>{{ standing.points_against }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+                </tbody>
+              </table>
+            </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if type == "league" %}
+      <h3>{{ league.name }}</h3>
+      <hr>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Pos</th>
+              <th scope="col">Team</th>
+              <th scope="col">W</th>
+              <th scope="col">L</th>
+              <th scope="col">T</th>
+              <th scope="col">Streak</th>
+              <th scope="col">PF</th>
+              <th scope="col">PA</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for standing in standings %}
+          <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+            <td>{{ standing.wins }}</td>
+            <td>{{ standing.losses }}</td>
+            <td>{{ standing.ties }}</td>
+            <td>{{ standing.streak }}</td>
+            <td>{{ standing.points_for }}</td>
+            <td>{{ standing.points_against }}</td>
+          </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
   </div>
 {% endblock content %}

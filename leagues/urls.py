@@ -23,5 +23,7 @@ urlpatterns = [
     path('<uuid:league>/advance-days/<int:days>/',
          views.advance_days, name='advance_days'),
     path('<uuid:league>/standings/',
-         views.TeamStandingsView.as_view(), name='team_standings')
+         views.TeamStandingsView.as_view(), name='team_standings'),
+    path('<uuid:league>/standings/<str:type>/',
+         views.TeamStandingsView.as_view(), name='team_standings_type')
 ]

@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import (
 from django.http import HttpResponse
 from django.contrib import messages
 
-from .models import League, Player, Team, UserTeam, Season, Matchup, TeamStanding
+from .models import League, Player, Team, UserTeam, Season, Matchup, TeamStanding, Conference, Division
 
 
 # Custom Mixins
@@ -290,7 +290,7 @@ class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
         league = self.kwargs['league']
         season = get_object_or_404(Season, league=league, is_current=True)
         standings = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number)
+            season=season, week_number=season.week_number).order_by('-wins', 'losses', '-points_for', 'points_against')
 
         return standings
 
@@ -299,9 +299,12 @@ class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
         context = super(TeamStandingsView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
+        context['afc'] = Conference.objects.get(name='AFC', league=league)
+        context['nfc'] = Conference.objects.get(name='NFC', league=league)
         context['league'] = league
         context['season'] = get_object_or_404(
             Season, league=league, is_current=True)
+        context['type'] = self.kwargs.get('type')
         if UserTeam.objects.filter(league=league).exists():
             context['user_team'] = True
         else:
