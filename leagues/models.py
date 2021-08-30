@@ -299,6 +299,17 @@ class Season(models.Model):
             for team in self.league.teams.all():
                 TeamStanding.objects.create(team=team, season=self)
 
+    def get_byes(self):
+        matchups = self.matchups.filter(week_number=self.week_number)
+        teams_in_league = {team for team in self.league.teams.all()}
+        teams_playing_this_week = set()
+        for matchup in matchups:
+            teams_playing_this_week.add(matchup.home_team)
+            teams_playing_this_week.add(matchup.away_team)
+        teams_with_bye = teams_in_league - teams_playing_this_week
+
+        return teams_with_bye
+
 
 class Matchup(models.Model):
     home_team = models.ForeignKey(

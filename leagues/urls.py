@@ -22,4 +22,6 @@ urlpatterns = [
          views.PlayerDetailView.as_view(), name='player_detail'),
     path('<uuid:league>/advance-days/<int:days>/',
          views.advance_days, name='advance_days'),
+    path('<uuid:league>/standings/',
+         views.TeamStandingsView.as_view(), name='team_standings')
 ]

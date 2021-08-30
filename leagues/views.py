@@ -210,39 +210,56 @@ def advance_days(request, league, days):
         matchups = Matchup.objects.filter(
             season=season, week_number=current_week)
 
+        byes = season.get_byes()
+        for team in byes:
+            current_standing = TeamStanding.objects.get(
+                team=team, season=season,
+                week_number=current_week)
+            wins = current_standing.wins
+            losses = current_standing.losses
+            ties = current_standing.ties
+            streak = current_standing.streak
+            points_for = current_standing.points_for
+            points_against = current_standing.points_against
+
+            TeamStanding.objects.create(
+                team=team, season=season,
+                week_number=current_week + 1, wins=wins, losses=losses,
+                ties=ties, streak=streak, points_for=points_for,
+                points_against=points_against)
+
         # Get scores and results for this weeks matchup
         for matchup in matchups:
             scores = matchup.scoreboard.get_score()
             winner = matchup.scoreboard.get_winner()
 
             for team in (matchup.home_team, matchup.away_team):
-                # previous_week = current_week - 1
-                previous_standing = TeamStanding.objects.get(
+                current_standing = TeamStanding.objects.get(
                     team=team, season=season,
                     week_number=current_week)
 
-                wins = previous_standing.wins
-                losses = previous_standing.losses
-                ties = previous_standing.ties
-                streak = previous_standing.streak
+                wins = current_standing.wins
+                losses = current_standing.losses
+                ties = current_standing.ties
+                streak = current_standing.streak
 
                 if winner == 'Tie':
-                    ties = previous_standing.ties + 1
+                    ties = current_standing.ties + 1
                     streak = 0
                 elif winner == team:
-                    wins = previous_standing.wins + 1
-                    streak = previous_standing.streak + 1
+                    wins = current_standing.wins + 1
+                    streak = current_standing.streak + 1
                 else:
-                    losses = previous_standing.losses + 1
+                    losses = current_standing.losses + 1
                     streak = 0
 
                 if team == matchup.home_team:
-                    points_for = previous_standing.points_for + scores['Home']
-                    points_against = previous_standing.points_against + \
+                    points_for = current_standing.points_for + scores['Home']
+                    points_against = current_standing.points_against + \
                         scores['Away']
                 else:
-                    points_for = previous_standing.points_for + scores['Away']
-                    points_against = previous_standing.points_against + \
+                    points_for = current_standing.points_for + scores['Away']
+                    points_against = current_standing.points_against + \
                         scores['Home']
 
                 TeamStanding.objects.create(
@@ -261,3 +278,33 @@ def advance_days(request, league, days):
         messages.add_message(request, messages.SUCCESS, 'Advanced one week.')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
+    model = TeamStanding
+    context_object_name = 'standings'
+    template_name = 'leagues/team/team_standings.html'
+    login_url = 'account_login'
+
+    def get_queryset(self):
+        league = self.kwargs['league']
+        season = get_object_or_404(Season, league=league, is_current=True)
+        standings = TeamStanding.objects.filter(
+            season=season, week_number=season.week_number)
+
+        return standings
+
+    def get_context_data(self, **kwargs):
+        # Add context data from URL kwargs for the teams' league
+        context = super(TeamStandingsView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        league = League.objects.get(id=league_uuid)
+        context['league'] = league
+        context['season'] = get_object_or_404(
+            Season, league=league, is_current=True)
+        if UserTeam.objects.filter(league=league).exists():
+            context['user_team'] = True
+        else:
+            context['user_team'] = False
+
+        return context

@@ -1,6 +1,6 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}League | {{ league.name }}{% endblock title %}
+{% block title %}Teams | {{ league.name }}{% endblock title %}
 
 {% block sidebar %}
 <div class="col-2 flex-shrink-0 mt-5 bg-white">
@@ -25,7 +25,7 @@
         League: {{ league.name }}
       </button>
       <div class="collapse show" id="league-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
           <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
         </ul>
@@ -38,7 +38,7 @@
           Team: {{ league.userteam.team.name }}
         </button>
         <div class="collapse" id="team-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
             <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
             <li><a href="{% url 'depth_chart' league.pk league.userteam.team.pk %}" class="link-dark rounded">Depth Chart</a></li>
@@ -52,7 +52,7 @@
         Account
       </button>
       <div class="collapse" id="account-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
           <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>
         </ul>
@@ -63,31 +63,37 @@
 {% endblock sidebar %}
 
 {% block content %}
-  <div class="row">
-    <h2>Home &middot; {{ league.name }}</h2>
-    <p><a href="{% url 'league_list' %}">&larr; Return to Leagues</a></p>
-    <hr>
-    <div class="col-6">
-      <div class="pt-2 pb-3">
-        <a href="{% url 'team_list' league.pk %}" class="btn btn-primary" role="button">
-          Teams
-        </a>
-        <a href="{% url 'team_standings' league.pk %}" class="btn btn-primary" role="button">
-          Standings
-        </a>
-        <a href="{% url 'league_edit' league.pk %}" class="btn btn-dark" role="button">
-          Edit Info
-        </a>
-        <a href="{% url 'league_delete' league.pk %}" class="btn btn-danger" role="button">
-          Delete League
-        </a>
-      </div>
-      <h3>League Info</h3>
-      
-      <ul>
-        <li>GM: {{ league.gm_name }}</li>
-        <li>Created: {{ league.creation_date }}</li>
-      </ul>
+  <h2>Team Standings &middot; Week {{ season.week_number }} Season {{ season.season_number }} &middot; {{ league.name }}</h2>
+  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
+  <hr>
+  <div class="container">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Team</th>
+            <th scope="col">W</th>
+            <th scope="col">L</th>
+            <th scope="col">T</th>
+            <th scope="col">Streak</th>
+            <th scope="col">PF</th>
+            <th scope="col">PA</th>
+          </tr>
+        </thead>
+        <tbody>
+      {% for standing in standings %}
+        <tr>
+          <th scope="row"><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></th>
+          <td>{{ standing.wins }}</td>
+          <td>{{ standing.losses }}</td>
+          <td>{{ standing.ties }}</td>
+          <td>{{ standing.streak }}</td>
+          <td>{{ standing.points_for }}</td>
+          <td>{{ standing.points_against }}</td>
+        </tr>
+      {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 {% endblock content %}
