@@ -1,5 +1,6 @@
 from pathlib import Path
 from environs import Env
+from django.contrib.messages import constants as messages
 
 env = Env()
 env.read_env()
@@ -100,7 +101,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     "default": env.dj_db_url("DATABASE_URL",
-    default="postgres://postgres@db/postgres")
+                             default="postgres://postgres@db/postgres")
 }
 
 
@@ -156,3 +157,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 DEFAULT_FROM_EMAIL = 'admin@djangobookstore.com'
+
+# Django Messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}

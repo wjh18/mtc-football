@@ -23,7 +23,7 @@
               Simulate
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="#">Progress 1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_days' league.pk 7|urlencode %}">Progress 1 Week</a></li>
             </ul>
           </div>
         </ul>
@@ -32,6 +32,13 @@
   {% endblock header %}
   <body>
     <div class="container-fluid">
+      {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <p{% if message.tags %} class="alert {{ message.tags }}" role="alert"{% endif %}>{{ message }}</p>
+            {% endfor %}
+        </div>
+      {% endif %}
       <div class="row">
         {% if user.is_authenticated %}
           {% block sidebar %}

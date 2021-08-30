@@ -3,7 +3,8 @@ from django.contrib import admin
 from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
-    Season, Matchup, PlayerMatchStat
+    Season, Matchup, PlayerMatchStat,
+    TeamStanding,
 )
 
 
@@ -58,9 +59,11 @@ class PlayerAdmin(admin.ModelAdmin):
     inlines = [
         PlayerInline
     ]
-    list_display = ('__str__', 'position', 'prototype', 'overall_rating', 'league')
+    list_display = ('__str__', 'position', 'prototype',
+                    'overall_rating', 'league')
     list_filter = ('team__league__name',)
     search_fields = ('first_name',)
+
 
 admin.site.register(League, LeagueAdmin)
 admin.site.register(Conference, ConferenceAdmin)
@@ -72,3 +75,4 @@ admin.site.register(Contract)
 admin.site.register(Season)
 admin.site.register(Matchup)
 admin.site.register(PlayerMatchStat)
+admin.site.register(TeamStanding)

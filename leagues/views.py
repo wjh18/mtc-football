@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
@@ -6,9 +8,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
-from .models import League, Player, Team, UserTeam
-
 from django.http import HttpResponse
+from django.contrib import messages
+
+from .models import League, Player, Team, UserTeam, Season, Matchup, TeamStanding
 
 
 # Custom Mixins
@@ -199,5 +202,62 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         return context
 
 
-def simulate(request, days):
-    pass
+def advance_days(request, league, days):
+    if request.method == 'GET':
+        league = get_object_or_404(League, pk=league)
+        season = get_object_or_404(Season, league=league, is_current=True)
+        current_week = season.week_number
+        previous_week = season.week_number - 1
+        matchups = Matchup.objects.filter(
+            season=season, week_number=current_week)
+
+        # Get scores and results for this weeks matchup
+        for matchup in matchups:
+            scores = matchup.scoreboard.get_score()
+            winner = matchup.scoreboard.get_winner()
+
+            # Need week number on TeamStanding?
+            # if previous_week > 0:
+            #     home_previous_standing = TeamStanding.objects.get(
+            #         team=matchup.home_team, season=season)
+            #     away_previous_standing = TeamStanding.objects.get(
+            #         team=matchup.away_team, season=season)
+
+            if winner == 'Tie':
+                TeamStanding.objects.create(
+                    team=matchup.home_team, season=season, ties=1,
+                    points_for=matchup.scoreboard.home_score,
+                    points_against=matchup.scoreboard.away_score)
+                TeamStanding.objects.create(
+                    team=matchup.away_team, season=season, ties=1,
+                    points_for=matchup.scoreboard.away_score,
+                    points_against=matchup.scoreboard.home_score)
+            elif winner == matchup.home_team:
+                TeamStanding.objects.create(
+                    team=matchup.home_team, season=season, wins=1, streak=1,
+                    points_for=matchup.scoreboard.home_score,
+                    points_against=matchup.scoreboard.away_score)
+                TeamStanding.objects.create(
+                    team=matchup.away_team, season=season, losses=1, streak=-1,
+                    points_for=matchup.scoreboard.away_score,
+                    points_against=matchup.scoreboard.home_score)
+            else:
+                TeamStanding.objects.create(
+                    team=matchup.away_team, season=season, wins=1, streak=1,
+                    points_for=matchup.scoreboard.away_score,
+                    points_against=matchup.scoreboard.home_score)
+                TeamStanding.objects.create(
+                    team=matchup.home_team, season=season, losses=1, streak=-1,
+                    points_for=matchup.scoreboard.home_score,
+                    points_against=matchup.scoreboard.away_score)
+
+        # Progress season by X days and save instance
+        season.current_date += datetime.timedelta(days=days)
+        if days == 7:
+            season.week_number += 1
+        season.save()
+
+        # Success message
+        messages.add_message(request, messages.SUCCESS, 'Advanced one week.')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

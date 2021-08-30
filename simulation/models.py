@@ -2,6 +2,7 @@ from django.db import models
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
+import random
 
 
 class Scoreboard(models.Model):
@@ -29,12 +30,17 @@ class Scoreboard(models.Model):
     # field_position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)])
 
     def __str__(self):
-        return f'Scoreboard for Match {str(self.matchup.pk)} Season {str(self.matchup.season.pk)} - {self.matchup.season.league.name}'
+        return f'Scoreboard for Match (week {str(self.matchup.week_number)}) Season {str(self.matchup.season.season_number)} - {self.matchup.season.league.name}'
+
+    def get_score(self):
+        self.home_score = random.randint(0, 50)
+        self.away_score = random.randint(0, 50)
+        self.save()
 
     def get_winner(self):
-        if home_score > away_score:
+        if self.home_score > self.away_score:
             return self.matchup.home_team
-        elif away_score > home_score:
+        elif self.away_score > self.home_score:
             return self.matchup.away_team
         else:
             return "Tie"

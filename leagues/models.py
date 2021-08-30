@@ -10,6 +10,7 @@ from .utils.utils import (
     read_team_info_from_csv,
     generate_player_attributes,
 )
+from simulation.models import Scoreboard
 
 
 class League(models.Model):
@@ -259,6 +260,7 @@ class Season(models.Model):
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
     phase = models.PositiveSmallIntegerField(default=6, choices=PHASES)
     season_number = models.PositiveSmallIntegerField(default=1)
+    week_number = models.PositiveSmallIntegerField(default=1)
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
@@ -282,12 +284,15 @@ class Season(models.Model):
             progress_week = datetime.timedelta(days=7)
             for week_num in range(1, len(matchups) + 1):
                 for matchup in matchups[week_num - 1]:
-                    Matchup.objects.create(
+                    new_matchup = Matchup.objects.create(
                         home_team=matchup[0],
                         away_team=matchup[1],
                         season=self,
                         week_number=week_num,
                         date=date
+                    )
+                    Scoreboard.objects.create(
+                        matchup=new_matchup
                     )
                 date += progress_week
 
