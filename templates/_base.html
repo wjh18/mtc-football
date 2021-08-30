@@ -50,7 +50,7 @@
           {% block sidebar %}
           <div class="col-2 flex-shrink-0 mt-5 bg-white">
             <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-              <span class="fs-5 fw-semibold">Welcome, {{ user }}</span>
+              <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
             </a>
             <ul class="list-unstyled ps-0">
               <li class="mb-1">
@@ -66,10 +66,10 @@
               </li>
               <li class="border-top my-3"></li>
               <li class="mb-1">
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
                   Account
                 </button>
-                <div class="collapse" id="account-collapse">
+                <div class="collapse show" id="account-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
                     <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
                     <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>

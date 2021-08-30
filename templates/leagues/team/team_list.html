@@ -2,102 +2,40 @@
 
 {% block title %}Teams | {{ league.name }}{% endblock title %}
 
-{% block sidebar %}
-<div class="col-2 flex-shrink-0 mt-5 bg-white">
-  <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-    <span class="fs-5 fw-semibold">Welcome, {{ user }}</span>
-  </a>
-  <ul class="list-unstyled ps-0">
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="false">
-        Start
-      </button>
-      <div class="collapse" id="start-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
-          <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="border-top my-3"></li>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="true">
-        League: {{ league.name }}
-      </button>
-      <div class="collapse show" id="league-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-          <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
-          <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
-        </ul>
-      </div>
-    </li>
-    {% if league.userteam %}
-      <li class="border-top my-3"></li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="false">
-          Team: {{ league.userteam.team.name }}
-        </button>
-        <div class="collapse" id="team-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-            <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">My Team</a></li>
-            <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
-            <li><a href="{% url 'depth_chart' league.pk league.userteam.team.pk %}" class="link-dark rounded">Depth Chart</a></li>
-          </ul>
-        </div>
-      </li>
-    {% endif %}
-    <li class="border-top my-3"></li>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-        Account
-      </button>
-      <div class="collapse" id="account-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-          <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
-          <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>
-        </ul>
-      </div>
-    </li>
-  </ul>
-</div>
-{% endblock sidebar %}
-
 {% block content %}
   <h2>Teams &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
-  <div class="container">
-    {% if user.is_authenticated and not user_team %}
-      <div class="team-list-welcome">
-        <h3 class="mt-4">Welcome to your new league, {{ user }}.</h3>
-        <p class="mt-3">Start by reviewing the rosters, then pick which team you want to sign onto as GM. Once you choose a team, you're locked in until your contract expires so choose wisely!</p>
-      </div>
-      <form action="{% url 'update_user_team' league.pk %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-          <select class="form-select mb-3" id="team-select" name="teams">
-            <option disabled selected value> -- Select your team -- </option>
-            {% for team in team_list %}
-            <option value="{{ team.pk }}">{{ team.location }} {{ team.name }}</option>
-            {% endfor %}
-          </select>
-          <button type="submit" class="btn btn-primary mb-3">Submit</button>
-        </div>
-      </form>
-    {% endif %}
-    <div class="row">
-      {% for team in team_list %}
-      <div class="col-4 m-3 team-list-wrapper">
-        <h3 class="team-list-name">
-          <a href="{% url 'team_detail' league.pk team.pk %}">{{ team.location }} {{ team.name }}</a>
-          {% if team.userteam %}
-            <span class="my-team-tag">GM</span>
-          {% endif %}
-        </h3>
-        <p>Overall: {{ team.calc_team_overall }}</p>
-        <a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a>
-      </div> 
-      {% endfor %}
+  {% if user.is_authenticated and not user_team %}
+    <div class="team-list-welcome">
+      <h3 class="mt-4">Welcome to your new league, {{ user }}.</h3>
+      <p class="mt-3">Start by reviewing the rosters, then pick which team you want to sign onto as GM. Once you choose a team, you're locked in until your contract expires so choose wisely!</p>
     </div>
-    </div>  
+    <form action="{% url 'update_user_team' league.pk %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <select class="form-select mb-3" id="team-select" name="teams">
+          <option disabled selected value> -- Select your team -- </option>
+          {% for team in team_list %}
+          <option value="{{ team.pk }}">{{ team.location }} {{ team.name }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+      </div>
+    </form>
+  {% endif %}
+  <div class="row">
+    {% for team in team_list %}
+    <div class="col-4 m-3 team-list-wrapper">
+      <h3 class="team-list-name">
+        <a href="{% url 'team_detail' league.pk team.pk %}">{{ team.location }} {{ team.name }}</a>
+        {% if team.userteam %}
+          <span class="my-team-tag">GM</span>
+        {% endif %}
+      </h3>
+      <p>Overall: {{ team.calc_team_overall }}</p>
+      <a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a>
+    </div>
+    {% endfor %}
+  </div>
 {% endblock content %}
