@@ -296,6 +296,9 @@ class Season(models.Model):
                     )
                 date += progress_week
 
+            for team in self.league.teams.all():
+                TeamStanding.objects.create(team=team, season=self)
+
 
 class Matchup(models.Model):
     home_team = models.ForeignKey(
@@ -397,9 +400,13 @@ class TeamStanding(models.Model):
         Season, on_delete=models.CASCADE,
         related_name='team_standings',
     )
+    week_number = models.PositiveSmallIntegerField(default=1)
     wins = models.SmallIntegerField(default=0)
     losses = models.SmallIntegerField(default=0)
     ties = models.SmallIntegerField(default=0)
     points_for = models.SmallIntegerField(default=0)
     points_against = models.SmallIntegerField(default=0)
     streak = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.team.name} standings for Week {self.week_number} Season {self.season.season_number}'

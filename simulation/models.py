@@ -37,6 +37,8 @@ class Scoreboard(models.Model):
         self.away_score = random.randint(0, 50)
         self.save()
 
+        return {'Home': self.home_score, 'Away': self.away_score}
+
     def get_winner(self):
         if self.home_score > self.away_score:
             return self.matchup.home_team
