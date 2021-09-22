@@ -29,7 +29,7 @@ class LeagueViewTest(TestCase):
         response = self.client.get(reverse('league_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test League')
-        self.assertTemplateUsed(response, 'leagues/league_list.html')
+        self.assertTemplateUsed(response, 'leagues/league/league_list.html')
 
     def test_league_list_view_for_logged_out_user(self):
         self.client.logout()

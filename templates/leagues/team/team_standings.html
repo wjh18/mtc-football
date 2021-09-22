@@ -42,9 +42,11 @@
               <tbody>
             {% for standing in standings %}
               {% if standing.team in division.teams.all %}
-              <tr>
+              <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
                 <th scope="row">{{ forloop.counter }}</th>
-                <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+                <td>
+                  <a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                </td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>
                 <td>{{ standing.ties }}</td>
@@ -82,7 +84,7 @@
               <tbody>
             {% for standing in standings %}
               {% if standing.team.division in conference.divisions.all %}
-              <tr>
+              <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
                 <td>{{ standing.wins }}</td>
@@ -119,7 +121,7 @@
         </thead>
         <tbody>
       {% for standing in standings %}
-        <tr>
+        <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
           <th scope="row">{{ forloop.counter }}</th>
           <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
           <td>{{ standing.wins }}</td>

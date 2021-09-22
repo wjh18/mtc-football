@@ -64,6 +64,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
     model = League
     fields = ['name', 'gm_name']
     template_name = 'leagues/league/league_create.html'
+    success_message = 'League successfully created.'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -77,12 +78,14 @@ class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
     model = League
     fields = ['name', 'gm_name']
     template_name = 'leagues/league/league_update.html'
+    success_message = 'League successfully updated.'
 
 
 class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     model = League
     success_url = reverse_lazy('league_list')
     template_name = 'leagues/league/league_delete.html'
+    success_message = 'League successfully deleted.'
 
 
 # Team Views
@@ -184,8 +187,11 @@ def update_user_team(request, league):
             })
         else:
             UserTeam.objects.create(league=league, team=selected_team)
+            # messages.add_message(
+            #     request, messages.SUCCESS, f'You are now the GM of the {selected_team.location} {selected_team.name}')
             return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))
 
+# Player views
 
 class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
     model = Player
@@ -201,6 +207,7 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         context['team'] = Team.objects.get(id=team_uuid)
         return context
 
+# League views
 
 def advance_days(request, league, days):
     if request.method == 'GET':
@@ -272,6 +279,8 @@ def advance_days(request, league, days):
         season.current_date += datetime.timedelta(days=days)
         if days == 7:
             season.week_number += 1
+        if season.week_number == 17:
+            season.phase = 7
         season.save()
 
         # Success message

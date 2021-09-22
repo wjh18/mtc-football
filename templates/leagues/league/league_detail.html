@@ -8,7 +8,13 @@
     <p><a href="{% url 'league_list' %}">&larr; Return to Leagues</a></p>
     <hr>
     <div class="col-6">
-      <div class="pt-2 pb-3">
+      <h3>League Info</h3>
+      <ul>
+        <li>GM: {{ league.gm_name }}</li>
+        <li>Created: {{ league.creation_date }}</li>
+      </ul>
+    </div>
+    <div class="pt-2 pb-3">
         <a href="{% url 'team_list' league.pk %}" class="btn btn-primary" role="button">
           Teams
         </a>
@@ -22,12 +28,5 @@
           Delete League
         </a>
       </div>
-      <h3>League Info</h3>
-      
-      <ul>
-        <li>GM: {{ league.gm_name }}</li>
-        <li>Created: {{ league.creation_date }}</li>
-      </ul>
-    </div>
   </div>
 {% endblock content %}
