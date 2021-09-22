@@ -1,7 +1,11 @@
-.logo {
+/* Main */
+
+logo {
     font-size: 30px;
     margin-right: 20px;
 }
+
+/* Teams */
 
 .team-list-wrapper {
     height: 150px;

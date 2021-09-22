@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from .utils.utils import (
+from .utils.league_setup import (
     get_conference_data,
     get_division_data,
     read_team_info_from_csv,

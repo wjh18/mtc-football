@@ -1,4 +1,12 @@
-import datetime
+from .models import (League, Player, Team, UserTeam,
+                     Season, Matchup, TeamStanding,
+                     Conference, Division
+)
+from leagues.utils.progress_season import progress_season
+from leagues.utils.update_standings import (
+    update_standings_for_byes,
+    update_standings
+)
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -11,12 +19,12 @@ from django.contrib.auth.mixins import (
 from django.http import HttpResponse
 from django.contrib import messages
 
-from .models import League, Player, Team, UserTeam, Season, Matchup, TeamStanding, Conference, Division
-
 
 # Custom Mixins
 
+
 # Permissions Mixins
+
 
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
 
@@ -42,6 +50,7 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 # League Views
+
 
 class LeagueListView(LoginRequiredMixin, ListView):
     model = League
@@ -89,6 +98,7 @@ class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
 
 
 # Team Views
+
 
 class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team
@@ -172,7 +182,6 @@ class DepthChartView(LeagueOwnerCanViewTeamsMixin, ListView):
             id__in=contracts.values('player_id'), position=position).order_by('-overall_rating')
         return context
 
-
 def update_user_team(request, league):
 
     if request.method == 'POST':
@@ -193,6 +202,7 @@ def update_user_team(request, league):
 
 # Player views
 
+
 class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
     model = Player
     context_object_name = 'player'
@@ -207,6 +217,7 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         context['team'] = Team.objects.get(id=team_uuid)
         return context
 
+
 # League views
 
 def advance_days(request, league, days):
@@ -217,71 +228,14 @@ def advance_days(request, league, days):
         matchups = Matchup.objects.filter(
             season=season, week_number=current_week)
 
-        byes = season.get_byes()
-        for team in byes:
-            current_standing = TeamStanding.objects.get(
-                team=team, season=season,
-                week_number=current_week)
-            wins = current_standing.wins
-            losses = current_standing.losses
-            ties = current_standing.ties
-            streak = current_standing.streak
-            points_for = current_standing.points_for
-            points_against = current_standing.points_against
+        # For teams on a bye week, update their standings
+        update_standings_for_byes(season, current_week)
 
-            TeamStanding.objects.create(
-                team=team, season=season,
-                week_number=current_week + 1, wins=wins, losses=losses,
-                ties=ties, streak=streak, points_for=points_for,
-                points_against=points_against)
-
-        # Get scores and results for this weeks matchup
-        for matchup in matchups:
-            scores = matchup.scoreboard.get_score()
-            winner = matchup.scoreboard.get_winner()
-
-            for team in (matchup.home_team, matchup.away_team):
-                current_standing = TeamStanding.objects.get(
-                    team=team, season=season,
-                    week_number=current_week)
-
-                wins = current_standing.wins
-                losses = current_standing.losses
-                ties = current_standing.ties
-                streak = current_standing.streak
-
-                if winner == 'Tie':
-                    ties = current_standing.ties + 1
-                    streak = 0
-                elif winner == team:
-                    wins = current_standing.wins + 1
-                    streak = current_standing.streak + 1
-                else:
-                    losses = current_standing.losses + 1
-                    streak = 0
-
-                if team == matchup.home_team:
-                    points_for = current_standing.points_for + scores['Home']
-                    points_against = current_standing.points_against + \
-                        scores['Away']
-                else:
-                    points_for = current_standing.points_for + scores['Away']
-                    points_against = current_standing.points_against + \
-                        scores['Home']
-
-                TeamStanding.objects.create(
-                    team=team, season=season,
-                    week_number=current_week + 1, wins=wins, losses=losses,
-                    ties=ties, streak=streak, points_for=points_for,
-                    points_against=points_against)
+        # Get scores and results for the current week's matchups, then update standings
+        update_standings(season, current_week, matchups)
 
         # Progress season by X days and save instance
-        season.current_date += datetime.timedelta(days=days)
-        if days == 7:
-            season.week_number += 1
-        if season.week_number == 17:
-            season.phase = 7
-        season.save()
+        progress_season(season, days)
 
         # Success message
         messages.add_message(request, messages.SUCCESS, 'Advanced one week.')
