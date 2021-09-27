@@ -23,6 +23,9 @@
       <a href="{% url 'depth_chart' league.pk team.pk %}" class="btn btn-primary" role="button">
         Depth Chart
       </a>
+      <a href="{% url 'team_schedule' league.pk team.pk %}" class="btn btn-primary" role="button">
+        Schedule
+      </a>
     </div>
   </div>
 {% endblock content %}

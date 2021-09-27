@@ -1,0 +1,32 @@
+{% extends 'leagues/_league_base.html' %}
+
+{% block title %}Schedule | {{ team.name }}{% endblock title %}
+
+{% block content %}
+  <h2>Team Schedule</h2>
+  <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
+  <hr>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Week</th>
+          <th scope="col">Home Team</th>
+          <th scope="col">Away Team</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for matchup in matchups %}
+          <tr>
+            <th scope="row">{{ matchup.week_number }}</th>
+            <td>{{ matchup.home_team }}</td>
+            <td>{{ matchup.away_team }}</td>            
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock content %}

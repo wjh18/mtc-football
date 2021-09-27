@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.contrib import messages
+from django.db.models import Q
 
 
 # Custom Mixins & Decorators
@@ -300,4 +301,28 @@ class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
         else:
             context['user_team'] = False
 
+        return context
+
+
+class TeamScheduleView(LeagueOwnerCanViewTeamsMixin, ListView):
+    model = Matchup
+    context_object_name = 'matchups'
+    template_name = 'leagues/team/team_schedule.html'
+    login_url = 'account_login'
+    
+    def get_queryset(self):
+        league = self.kwargs['league']
+        team = self.kwargs['pk']
+        season = get_object_or_404(
+            Season, league=league, is_current=True)
+        matchups = Matchup.objects.filter(Q(home_team=team) | Q(away_team=team), season=season)
+        return matchups
+    
+    def get_context_data(self, **kwargs):
+        # Add context data from URL kwargs for the teams' league
+        context = super(TeamScheduleView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        team_uuid = self.kwargs.get('pk')
+        context['league'] = League.objects.get(id=league_uuid)
+        context['team'] = Team.objects.get(id=team_uuid)
         return context

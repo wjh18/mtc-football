@@ -90,6 +90,7 @@
                         <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">Home ({{ league.userteam.team.abbreviation }})</a></li>
                         <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
                         <li><a href="{% url 'depth_chart' league.pk league.userteam.team.pk %}" class="link-dark rounded">Depth Chart</a></li>
+                        <li><a href="{% url 'team_schedule' league.pk league.userteam.team.pk %}" class="link-dark rounded">Schedule</a></li>
                       </ul>
                     </div>
                   </li>
