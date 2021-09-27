@@ -3,8 +3,7 @@ from .models import (
     League, Player, Team, UserTeam,
     Season, Matchup, TeamStanding,
     Conference)
-from leagues.utils.advance_season import (
-    advance_season_weeks, advance_season_phases)
+from leagues.utils.advance_season import advance_season_weeks
 from leagues.utils.update_standings import (
     update_standings_for_byes,
     update_standings)
@@ -16,8 +15,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
-    LoginRequiredMixin, UserPassesTestMixin
-)
+    LoginRequiredMixin, UserPassesTestMixin)
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse

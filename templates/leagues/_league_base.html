@@ -23,6 +23,7 @@
               Advance
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              {% comment %} Only show if league's current season is in 'Regular Season' (5) phase {% endcomment %}
               <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 1|urlencode %}">1 Week</a></li>
               <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 4|urlencode %}">4 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'advance_regular_season_full' league.pk %}">End of regular season</a></li>
@@ -37,7 +38,10 @@
       {% if messages %}
         <div class="messages">
             {% for message in messages %}
-            <p{% if message.tags %} class="alert {{ message.tags }}" role="alert"{% endif %}>{{ message }}</p>
+            <div{% if message.tags %} class="alert alert-dismissible fade show {{ message.tags }}" role="alert"{% endif %}>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             {% endfor %}
         </div>
       {% endif %}
