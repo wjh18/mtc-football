@@ -1,13 +1,13 @@
 # App imports
-from .models import (League, Player, Team, UserTeam,
-                     Season, Matchup, TeamStanding,
-                     Conference
-)
-from leagues.utils.advance_season import advance_season_weeks
+from .models import (
+    League, Player, Team, UserTeam,
+    Season, Matchup, TeamStanding,
+    Conference)
+from leagues.utils.advance_season import (
+    advance_season_weeks, advance_season_phases)
 from leagues.utils.update_standings import (
     update_standings_for_byes,
-    update_standings
-)
+    update_standings)
 
 # Django imports
 from django.http import HttpResponseRedirect
@@ -204,7 +204,7 @@ class DepthChartView(LeagueOwnerCanViewTeamsMixin, ListView):
 @is_league_owner
 def update_user_team(request, league):
     """
-    Select user-controlled team if the user is the league owner
+    Select the user-controlled team if the user owns the league
     """
     if request.method == 'POST':
         league = get_object_or_404(League, pk=league)
@@ -244,11 +244,17 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
 
 @login_required
 @is_league_owner
-def advance_weeks(request, league, weeks):
+def advance_regular_season(request, league, weeks=False):
+    """
+    Advance the season by X number of weeks if the user owns the league
+    """
     league = get_object_or_404(League, pk=league)
     season = get_object_or_404(Season, league=league, is_current=True)
     current_week = season.week_number
     if request.method == 'GET':
+        # Advance to end of regular season, not X number of weeks
+        if not weeks:
+            weeks = 17 - (current_week - 1)
         # Get scores and results for the current week's matchups, then update standings
         for week_num in range(current_week, current_week + weeks):
             matchups = Matchup.objects.filter(

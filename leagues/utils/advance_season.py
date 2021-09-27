@@ -8,8 +8,3 @@ def advance_season_weeks(season, weeks=1):
     if season.week_number == 17:
         season.phase = 5
     season.save()
-    
-# Progress to a specific phase, end of current phase, or end of season
-def advance_season_phases(season, phases):
-    season.phase += phases
-    season.save()

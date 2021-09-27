@@ -23,8 +23,9 @@
               Advance
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="{% url 'advance_weeks' league.pk 1|urlencode %}">1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'advance_weeks' league.pk 4|urlencode %}">4 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 1|urlencode %}">1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 4|urlencode %}">4 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_regular_season_full' league.pk %}">End of regular season</a></li>
             </ul>
           </div>
         </ul>
