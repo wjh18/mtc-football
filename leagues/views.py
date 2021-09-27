@@ -6,7 +6,8 @@ from .models import (
 from leagues.utils.advance_season import advance_season_weeks
 from leagues.utils.update_standings import (
     update_standings_for_byes,
-    update_standings)
+    update_standings,
+    update_rankings)
 
 # Django imports
 from django.http import HttpResponseRedirect
@@ -259,6 +260,7 @@ def advance_regular_season(request, league, weeks=False):
                 season=season, week_number=week_num)
             update_standings_for_byes(season, week_num)
             update_standings(season, week_num, matchups)
+            update_rankings(season)
             # Progress season by X weeks and save instance
             advance_season_weeks(season)
             week_num += 1

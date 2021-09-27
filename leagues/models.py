@@ -295,7 +295,8 @@ class Season(models.Model):
                 date += progress_week
 
             for team in self.league.teams.all():
-                TeamStanding.objects.create(team=team, season=self)
+                standing = TeamStanding.objects.create(team=team, season=self)
+                ranking = TeamRanking.objects.create(standing=standing)
 
     def get_byes(self):
         matchups = self.matchups.filter(week_number=self.week_number)
@@ -423,7 +424,8 @@ class TeamStanding(models.Model):
 
 class TeamRanking(models.Model):
     standing = models.OneToOneField(
-        TeamStanding, on_delete=models.CASCADE,
+        TeamStanding, related_name='ranking',
+        on_delete=models.CASCADE,
     )
     power_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)

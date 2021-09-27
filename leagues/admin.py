@@ -4,7 +4,7 @@ from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
     Season, Matchup, PlayerMatchStat,
-    TeamStanding,
+    TeamStanding, TeamRanking,
 )
 
 
@@ -76,3 +76,4 @@ admin.site.register(Season)
 admin.site.register(Matchup)
 admin.site.register(PlayerMatchStat)
 admin.site.register(TeamStanding)
+admin.site.register(TeamRanking)

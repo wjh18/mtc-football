@@ -1,4 +1,4 @@
-from ..models import TeamStanding
+from ..models import TeamStanding, TeamRanking
 
 
 def update_standings_for_byes(season, current_week):
@@ -62,5 +62,38 @@ def update_standings(season, current_week, matchups):
                 ties=ties, streak=streak, points_for=points_for,
                 points_against=points_against)
             
-# def update_rankings(league, division, conference):
-#     league_rankings = league.teams.all().order_by()
+def update_rankings(season):
+    standings = TeamStanding.objects.filter(week_number=season.week_number + 1)
+    league_standings = standings.order_by(
+        '-wins', 'losses', '-points_for', 'points_against')
+    
+    for team in season.league.teams.all():
+        team_ranking = TeamRanking.objects.create(standing=standings.get(team=team))
+        
+        division_standings = standings.filter(
+            team__division__exact=team.division).order_by(
+                '-wins', 'losses', '-points_for', 'points_against')        
+        conference_standings = standings.filter(
+            team__division__conference__exact=team.division.conference).order_by(
+                '-wins', 'losses', '-points_for', 'points_against')
+            
+        d_rank = 1
+        for team_standing in division_standings:
+            if team_standing.team == team:
+                team_ranking.division_ranking = d_rank
+                team_ranking.save()
+            d_rank += 1
+                
+        c_rank = 1
+        for team_standing in conference_standings:
+            if team_standing.team == team:
+                team_ranking.conference_ranking = c_rank
+                team_ranking.save()
+            c_rank += 1
+            
+        l_rank = 1
+        for team_standing in league_standings:
+            if team_standing.team == team:
+                team_ranking.power_ranking = l_rank
+                team_ranking.save()
+            l_rank += 1
