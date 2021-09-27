@@ -16,6 +16,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin
 )
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -47,6 +49,15 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
         return HttpResponse(
             'Sorry, only league owners have access to this page.'
         )
+        
+def is_league_owner(func):
+    def wrap(request, *args, **kwargs):
+        league = League.objects.get(id=kwargs['league'])
+        if league.user == request.user:
+            return func(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+    return wrap
 
 
 # League Views
@@ -220,12 +231,13 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
 
 # League views
 
+@login_required
+@is_league_owner
 def advance_weeks(request, league, weeks):
+    league = get_object_or_404(League, pk=league)
+    season = get_object_or_404(Season, league=league, is_current=True)
+    current_week = season.week_number
     if request.method == 'GET':
-        league = get_object_or_404(League, pk=league)
-        season = get_object_or_404(Season, league=league, is_current=True)
-        current_week = season.week_number
-
         # Get scores and results for the current week's matchups, then update standings
         for week_num in range(current_week, current_week + weeks):
             matchups = Matchup.objects.filter(
@@ -235,7 +247,6 @@ def advance_weeks(request, league, weeks):
             # Progress season by X weeks and save instance
             advance_season_weeks(season)
             week_num += 1
-
         # Success message
         messages.add_message(request, messages.SUCCESS, f'Advanced {weeks} week(s).')
 
