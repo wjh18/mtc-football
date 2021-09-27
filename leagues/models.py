@@ -245,11 +245,9 @@ class Season(models.Model):
         (1, 'Re-signing'),
         (2, 'Free Agent Signing'),
         (3, 'Draft'),
-        (4, 'Training Camp'),
-        (5, 'Preseason'),
-        (6, 'Regular Season'),
-        (7, 'Playoffs'),
-        (8, 'Offseason'),
+        (4, 'Regular Season'),
+        (5, 'Playoffs'),
+        (6, 'Offseason'),
     )
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
@@ -258,7 +256,7 @@ class Season(models.Model):
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
     duration = models.DurationField(default=datetime.timedelta(weeks=52))
-    phase = models.PositiveSmallIntegerField(default=6, choices=PHASES)
+    phase = models.PositiveSmallIntegerField(default=4, choices=PHASES)
     season_number = models.PositiveSmallIntegerField(default=1)
     week_number = models.PositiveSmallIntegerField(default=1)
     is_current = models.BooleanField(default=True)

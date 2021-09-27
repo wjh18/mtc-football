@@ -20,10 +20,11 @@
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-3">
           <div class="dropdown">
             <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Simulate
+              Advance
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="{% url 'advance_days' league.pk 7|urlencode %}">Progress 1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_weeks' league.pk 1|urlencode %}">1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'advance_weeks' league.pk 4|urlencode %}">4 Weeks</a></li>
             </ul>
           </div>
         </ul>

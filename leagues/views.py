@@ -2,7 +2,7 @@ from .models import (League, Player, Team, UserTeam,
                      Season, Matchup, TeamStanding,
                      Conference, Division
 )
-from leagues.utils.progress_season import progress_season
+from leagues.utils.advance_season import advance_season_weeks
 from leagues.utils.update_standings import (
     update_standings_for_byes,
     update_standings
@@ -220,25 +220,24 @@ class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
 
 # League views
 
-def advance_days(request, league, days):
+def advance_weeks(request, league, weeks):
     if request.method == 'GET':
         league = get_object_or_404(League, pk=league)
         season = get_object_or_404(Season, league=league, is_current=True)
         current_week = season.week_number
-        matchups = Matchup.objects.filter(
-            season=season, week_number=current_week)
-
-        # For teams on a bye week, update their standings
-        update_standings_for_byes(season, current_week)
 
         # Get scores and results for the current week's matchups, then update standings
-        update_standings(season, current_week, matchups)
-
-        # Progress season by X days and save instance
-        progress_season(season, days)
+        for week_num in range(current_week, current_week + weeks):
+            matchups = Matchup.objects.filter(
+                season=season, week_number=week_num)
+            update_standings_for_byes(season, week_num)
+            update_standings(season, week_num, matchups)
+            # Progress season by X weeks and save instance
+            advance_season_weeks(season)
+            week_num += 1
 
         # Success message
-        messages.add_message(request, messages.SUCCESS, 'Advanced one week.')
+        messages.add_message(request, messages.SUCCESS, f'Advanced {weeks} week(s).')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
