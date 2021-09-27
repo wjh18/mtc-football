@@ -1,6 +1,7 @@
+# App imports
 from .models import (League, Player, Team, UserTeam,
                      Season, Matchup, TeamStanding,
-                     Conference, Division
+                     Conference
 )
 from leagues.utils.advance_season import advance_season_weeks
 from leagues.utils.update_standings import (
@@ -8,6 +9,7 @@ from leagues.utils.update_standings import (
     update_standings
 )
 
+# Django imports
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
@@ -22,10 +24,10 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 
-# Custom Mixins
+# Custom Mixins & Decorators
 
 
-# Permissions Mixins
+# Permissions Mixins & Decorators
 
 
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -51,6 +53,10 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
         )
         
 def is_league_owner(func):
+    """
+    Decorator permission for function-based views that verifies
+    whether the user is the league owner.
+    """
     def wrap(request, *args, **kwargs):
         league = League.objects.get(id=kwargs['league'])
         if league.user == request.user:
@@ -193,8 +199,13 @@ class DepthChartView(LeagueOwnerCanViewTeamsMixin, ListView):
             id__in=contracts.values('player_id'), position=position).order_by('-overall_rating')
         return context
 
-def update_user_team(request, league):
 
+@login_required
+@is_league_owner
+def update_user_team(request, league):
+    """
+    Select user-controlled team if the user is the league owner
+    """
     if request.method == 'POST':
         league = get_object_or_404(League, pk=league)
         try:
