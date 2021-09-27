@@ -61,3 +61,6 @@ def update_standings(season, current_week, matchups):
                 week_number=current_week + 1, wins=wins, losses=losses,
                 ties=ties, streak=streak, points_for=points_for,
                 points_against=points_against)
+            
+# def update_rankings(league, division, conference):
+#     league_rankings = league.teams.all().order_by()

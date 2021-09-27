@@ -419,3 +419,15 @@ class TeamStanding(models.Model):
 
     def __str__(self):
         return f'{self.team.name} standings for Week {self.week_number} Season {self.season.season_number}'
+
+
+class TeamRanking(models.Model):
+    standing = models.OneToOneField(
+        TeamStanding, on_delete=models.CASCADE,
+    )
+    power_ranking = models.PositiveSmallIntegerField(default=1)
+    conference_ranking = models.PositiveSmallIntegerField(default=1)
+    division_ranking = models.PositiveSmallIntegerField(default=1)
+    
+    def __str__(self):
+        return f'{self.standing.team} rankings for {self.standing}.__str__'
