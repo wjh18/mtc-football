@@ -17,6 +17,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin)
+from django.views.generic.base import ContextMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -141,6 +142,7 @@ class WeeklyMatchupsView(LeagueOwnerCanViewTeamsMixin, ListView):
             context['user_team'] = False
         
         return context
+
 
 # Team Views
 
@@ -299,10 +301,10 @@ def advance_regular_season(request, league, weeks=False):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
-class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
+class LeagueStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = TeamStanding
     context_object_name = 'standings'
-    template_name = 'leagues/team/team_standings.html'
+    template_name = 'leagues/league/league_standings.html'
     login_url = 'account_login'
 
     def get_queryset(self):
@@ -315,7 +317,7 @@ class TeamStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
 
     def get_context_data(self, **kwargs):
         # Add context data from URL kwargs for the teams' league
-        context = super(TeamStandingsView, self).get_context_data(**kwargs)
+        context = super(LeagueStandingsView, self).get_context_data(**kwargs)
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
         context['afc'] = Conference.objects.get(name='AFC', league=league)
