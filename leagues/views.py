@@ -27,6 +27,19 @@ from django.db.models import Q
 
 # Custom Mixins & Decorators
 
+class GetLeagueContextMixin(ContextMixin):
+    """
+    Mixin for reducing duplicate get_context_data calls for league data
+    """
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        league = League.objects.get(id=league_uuid)
+        context['league'] = league
+        context['season'] = get_object_or_404(
+            Season, league=league, is_current=True)
+        
+        return context
 
 # Permissions Mixins & Decorators
 
@@ -115,7 +128,7 @@ class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     success_message = 'League successfully deleted.'
     
 
-class WeeklyMatchupsView(LeagueOwnerCanViewTeamsMixin, ListView):
+class WeeklyMatchupsView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, ListView):
     model = Matchup
     context_object_name = 'matchups'
     template_name = 'leagues/league/weekly_matchups.html'
@@ -128,20 +141,13 @@ class WeeklyMatchupsView(LeagueOwnerCanViewTeamsMixin, ListView):
                     season__league=league,
                     week_number=season.week_number
                 )
-    
-    def get_context_data(self, **kwargs):
-        context = super(WeeklyMatchupsView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        league = League.objects.get(id=league_uuid)
-        context['league'] = league
-        context['season'] = get_object_or_404(
-            Season, league=league, is_current=True)
-        if UserTeam.objects.filter(league=league).exists():
-            context['user_team'] = True
-        else:
-            context['user_team'] = False
-        
-        return context
+
+
+class MatchupDetailView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, DetailView):
+    model = Matchup
+    context_object_name = 'matchup'
+    template_name = 'leagues/league/matchup_detail.html'
+    login_url = 'account_login'
 
 
 # Team Views
@@ -182,11 +188,7 @@ class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
         league_uuid = self.kwargs.get('league')
         league = League.objects.get(id=league_uuid)
         context['league'] = league
-        if UserTeam.objects.filter(league=league, team=self.object).exists():
-            context['user_team'] = UserTeam.objects.get(
-                league=league, team=self.object)
-        else:
-            context['user_team'] = False
+        
         return context
 
 

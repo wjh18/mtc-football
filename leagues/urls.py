@@ -31,5 +31,7 @@ urlpatterns = [
     path('<uuid:league>/teams/<uuid:pk>/schedule/',
          views.TeamScheduleView.as_view(), name='team_schedule'),
     path('<uuid:league>/weekly-matchups/',
-         views.WeeklyMatchupsView.as_view(), name='weekly_matchups')
+         views.WeeklyMatchupsView.as_view(), name='weekly_matchups'),
+    path('<uuid:league>/weekly-matchups/<int:pk>/',
+         views.MatchupDetailView.as_view(), name='matchup_detail'),
 ]
