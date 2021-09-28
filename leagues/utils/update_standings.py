@@ -1,11 +1,13 @@
 from ..models import TeamStanding, TeamRanking
 
-from django.db.models import F, Q, Window
+from django.db.models import F, Window
 from django.db.models.functions import Rank
 
 
 def update_standings_for_byes(season, current_week):
-    """For teams on a bye week, update their standings"""
+    """
+    For teams on a bye week, update their standings
+    """
     byes = season.get_byes()
     for team in byes:
         current_standing = TeamStanding.objects.get(
@@ -25,7 +27,9 @@ def update_standings_for_byes(season, current_week):
             points_against=points_against)
                        
 def update_standings(season, current_week, matchups):
-    """Get scores and results for this weeks matchup, then update standings"""
+    """
+    Get scores and results for this weeks matchup, then update standings
+    """
     for matchup in matchups:
         scores = matchup.scoreboard.get_score()
         winner = matchup.scoreboard.get_winner()
@@ -66,7 +70,9 @@ def update_standings(season, current_week, matchups):
                 points_against=points_against)
             
 def update_rankings(season):
-    
+    """
+    Update rankings based on newly created standings objects
+    """
     for team in season.league.teams.all():
         
         division_rank_qs = TeamStanding.objects.filter(

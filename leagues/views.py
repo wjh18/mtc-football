@@ -112,7 +112,35 @@ class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     success_url = reverse_lazy('league_list')
     template_name = 'leagues/league/league_delete.html'
     success_message = 'League successfully deleted.'
+    
 
+class WeeklyMatchupsView(LeagueOwnerCanViewTeamsMixin, ListView):
+    model = Matchup
+    context_object_name = 'matchups'
+    template_name = 'leagues/league/weekly_matchups.html'
+    login_url = 'account_login'
+    
+    def get_queryset(self):
+        league = self.kwargs['league']
+        season = Season.objects.get(league=league, is_current=True)
+        return Matchup.objects.filter(
+                    season__league=league,
+                    week_number=season.week_number
+                )
+    
+    def get_context_data(self, **kwargs):
+        context = super(WeeklyMatchupsView, self).get_context_data(**kwargs)
+        league_uuid = self.kwargs.get('league')
+        league = League.objects.get(id=league_uuid)
+        context['league'] = league
+        context['season'] = get_object_or_404(
+            Season, league=league, is_current=True)
+        if UserTeam.objects.filter(league=league).exists():
+            context['user_team'] = True
+        else:
+            context['user_team'] = False
+        
+        return context
 
 # Team Views
 

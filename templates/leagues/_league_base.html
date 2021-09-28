@@ -74,6 +74,7 @@
                       <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home ({{ league.name }})</a></li>
                       <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
                       <li><a href="{% url 'team_standings' league.pk %}" class="link-dark rounded">Standings</a></li>
+                      <li><a href="{% url 'weekly_matchups' league.pk %}" class="link-dark rounded">Weekly Matchups</a></li>
                       <li><a href="{% url 'league_delete' league.pk %}" class="link-dark rounded">Delete League</a></li>
                       <li><a href="{% url 'league_edit' league.pk %}" class="link-dark rounded">Edit League</a></li>
                     </ul>
