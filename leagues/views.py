@@ -11,18 +11,18 @@ from leagues.utils.update_standings import (
 
 # Django imports
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin, UserPassesTestMixin)
-from django.views.generic.base import ContextMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Q
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import ContextMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, UserPassesTestMixin)
 
 
 # Custom Mixins & Decorators
@@ -33,16 +33,16 @@ class GetLeagueContextMixin(ContextMixin):
     """
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        league = League.objects.get(id=league_uuid)
+        league = League.objects.get(pk=self.kwargs.get('league'))
         context['league'] = league
         context['season'] = get_object_or_404(
             Season, league=league, is_current=True)
-        
+        if self.kwargs.get('team'):
+            context['team'] = Team.objects.get(pk=self.kwargs.get('team'))
         return context
 
-# Permissions Mixins & Decorators
 
+# Permissions Mixins & Decorators
 
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
 
@@ -58,7 +58,7 @@ class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
 class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
-        league = League.objects.get(id=self.kwargs['league'])
+        league = League.objects.get(pk=self.kwargs['league'])
         return self.request.user == league.user
 
     def handle_no_permission(self):
@@ -66,13 +66,14 @@ class LeagueOwnerCanViewTeamsMixin(LoginRequiredMixin, UserPassesTestMixin):
             'Sorry, only league owners have access to this page.'
         )
         
+        
 def is_league_owner(func):
     """
     Decorator permission for function-based views that verifies
     whether the user is the league owner.
     """
     def wrap(request, *args, **kwargs):
-        league = League.objects.get(id=kwargs['league'])
+        league = League.objects.get(pk=kwargs['league'])
         if league.user == request.user:
             return func(request, *args, **kwargs)
         else:
@@ -81,7 +82,6 @@ def is_league_owner(func):
 
 
 # League Views
-
 
 class LeagueListView(LoginRequiredMixin, ListView):
     model = League
@@ -152,7 +152,6 @@ class MatchupDetailView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, Det
 
 # Team Views
 
-
 class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
     model = Team
     context_object_name = 'team_list'
@@ -163,33 +162,21 @@ class TeamListView(LeagueOwnerCanViewTeamsMixin, ListView):
         return Team.objects.filter(league=self.kwargs['league'])
 
     def get_context_data(self, **kwargs):
-        # Add context data from URL kwargs for the teams' league
-        context = super(TeamListView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        league = League.objects.get(id=league_uuid)
+        context = super().get_context_data(**kwargs)
+        league = League.objects.get(pk=self.kwargs.get('league'))
         context['league'] = league
         if UserTeam.objects.filter(league=league).exists():
             context['user_team'] = True
         else:
             context['user_team'] = False
-
         return context
 
 
-class TeamDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
+class TeamDetailView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, DetailView):
     model = Team
     context_object_name = 'team'
     template_name = 'leagues/team/team_detail.html'
     login_url = 'account_login'
-
-    def get_context_data(self, **kwargs):
-        # Add context data from URL kwargs for the teams' league
-        context = super(TeamDetailView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        league = League.objects.get(id=league_uuid)
-        context['league'] = league
-        
-        return context
 
 
 class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
@@ -199,13 +186,10 @@ class TeamRosterView(LeagueOwnerCanViewTeamsMixin, ListView):
     login_url = 'account_login'
 
     def get_context_data(self, **kwargs):
-        # Add context data from URL kwargs for the teams' league
-        context = super(TeamRosterView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        team_uuid = self.kwargs['pk']
-        context['league'] = League.objects.get(id=league_uuid)
-        context['team'] = Team.objects.get(id=team_uuid)
-        context['contracts'] = Team.objects.get(id=team_uuid).contracts.all()
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(pk=self.kwargs.get('league'))
+        context['team'] = Team.objects.get(pk=self.kwargs.get('team'))
+        context['contracts'] = Team.objects.get(pk=self.kwargs.get('team')).contracts.all()
         return context
 
 
@@ -216,19 +200,18 @@ class DepthChartView(LeagueOwnerCanViewTeamsMixin, ListView):
     login_url = 'account_login'
 
     def get_context_data(self, **kwargs):
-        context = super(DepthChartView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        team_uuid = self.kwargs['pk']
-        context['league'] = League.objects.get(id=league_uuid)
-        context['team'] = Team.objects.get(id=team_uuid)
-        contracts = Team.objects.get(id=team_uuid).contracts.all()
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(pk=self.kwargs.get('league'))
+        context['team'] = Team.objects.get(pk=self.kwargs.get('team'))
+        contracts = Team.objects.get(pk=self.kwargs.get('team')).contracts.all()
         position = self.kwargs.get('position', 'QB')
         players = Player.objects.filter(
             id__in=contracts.values('player_id'))
         context['positions'] = list(dict.fromkeys(
             [player.position for player in players]))
         context['players'] = Player.objects.filter(
-            id__in=contracts.values('player_id'), position=position).order_by('-overall_rating')
+            id__in=contracts.values('player_id'),
+            position=position).order_by('-overall_rating')
         return context
 
 
@@ -250,26 +233,19 @@ def update_user_team(request, league):
             })
         else:
             UserTeam.objects.create(league=league, team=selected_team)
-            # messages.add_message(
-            #     request, messages.SUCCESS, f'You are now the GM of the {selected_team.location} {selected_team.name}')
+            messages.add_message(
+                request, messages.SUCCESS,
+                f'You are now the GM of the {selected_team.location} {selected_team.name}.')
             return HttpResponseRedirect(reverse('team_detail', args=[league.id, selected_team.id]))
+
 
 # Player views
 
-
-class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, DetailView):
+class PlayerDetailView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, DetailView):
     model = Player
     context_object_name = 'player'
     template_name = 'leagues/player/player_detail.html'
     login_url = 'account_login'
-
-    def get_context_data(self, **kwargs):
-        context = super(PlayerDetailView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        team_uuid = self.kwargs['team']
-        context['league'] = League.objects.get(id=league_uuid)
-        context['team'] = Team.objects.get(id=team_uuid)
-        return context
 
 
 # League views
@@ -299,7 +275,6 @@ def advance_regular_season(request, league, weeks=False):
             week_num += 1
         # Success message
         messages.add_message(request, messages.SUCCESS, f'Advanced {weeks} week(s).')
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -314,29 +289,21 @@ class LeagueStandingsView(LeagueOwnerCanViewTeamsMixin, ListView):
         season = get_object_or_404(Season, league=league, is_current=True)
         standings = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by('-wins', 'losses', '-points_for', 'points_against')
-
         return standings
 
     def get_context_data(self, **kwargs):
-        # Add context data from URL kwargs for the teams' league
-        context = super(LeagueStandingsView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        league = League.objects.get(id=league_uuid)
+        context = super().get_context_data(**kwargs)
+        league = League.objects.get(pk=self.kwargs.get('league'))
         context['afc'] = Conference.objects.get(name='AFC', league=league)
         context['nfc'] = Conference.objects.get(name='NFC', league=league)
         context['league'] = league
         context['season'] = get_object_or_404(
             Season, league=league, is_current=True)
         context['type'] = self.kwargs.get('type')
-        if UserTeam.objects.filter(league=league).exists():
-            context['user_team'] = True
-        else:
-            context['user_team'] = False
-
         return context
 
 
-class TeamScheduleView(LeagueOwnerCanViewTeamsMixin, ListView):
+class TeamScheduleView(LeagueOwnerCanViewTeamsMixin, GetLeagueContextMixin, ListView):
     model = Matchup
     context_object_name = 'matchups'
     template_name = 'leagues/team/team_schedule.html'
@@ -344,17 +311,8 @@ class TeamScheduleView(LeagueOwnerCanViewTeamsMixin, ListView):
     
     def get_queryset(self):
         league = self.kwargs['league']
-        team = self.kwargs['pk']
+        team = self.kwargs['team']
         season = get_object_or_404(
             Season, league=league, is_current=True)
         matchups = Matchup.objects.filter(Q(home_team=team) | Q(away_team=team), season=season)
         return matchups
-    
-    def get_context_data(self, **kwargs):
-        # Add context data from URL kwargs for the teams' league
-        context = super(TeamScheduleView, self).get_context_data(**kwargs)
-        league_uuid = self.kwargs.get('league')
-        team_uuid = self.kwargs.get('pk')
-        context['league'] = League.objects.get(id=league_uuid)
-        context['team'] = Team.objects.get(id=team_uuid)
-        return context
