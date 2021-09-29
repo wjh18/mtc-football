@@ -6,7 +6,7 @@ from django.db.models.functions import Rank
 
 def update_standings_for_byes(season, current_week):
     """
-    For teams on a bye week, update their standings
+    Update the standings of teams that have a 'bye' week this week.
     """
     byes = season.get_byes()
     for team in byes:
@@ -28,7 +28,7 @@ def update_standings_for_byes(season, current_week):
                        
 def update_standings(season, current_week, matchups):
     """
-    Get scores and results for this weeks matchup, then update standings
+    Generate scores and results for the current week, update standings.
     """
     for matchup in matchups:
         scores = matchup.scoreboard.get_score()
@@ -71,18 +71,20 @@ def update_standings(season, current_week, matchups):
             
 def update_rankings(season):
     """
-    Update rankings based on newly created standings objects
+    Update league rankings based on new standings for next week.
     """
     for team in season.league.teams.all():
-        
         division_rank_qs = TeamStanding.objects.filter(
             week_number=season.week_number + 1,
             team__division__exact=team.division
         ).annotate(
             rank=Window(
                 expression=Rank(),
-                order_by=[F('wins').desc(), F('losses'),F('points_for').desc(),
-                        F('points_against')],
+                order_by=[
+                    F('wins').desc(), F('losses'),
+                    F('points_for').desc(),
+                    F('points_against')
+                ],
             )
         )
         for standing in division_rank_qs:
@@ -95,8 +97,11 @@ def update_rankings(season):
         ).annotate(
             rank=Window(
                 expression=Rank(),
-                order_by=[F('wins').desc(), F('losses'),F('points_for').desc(),
-                        F('points_against')],
+                order_by=[
+                    F('wins').desc(), F('losses'),
+                    F('points_for').desc(),
+                    F('points_against')
+                ],
             )
         )
         for standing in conference_rank_qs:
@@ -108,21 +113,25 @@ def update_rankings(season):
         ).annotate(
             rank=Window(
                 expression=Rank(),
-                order_by=[F('wins').desc(), F('losses'),F('points_for').desc(),
-                        F('points_against')],
+                order_by=[
+                    F('wins').desc(), F('losses'),
+                    F('points_for').desc(),
+                    F('points_against')
+                ],
             )
         )
         for standing in league_rank_qs:
             if standing.team == team:
                 league_rank = standing.rank   
                 
-        TeamRanking.objects.create(standing=TeamStanding.objects.get(
-                                                team=team, season=season,
-                                                week_number=season.week_number + 1),
-                                   division_ranking=division_rank,
-                                   conference_ranking=conference_rank,
-                                   power_ranking=league_rank,
-                                   )
+        TeamRanking.objects.create(
+            standing=TeamStanding.objects.get(
+                        team=team, season=season,
+                        week_number=season.week_number + 1),
+            division_ranking=division_rank,
+            conference_ranking=conference_rank,
+            power_ranking=league_rank,
+        )
         
         # standings = TeamStanding.objects.filter(week_number=season.week_number + 1)
         # league_standings = standings.order_by(

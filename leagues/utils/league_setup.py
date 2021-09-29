@@ -1,6 +1,7 @@
 import os
 import random
 import csv
+import datetime
 
 
 def read_player_names_from_csv():
@@ -17,8 +18,7 @@ def read_player_names_from_csv():
         last_names = [names[1] for names in player_names]
         random.shuffle(first_names)
         random.shuffle(last_names)
-        player_names = list(zip(first_names, last_names))
-
+        player_names = list(zip(first_names, last_names))    
     return player_names
 
 def read_team_info_from_csv():
@@ -28,8 +28,7 @@ def read_team_info_from_csv():
     """
     with open(os.path.join(os.path.dirname(__file__), '../data/nfl-teams.csv'), 'r') as team_data_file:
         team_reader = csv.reader(team_data_file, delimiter=',')
-        team_info = {row[3]: [row[1], row[2], row[4], f'{row[4]} ' + f'{row[5]}'] for row in team_reader if row[1] != 'Name'}
-
+        team_info = {row[3]: [row[1], row[2], row[4], f'{row[4]} ' + f'{row[5]}'] for row in team_reader if row[1] != 'Name'}     
     return team_info
 
 def generate_player_attributes():
@@ -190,7 +189,6 @@ def generate_player_attributes():
         # Calculate overall rating and add player to list
         player['overall_rating'] = int(sum(calc_overall) / len(calc_overall))
         player_list.append(player)
-
     return player_list
     
 def get_conference_data():
@@ -198,7 +196,6 @@ def get_conference_data():
         {'name': 'AFC'},
         {'name': 'NFC'}
     ]
-
     return conferences
 
 def get_division_data():
@@ -212,5 +209,90 @@ def get_division_data():
         {'name': 'NFC South'},
         {'name': 'NFC West'},
     ]
-
     return divisions
+
+def create_league_structure(league):
+    """
+    Creates a league's structure and teams
+    - called during initial save of new League instance in models.py.
+    """
+    from ..models import Conference, Division, Season, Team
+    # Get conference and division data and create them
+    conferences = get_conference_data()
+    divisions = get_division_data()
+    Conference.objects.bulk_create(
+        [Conference(league=league, **c) for c in conferences])
+    afc = Conference.objects.get(name='AFC', league=league)
+    nfc = Conference.objects.get(name='NFC', league=league)
+    for division in divisions:
+        division_name = division['name']
+        if division_name[:3] == 'AFC':
+            Division.objects.create(conference=afc, **division)
+        elif division_name[:3] == 'NFC':
+            Division.objects.create(conference=nfc, **division)
+    # Read team data from CSV and create 32 teams in League
+    team_info = read_team_info_from_csv()
+    abbreviations = [*team_info.keys()]
+    other_team_info = [*team_info.values()]
+    for team in range(0, 32):
+        team_conference = Conference.objects.get(
+            name=other_team_info[team][2], league=league
+        )
+        team_division = Division.objects.get(
+            name=other_team_info[team][3], conference=team_conference
+        )
+        Team.objects.create(
+            location=other_team_info[team][0],
+            name=other_team_info[team][1],
+            abbreviation=abbreviations[team],
+            division=team_division,
+            league=league)
+    # Create first season in league automatically
+    Season.objects.create(
+        league=league
+    )
+    
+def create_team_players(team):
+    """
+    Creates players and generates their starting attributes on a per-team basis
+    - called during initial save of new Team instance in models.py.
+    """
+    from ..models import Player
+    # Read player names from CSV, generate attributes and create players
+    player_attributes = generate_player_attributes()
+    for player in player_attributes:
+        p = Player.objects.create(
+            league=team.league,
+            **player
+        )
+        # Creates a contract b/w team and player instance
+        p.team.add(team)
+        
+def create_season_details(season):
+    """
+    Generates a season's schedule, matchups, scoreboards and initial rankings
+    - called during initial save of new Team instance in models.py.
+    """
+    from .schedule import create_schedule
+    from ..models import Matchup, Scoreboard, TeamStanding, TeamRanking
+    league_uuid = season.league.pk
+    matchups = create_schedule(str(league_uuid))
+    date = datetime.date(2021, 8, 29)
+    progress_week = datetime.timedelta(days=7)
+    for week_num in range(1, len(matchups) + 1):
+        for matchup in matchups[week_num - 1]:
+            new_matchup = Matchup.objects.create(
+                home_team=matchup[0],
+                away_team=matchup[1],
+                season=season,
+                week_number=week_num,
+                date=date
+            )
+            Scoreboard.objects.create(
+                matchup=new_matchup
+            )
+        date += progress_week
+
+    for team in season.league.teams.all():
+        standing = TeamStanding.objects.create(team=team, season=season)
+        TeamRanking.objects.create(standing=standing)

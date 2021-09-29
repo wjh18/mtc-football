@@ -5,10 +5,9 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from .utils.league_setup import (
-    get_conference_data,
-    get_division_data,
-    read_team_info_from_csv,
-    generate_player_attributes,
+    create_league_structure,
+    create_team_players,
+    create_season_details,
 )
 from simulation.models import Scoreboard
 
@@ -35,49 +34,13 @@ class League(models.Model):
         return f'{self.name}'
 
     def save(self, *args, **kwargs):
-
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
-
         # Save League instance before referencing it for Team creation
         super().save(*args, **kwargs)
-
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
-            # Get conference and division data and create them
-            conferences = get_conference_data()
-            divisions = get_division_data()
-            Conference.objects.bulk_create(
-                [Conference(league=self, **c) for c in conferences])
-            afc = Conference.objects.get(name='AFC', league=self)
-            nfc = Conference.objects.get(name='NFC', league=self)
-            for division in divisions:
-                division_name = division['name']
-                if division_name[:3] == 'AFC':
-                    Division.objects.create(conference=afc, **division)
-                elif division_name[:3] == 'NFC':
-                    Division.objects.create(conference=nfc, **division)
-            # Read team data from CSV and create 32 teams in League
-            team_info = read_team_info_from_csv()
-            abbreviations = [*team_info.keys()]
-            other_team_info = [*team_info.values()]
-            for team in range(0, 32):
-                team_conference = Conference.objects.get(
-                    name=other_team_info[team][2], league=self
-                )
-                team_division = Division.objects.get(
-                    name=other_team_info[team][3], conference=team_conference
-                )
-                Team.objects.create(
-                    location=other_team_info[team][0],
-                    name=other_team_info[team][1],
-                    abbreviation=abbreviations[team],
-                    division=team_division,
-                    league=self)
-            # Create first season in league automatically
-            Season.objects.create(
-                league=self
-            )
+            create_league_structure(self)
 
     def get_absolute_url(self):
         return reverse("league_detail", args=[str(self.id)])
@@ -130,24 +93,13 @@ class Team(models.Model):
         return f'{self.location} {self.name} ({self.abbreviation})'
 
     def save(self, *args, **kwargs):
-
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
-
         # Save Team instance before referencing it for Player creation
         super().save(*args, **kwargs)
-
-        # Read player names from CSV, generate attributes and create players
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
-            player_attributes = generate_player_attributes()
-            for player in player_attributes:
-                p = Player.objects.create(
-                    league=self.league,
-                    **player
-                )
-                # Creates a contract b/w team and player instance
-                p.team.add(self)
+            create_team_players(self)
 
     def calc_team_overall(self):
         team_overall = 0
@@ -265,38 +217,13 @@ class Season(models.Model):
         return f'Season {str(self.season_number)} - {self.league.name}'
 
     def save(self, *args, **kwargs):
-
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
-
         # Save Season instance before referencing it for schedule / Matchup creation
-        super().save(*args, **kwargs)
-
-        # Generate schedule from utils and create Matchup instances
+        super().save(*args, **kwargs)        
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
-            from .utils.schedule import create_schedule
-            league_uuid = self.league.pk
-            matchups = create_schedule(str(league_uuid))
-            date = datetime.date(2021, 8, 29)
-            progress_week = datetime.timedelta(days=7)
-            for week_num in range(1, len(matchups) + 1):
-                for matchup in matchups[week_num - 1]:
-                    new_matchup = Matchup.objects.create(
-                        home_team=matchup[0],
-                        away_team=matchup[1],
-                        season=self,
-                        week_number=week_num,
-                        date=date
-                    )
-                    Scoreboard.objects.create(
-                        matchup=new_matchup
-                    )
-                date += progress_week
-
-            for team in self.league.teams.all():
-                standing = TeamStanding.objects.create(team=team, season=self)
-                ranking = TeamRanking.objects.create(standing=standing)
+            create_season_details(self)
 
     def get_byes(self):
         matchups = self.matchups.filter(week_number=self.week_number)
