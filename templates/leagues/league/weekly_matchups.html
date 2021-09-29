@@ -18,8 +18,8 @@
       <tbody>
         {% for matchup in matchups %}
           <tr>
-            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.home_team }} | {{ matchup.home_team.calc_team_overall }} Overall</a></td>
-            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.away_team }} | {{ matchup.away_team.calc_team_overall }} Overall</a></td>            
+            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.home_team }}</a></td>
+            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.away_team }}</a></td>            
             </td>
           </tr>
         {% endfor %}

@@ -9,7 +9,7 @@
   <a href="{% url 'league_create' %}">
     <button class="btn btn-dark mt-2 mb-3" type="submit">New League</button>
   </a>
-  {% if not league_list %}
+  {% if not leagues %}
   <p>No leagues to display. Please create one above.</p>
   {% else %}
   <div class="table-responsive">
@@ -24,7 +24,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for league in league_list %}
+        {% for league in leagues %}
           <tr>
             <th scope="row"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></th>
             <td><a href="{% url 'league_edit' league.pk %}">Edit Info</a></td>
