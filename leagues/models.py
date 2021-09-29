@@ -357,4 +357,4 @@ class TeamRanking(models.Model):
     division_ranking = models.PositiveSmallIntegerField(default=1)
     
     def __str__(self):
-        return f'{self.standing.team} rankings for {self.standing}.__str__'
+        return f'{self.standing.team} rankings for {self.standing}'

@@ -1,11 +1,20 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}Weekly Matchups | Week {{ season.week_number }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
+{% block title %}Weekly Matchups | Week {{ week_num }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Weekly Matchups &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }} &middot; {{ league.name }}</h2>
+  <h2>Weekly Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }} &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
+
+  <nav aria-label="...">
+    <ul class="pagination pagination-sm">
+      {% for w in num_weeks %}
+        <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}"><a class="page-link" href="{% url 'weekly_matchups_by_week' league.pk w %}">{{ w }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  
 
   <div class="table-responsive">
     <table class="table table-striped">

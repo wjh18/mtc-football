@@ -135,11 +135,12 @@ class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     success_message = 'Your league has been deleted sucessfully.'
     
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, self.success_message)
+        messages.add_message(request, messages.SUCCESS, self.success_message)
+        # messages.success(request, self.success_message)
         return super().delete(request, *args, **kwargs)
     
 
-class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
     """
     View weekly matchups for the active league and its current season.
     """
@@ -150,10 +151,24 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     def get_queryset(self):
         league = self.kwargs['league']
         season = Season.objects.get(league=league, is_current=True)
+        if self.kwargs.get('week_num'):
+            week_number = self.kwargs['week_num']
+        else:
+            week_number = season.week_number
         return Matchup.objects.filter(
                     season__league=league,
-                    week_number=season.week_number
+                    week_number=week_number
                 )
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(pk=self.kwargs['league'])
+        context['season'] = Season.objects.get(league=context['league'], is_current=True)
+        if self.kwargs.get('team'):
+            context['team'] = Team.objects.get(pk=self.kwargs['team'])
+        context['week_num'] = self.kwargs.get('week_num', context['season'].week_number)
+        context['num_weeks'] = range(1, 18)
+        return context
 
 
 class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
