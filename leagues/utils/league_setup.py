@@ -35,7 +35,6 @@ def generate_player_attributes():
     """
     Return a list of 53 dictionaries containing player attributes
     that map to Player model fields.
-    Called in leagues/models.py Team model save() method.
     """
 
     # Positional constraints per 53 man roster
@@ -274,7 +273,8 @@ def create_season_details(season):
     - called during initial save of new Team instance in models.py.
     """
     from .schedule import create_schedule
-    from ..models import Matchup, Scoreboard, TeamStanding, TeamRanking
+    from ..models import Matchup, TeamStanding, TeamRanking
+    from simulation.models import Scoreboard
     league_uuid = season.league.pk
     matchups = create_schedule(str(league_uuid))
     date = datetime.date(2021, 8, 29)

@@ -7,9 +7,7 @@ from django.urls import reverse
 from .utils.league_setup import (
     create_league_structure,
     create_team_players,
-    create_season_details,
-)
-from simulation.models import Scoreboard
+    create_season_details)
 
 
 class League(models.Model):
