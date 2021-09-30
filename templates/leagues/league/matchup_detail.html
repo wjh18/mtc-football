@@ -3,11 +3,22 @@
 {% block title %}Matchup | {{ matchup.home_team }} vs. {{ matchup.away_team }}{% endblock title %}
 
 {% block content %}
-
   <h2>Matchup &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'weekly_matchups' league.pk %}">&larr; Matchups</a>
   <hr>
-
-  <p>{{ matchup.home_team }} (home) vs. {{ matchup.away_team }} (away)</p>
-
+  
+  <p>
+    <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+      {{ matchup.away_team.name }}
+    </span>
+    {% if matchup.week_number < season.week_number %}
+      - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
+    {% endif %} @
+    <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+      {{ matchup.home_team.name }}
+    </span>
+    {% if matchup.week_number < season.week_number %}
+      - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
+    {% endif %}
+  </p>
 {% endblock content %}

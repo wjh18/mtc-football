@@ -146,7 +146,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
     """
     model = Matchup
     context_object_name = 'matchups'
-    template_name = 'leagues/league/weekly_matchups.html'
+    template_name = 'leagues/league/matchups.html'
     
     def get_queryset(self):
         league = self.kwargs['league']
@@ -220,7 +220,7 @@ class TeamRosterView(LeagueOwnerMixin, ListView):
     """
     model = Team
     context_object_name = 'team'
-    template_name = 'leagues/team/team_roster.html'
+    template_name = 'leagues/team/roster.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -328,7 +328,7 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
     """
     model = TeamStanding
     context_object_name = 'standings'
-    template_name = 'leagues/league/league_standings.html'
+    template_name = 'leagues/league/standings.html'
 
     def get_queryset(self):
         league = self.kwargs['league']
@@ -356,7 +356,7 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     """
     model = Matchup
     context_object_name = 'matchups'
-    template_name = 'leagues/team/team_schedule.html'
+    template_name = 'leagues/team/schedule.html'
     
     def get_queryset(self):
         league = self.kwargs['league']

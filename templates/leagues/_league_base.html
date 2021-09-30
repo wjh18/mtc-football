@@ -17,7 +17,7 @@
         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
           <h1 class="logo">Pigskin Prowess</h1>      
         </a>
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-3">
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-2">
           <div class="dropdown">
             <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
               Advance
@@ -28,7 +28,7 @@
               <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 4|urlencode %}">4 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'advance_regular_season_full' league.pk %}">End of regular season</a></li>
             </ul>
-            <span class="ms-3">League: {{ league.name }}</span>
+            <span class="ms-4">League: {{ league.name }}</span>
           </div>
         </ul>
     </div>    
@@ -75,7 +75,7 @@
                       <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home ({{ league.name }})</a></li>
                       <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
                       <li><a href="{% url 'league_standings' league.pk %}" class="link-dark rounded">Standings</a></li>
-                      <li><a href="{% url 'weekly_matchups' league.pk %}" class="link-dark rounded">Weekly Matchups</a></li>
+                      <li><a href="{% url 'weekly_matchups' league.pk %}" class="link-dark rounded">Matchups</a></li>
                       <li><a href="{% url 'league_delete' league.pk %}" class="link-dark rounded">Delete League</a></li>
                       <li><a href="{% url 'league_edit' league.pk %}" class="link-dark rounded">Edit League</a></li>
                     </ul>

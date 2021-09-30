@@ -19,20 +19,19 @@
   
   <br>
   {% for matchup in matchups %}
-    {% if matchup.scoreboard.get_winner == matchup.away_team %}{% endif %}
     <p>
       <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
         {{ matchup.away_team.name }}
       </span>
-          {% if matchup.week_number < season.week_number %}
-            - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
-          {% endif %} @
+      {% if matchup.week_number < season.week_number %}
+        - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
+      {% endif %} @
       <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
         {{ matchup.home_team.name }}
       </span>
-          {% if matchup.week_number < season.week_number %}
-            - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
-          {% endif %} -
+      {% if matchup.week_number < season.week_number %}
+        - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
+      {% endif %} -
       <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
     </p>
   {% endfor %}
