@@ -245,6 +245,7 @@ class DepthChartView(LeagueOwnerMixin, ListView):
         contracts = context['team'].contracts.all()
         player_ids = contracts.values('player_id')
         position = self.kwargs.get('position', 'QB')
+        context['active_position'] = position
         players = Player.objects.filter(
             id__in=player_ids)
         context['positions'] = list(dict.fromkeys(

@@ -10,33 +10,30 @@
   <nav aria-label="...">
     <ul class="pagination pagination-sm">
       {% for w in num_weeks %}
-        <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}"><a class="page-link" href="{% url 'weekly_matchups_by_week' league.pk w %}">{{ w }}</a></li>
+        <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}">
+          <a class="page-link" href="{% url 'weekly_matchups_by_week' league.pk w %}">W{{ w }}</a>
+        </li>
       {% endfor %}
     </ul>
   </nav>
   
   <br>
-
   {% for matchup in matchups %}
     {% if matchup.scoreboard.get_winner == matchup.away_team %}{% endif %}
     <p>
       <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
         {{ matchup.away_team.name }}
+      </span>
           {% if matchup.week_number < season.week_number %}
             - {{ matchup.scoreboard.away_score }}
-          {% endif %}
-      </span>
-      @
+          {% endif %} @
       <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
         {{ matchup.home_team.name }}
+      </span>
           {% if matchup.week_number < season.week_number %}
             - {{ matchup.scoreboard.home_score }}
-          {% endif %}
-      </span>
-      -
+          {% endif %} -
       <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
     </p>
-    
   {% endfor %}
-
 {% endblock content %}
