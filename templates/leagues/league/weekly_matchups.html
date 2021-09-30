@@ -3,7 +3,7 @@
 {% block title %}Weekly Matchups | Week {{ week_num }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Weekly Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }} &middot; {{ league.name }}</h2>
+  <h2>Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }} &middot; {{ league.name }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
 
@@ -15,25 +15,28 @@
     </ul>
   </nav>
   
+  <br>
 
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">Home Team</th>
-          <th scope="col">Away Team</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for matchup in matchups %}
-          <tr>
-            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.home_team }}</a></td>
-            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">{{ matchup.away_team }}</a></td>            
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% for matchup in matchups %}
+    {% if matchup.scoreboard.get_winner == matchup.away_team %}{% endif %}
+    <p>
+      <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
+        {{ matchup.away_team.name }}
+          {% if matchup.week_number < season.week_number %}
+            - {{ matchup.scoreboard.away_score }}
+          {% endif %}
+      </span>
+      @
+      <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
+        {{ matchup.home_team.name }}
+          {% if matchup.week_number < season.week_number %}
+            - {{ matchup.scoreboard.home_score }}
+          {% endif %}
+      </span>
+      -
+      <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
+    </p>
+    
+  {% endfor %}
 
 {% endblock content %}
