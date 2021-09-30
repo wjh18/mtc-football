@@ -189,7 +189,7 @@ class TeamListView(LeagueOwnerMixin, ListView):
     """
     model = Team
     context_object_name = 'team_list'
-    template_name = 'leagues/team/team_list.html'
+    template_name = 'leagues/league/team_list.html'
 
     def get_queryset(self):
         return Team.objects.filter(league=self.kwargs['league'])
@@ -268,7 +268,7 @@ def update_user_team(request, league):
             selected_team = league.teams.get(pk=request.POST['teams'])
         except (KeyError, Team.DoesNotExist):
             # Redisplay the team selection page with an error.
-            return render(request, 'leagues/team/team_list.html', {
+            return render(request, 'leagues/league/team_list.html', {
                 'league': league,
                 'error_message': "You didn't select a team.",
             })

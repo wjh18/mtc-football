@@ -15,7 +15,7 @@
   <header class="p-3 bg-dark text-white">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <h1 class="logo">Pigskin Prowess</h1>
+          <h1 class="logo">Pigskin Prowess</h1>      
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-3">
           <div class="dropdown">
@@ -28,9 +28,10 @@
               <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 4|urlencode %}">4 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'advance_regular_season_full' league.pk %}">End of regular season</a></li>
             </ul>
+            <span class="ms-3">League: {{ league.name }}</span>
           </div>
         </ul>
-    </div>
+    </div>    
   </header>
   {% endblock header %}
   <body>

@@ -3,7 +3,12 @@
 {% block title %}Schedule | {{ team.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Team Schedule - {{ team.location }} {{ team.name }} ({{ team.abbreviation }}) &middot; {{ league.name }}</h2>
+  <h2>
+    Schedule - {{ team }}
+    {% if team.userteam %}
+      <span class="my-team-tag">GM</span>
+    {% endif %}
+  </h2>
   <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
   <hr>
 

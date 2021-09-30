@@ -5,7 +5,7 @@
 {% block content %}
   <div>
     <h2>
-      {{ player.first_name }} {{ player.last_name }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; {{ team.location }} {{ team.name }} ({{ team.abbreviation }})
+      {{ player.first_name }} {{ player.last_name }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; ({{ team.abbreviation }})
       {% if team.userteam %}
         <span class="my-team-tag">GM</span>
       {% endif %}

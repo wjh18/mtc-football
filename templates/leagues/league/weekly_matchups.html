@@ -3,7 +3,7 @@
 {% block title %}Weekly Matchups | Week {{ week_num }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }} &middot; {{ league.name }}</h2>
+  <h2>Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
 
@@ -21,17 +21,17 @@
   {% for matchup in matchups %}
     {% if matchup.scoreboard.get_winner == matchup.away_team %}{% endif %}
     <p>
-      <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
+      <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
         {{ matchup.away_team.name }}
       </span>
           {% if matchup.week_number < season.week_number %}
-            - {{ matchup.scoreboard.away_score }}
+            - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
           {% endif %} @
-      <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen; font-weight:bold;"{% endif %}>
+      <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
         {{ matchup.home_team.name }}
       </span>
           {% if matchup.week_number < season.week_number %}
-            - {{ matchup.scoreboard.home_score }}
+            - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
           {% endif %} -
       <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
     </p>

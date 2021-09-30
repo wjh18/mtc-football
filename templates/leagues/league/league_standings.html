@@ -3,7 +3,7 @@
 {% block title %}Teams | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Team Standings &middot; Week {{ season.week_number }} Season {{ season.season_number }} &middot; {{ league.name }}</h2>
+  <h2>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
   <hr>
 
