@@ -16,7 +16,7 @@
       {% if team.userteam %}
         <p>You're the GM of this team.</p>
       {% endif %}
-      <p>Overall: {{ team.calc_team_overall }}</p>
+      <p>Overall: {{ team.overall_rating }}</p>
       <a href="{% url 'team_roster' league.pk team.pk %}" class="btn btn-primary" role="button">
         Roster
       </a>

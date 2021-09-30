@@ -266,6 +266,8 @@ def create_team_players(team):
         )
         # Creates a contract b/w team and player instance
         p.team.add(team)
+    # Set initial team overall rating
+    team.update_team_overall()
         
 def create_season_details(season):
     """

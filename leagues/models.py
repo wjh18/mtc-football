@@ -83,6 +83,7 @@ class Team(models.Model):
     location = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=3)
+    overall_rating = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
         ordering = ['location']
@@ -99,14 +100,13 @@ class Team(models.Model):
         if no_instance_exists:
             create_team_players(self)
 
-    def calc_team_overall(self):
-        team_overall = 0
-        for contract in self.contracts.all():
-            player = contract.player
-            team_overall += player.overall_rating
-        team_overall /= 53
-
-        return int(team_overall)
+    def update_team_overall(self):
+        player_ratings = [
+            contract.player.overall_rating for contract in self.contracts.all()
+        ]
+        team_overall = int(sum(player_ratings) / 53)
+        self.overall_rating = team_overall
+        self.save()
 
     def get_absolute_url(self):
         return reverse("team_detail", args=[str(self.id)])

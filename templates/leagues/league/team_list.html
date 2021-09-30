@@ -33,7 +33,7 @@
           <span class="my-team-tag">GM</span>
         {% endif %}
       </h3>
-      <p>Overall: {{ team.calc_team_overall }}</p>
+      <p>Overall: {{ team.overall_rating }}</p>
       <a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a>
     </div>
     {% endfor %}
