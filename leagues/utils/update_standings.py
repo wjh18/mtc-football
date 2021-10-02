@@ -3,10 +3,23 @@ from ..models import TeamStanding, TeamRanking, Division, Conference
 from django.db.models import F, Window
 from django.db.models.functions import DenseRank
 
+def get_matchup_type(matchup):
+    """
+    Determine whether the matchups is Divisional, Conference or Non-Conference.
+    """
+    home_team = matchup.home_team
+    away_team = matchup.away_team
+    if home_team.division == away_team.division:
+        return 'Divisional'
+    elif home_team.division.conference == away_team.division.conference:
+        return 'Conference'
+    else:
+        return 'Non-Conference'
 
 def update_standings_for_byes(season, current_week):
     """
-    Update the standings of teams that have a 'bye' week this week.
+    Update the standings of teams that have a 'bye' week this week
+    by copying their current week's TeamStanding instance.
     """
     byes = season.get_byes()
     for team in byes:
@@ -17,36 +30,6 @@ def update_standings_for_byes(season, current_week):
         current_standing._state.adding = True
         current_standing.week_number = current_week + 1
         current_standing.save()
-        # wins = current_standing.wins
-        # losses = current_standing.losses
-        # ties = current_standing.ties
-        # streak = current_standing.streak
-        # points_for = current_standing.points_for
-        # points_against = current_standing.points_against
-        # home_wins = current_standing.
-        # home_losses = current_standing.
-        # home_ties = current_standing.
-        # away_wins = current_standing.
-        # away_losses = current_standing.
-        # away_ties = current_standing.
-        # div_wins = current_standing.
-        # div_losses = current_standing.
-        # div_ties = current_standing.
-        # conf_wins = current_standing.
-        # conf_losses = current_standing.
-        # conf_ties = current_standing.
-        # non_conf_wins = current_standing.
-        # non_conf_losses = current_standing.
-        # non_conf_ties = current_standing.
-        # last_5_wins = current_standing.
-        # last_5_losses = current_standing.
-        # last_5_ties = current_standing.
-
-        # TeamStanding.objects.create(
-        #     team=team, season=season,
-        #     week_number=current_week + 1, wins=wins, losses=losses,
-        #     ties=ties, streak=streak, points_for=points_for,
-        #     points_against=points_against)
                        
 def update_standings(season, current_week, matchups):
     """
@@ -55,27 +38,30 @@ def update_standings(season, current_week, matchups):
     for matchup in matchups:
         scores = matchup.scoreboard.get_score()
         winner = matchup.scoreboard.get_winner()
+        matchup_type = get_matchup_type(matchup)
 
         for team in (matchup.home_team, matchup.away_team):
             current_standing = TeamStanding.objects.get(
                 team=team, season=season,
                 week_number=current_week)
 
+            # Update regular standings
             wins = current_standing.wins
             losses = current_standing.losses
             ties = current_standing.ties
             streak = current_standing.streak
 
             if winner == 'Tie':
-                ties = current_standing.ties + 1
+                ties += 1
                 streak = 0
             elif winner == team:
-                wins = current_standing.wins + 1
-                streak = current_standing.streak + 1
+                wins += 1
+                streak += 1
             else:
-                losses = current_standing.losses + 1
+                losses += 1
                 streak = 0
 
+            # Update PF and PA
             if team == matchup.home_team:
                 points_for = current_standing.points_for + scores['Home']
                 points_against = current_standing.points_against + \
@@ -84,12 +70,54 @@ def update_standings(season, current_week, matchups):
                 points_for = current_standing.points_for + scores['Away']
                 points_against = current_standing.points_against + \
                     scores['Home']
+            
+            # Update Home/Away standings
+                    
+            # Update type standings
+            
+            div_wins = current_standing.div_wins
+            div_losses = current_standing.div_losses
+            div_ties = current_standing.div_ties
+            conf_wins = current_standing.conf_wins
+            conf_losses = current_standing.conf_losses
+            conf_ties = current_standing.conf_ties
+            non_conf_wins = current_standing.non_conf_wins
+            non_conf_losses = current_standing.non_conf_losses
+            non_conf_ties = current_standing.non_conf_ties
+            
+            if matchup_type == 'Divisional':
+                if winner == 'Tie':
+                    div_ties += 1                    
+                elif winner == team:
+                    div_wins += 1
+                else:
+                    div_losses += 1
+            elif matchup_type == 'Conference':
+                if winner == 'Tie':
+                    conf_ties += 1                    
+                elif winner == team:
+                    conf_wins += 1
+                else:
+                    conf_losses += 1
+            else:
+                if winner == 'Tie':
+                    non_conf_ties += 1                    
+                elif winner == team:
+                    non_conf_wins += 1
+                else:
+                    non_conf_losses += 1
+            
+            # Update Last 5 standings
+            
 
             TeamStanding.objects.create(
-                team=team, season=season,
-                week_number=current_week + 1, wins=wins, losses=losses,
-                ties=ties, streak=streak, points_for=points_for,
-                points_against=points_against)
+                team=team, season=season, week_number=current_week + 1,
+                wins=wins, losses=losses, ties=ties, streak=streak,
+                points_for=points_for, points_against=points_against,
+                div_wins=div_wins, div_losses=div_losses, div_ties=div_ties,
+                conf_wins=conf_wins, conf_losses=conf_losses, conf_ties=conf_ties,
+                non_conf_wins=non_conf_wins, non_conf_losses=non_conf_losses,
+                non_conf_ties=non_conf_ties)
 
 def generate_division_rankings(season):
     """
