@@ -335,7 +335,7 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         season = get_object_or_404(Season, league=league, is_current=True)
         standings = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by(
-                '-wins', 'losses', '-points_for', 'points_against')
+                'ranking__power_ranking')
         return standings
 
     def get_context_data(self, **kwargs):
