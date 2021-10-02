@@ -13,18 +13,40 @@ def update_standings_for_byes(season, current_week):
         current_standing = TeamStanding.objects.get(
             team=team, season=season,
             week_number=current_week)
-        wins = current_standing.wins
-        losses = current_standing.losses
-        ties = current_standing.ties
-        streak = current_standing.streak
-        points_for = current_standing.points_for
-        points_against = current_standing.points_against
+        current_standing.pk = None        
+        current_standing._state.adding = True
+        current_standing.week_number = current_week + 1
+        current_standing.save()
+        # wins = current_standing.wins
+        # losses = current_standing.losses
+        # ties = current_standing.ties
+        # streak = current_standing.streak
+        # points_for = current_standing.points_for
+        # points_against = current_standing.points_against
+        # home_wins = current_standing.
+        # home_losses = current_standing.
+        # home_ties = current_standing.
+        # away_wins = current_standing.
+        # away_losses = current_standing.
+        # away_ties = current_standing.
+        # div_wins = current_standing.
+        # div_losses = current_standing.
+        # div_ties = current_standing.
+        # conf_wins = current_standing.
+        # conf_losses = current_standing.
+        # conf_ties = current_standing.
+        # non_conf_wins = current_standing.
+        # non_conf_losses = current_standing.
+        # non_conf_ties = current_standing.
+        # last_5_wins = current_standing.
+        # last_5_losses = current_standing.
+        # last_5_ties = current_standing.
 
-        TeamStanding.objects.create(
-            team=team, season=season,
-            week_number=current_week + 1, wins=wins, losses=losses,
-            ties=ties, streak=streak, points_for=points_for,
-            points_against=points_against)
+        # TeamStanding.objects.create(
+        #     team=team, season=season,
+        #     week_number=current_week + 1, wins=wins, losses=losses,
+        #     ties=ties, streak=streak, points_for=points_for,
+        #     points_against=points_against)
                        
 def update_standings(season, current_week, matchups):
     """
