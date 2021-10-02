@@ -119,8 +119,13 @@ def generate_matchups(league_structure):
     afc_divs_reversed = afc_divs.reverse()
     div_pairs_2 = [[t1.teams.all(), t2.teams.all()] for t1, t2 in zip(afc_divs_reversed, nfc_divs)]
     for div_pair in div_pairs_2:
+        r = 1
         for t1, t2, in zip(div_pair[0], div_pair[1]):
-            matchups.append([t1, t2])
+            additional_matchup = [t1, t2]
+            if r % 2 == 0:
+                additional_matchup.reverse()
+            r += 1
+            matchups.append(additional_matchup)            
             
     return matchups
 
