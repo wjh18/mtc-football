@@ -156,7 +156,7 @@ def set_schedule(matchups, limit=500):
     team_bye = {team: add_column() for team in teams}
 
     # `week_bye[week][i]` represents the fact that `week` has its `i`-th bye team. (4 <= `week` < 12, 0 <= `i` < 4)
-    week_bye = {week: [add_column() for i in range(4)] for week in range(4, 12)}
+    week_bye = {week: [add_column() for i in range(4)] for week in range(5, 13)}
 
     rows = []
 
@@ -177,7 +177,7 @@ def set_schedule(matchups, limit=500):
 
     # Add rows for bye assignments.
     for team in teams:
-        for week in range(4, 12):
+        for week in range(5, 13):
             for i in range(4):
                 tag = (
                     'bye', (team, week),
