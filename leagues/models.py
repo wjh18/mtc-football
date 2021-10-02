@@ -342,6 +342,24 @@ class TeamStanding(models.Model):
     points_for = models.SmallIntegerField(default=0)
     points_against = models.SmallIntegerField(default=0)
     streak = models.SmallIntegerField(default=0)
+    home_wins = models.SmallIntegerField(default=0)
+    home_losses = models.SmallIntegerField(default=0)
+    home_ties = models.SmallIntegerField(default=0)
+    away_wins = models.SmallIntegerField(default=0)
+    away_losses = models.SmallIntegerField(default=0)
+    away_ties = models.SmallIntegerField(default=0)
+    div_wins = models.SmallIntegerField(default=0)
+    div_losses = models.SmallIntegerField(default=0)
+    div_ties = models.SmallIntegerField(default=0)
+    conf_wins = models.SmallIntegerField(default=0)
+    conf_losses = models.SmallIntegerField(default=0)
+    conf_ties = models.SmallIntegerField(default=0)
+    non_conf_wins = models.SmallIntegerField(default=0)
+    non_conf_losses = models.SmallIntegerField(default=0)
+    non_conf_ties = models.SmallIntegerField(default=0)
+    last_5_wins = models.SmallIntegerField(default=0)
+    last_5_losses = models.SmallIntegerField(default=0)
+    last_5_ties = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return f'{self.team.name} standings for Week {self.week_number} Season {self.season.season_number}'
@@ -357,4 +375,4 @@ class TeamRanking(models.Model):
     division_ranking = models.PositiveSmallIntegerField(default=1)
     
     def __str__(self):
-        return f'{self.standing.team} rankings for {self.standing}'
+        return f'Rankings for {self.standing}'
