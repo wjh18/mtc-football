@@ -167,7 +167,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
         if self.kwargs.get('team'):
             context['team'] = Team.objects.get(pk=self.kwargs['team'])
         context['week_num'] = self.kwargs.get('week_num', context['season'].week_number)
-        context['num_weeks'] = range(1, 18)
+        context['num_weeks'] = range(1, 19)
         return context
 
 
@@ -306,7 +306,7 @@ def advance_regular_season(request, league, weeks=False):
     if request.method == 'GET':
         # Advance to end of regular season, not X number of weeks
         if not weeks:
-            weeks = 17 - (current_week - 1)
+            weeks = 18 - (current_week - 1)
         # Get scores and results for the current week's matchups, then update standings
         for week_num in range(current_week, current_week + weeks):
             matchups = Matchup.objects.filter(

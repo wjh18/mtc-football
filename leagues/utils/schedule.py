@@ -1,4 +1,5 @@
 import random
+from pprint import pprint
 from collections import Counter
 
 from algorithm_x import AlgorithmX
@@ -20,17 +21,16 @@ def fetch_league_structure(league):
 
     return league_structure
 
-
 def generate_matchups(league_structure):
     matchups = []
-    # Generate divisional matchups
+    ### Generate divisional matchups
     for division in league_structure['divisions']:
         for team in division.teams.all():
             team_exclude = division.teams.all().exclude(id=team.id)
             for included_team in team_exclude:
                 matchups.append([team, included_team])
 
-    # Generate inter-conference matchups
+    ### Generate inter-conference matchups
     for conference in league_structure['conferences']:
         division_list = [div.teams.all() for div in list(conference.divisions.all())]
         division_pair1 = random.sample(division_list, 2)
@@ -91,43 +91,44 @@ def generate_matchups(league_structure):
                     opp_counter += 1
                 team_counter += 1
 
-    # Generate cross-conference matchups
-    afc = league_structure['conferences'].get(name='AFC').divisions.all().order_by('?')
-    nfc = league_structure['conferences'].get(name='NFC').divisions.all().order_by('?')
-
-    d_pairs = []
-    for t1, t2 in zip(afc, nfc):
-        d_pair = [t1.teams.all(), t2.teams.all()]
-        d_pairs.append(d_pair)
-
-    for d in d_pairs:
+    ### Generate cross-conference matchups
+    # Get a queryset of each conferences divisions, one in random order
+    afc_divs = league_structure['conferences'].get(name='AFC').divisions.all().order_by('name')
+    nfc_divs = league_structure['conferences'].get(name='NFC').divisions.all().order_by('?')
+    # Build pairs of cross-conference divisions
+    div_pairs = [[t1.teams.all(), t2.teams.all()] for t1, t2 in zip(afc_divs, nfc_divs)]
+    
+    # Generate matchups with cross-conference division pairs
+    for div_pair in div_pairs:
         team_counter = 1
-        for team in d[0]:
+        for team in div_pair[0]:
             opp_counter = 1
-            for opponent in d[1]:
-
+            for opponent in div_pair[1]:
                 if team_counter % 2 == 0:
                     matchup = [team, opponent]
                 else:
                     matchup = [opponent, team]
-
                 if opp_counter % 2 != 0:
                     matchup.reverse()
-
                 matchups.append(matchup)
-
                 opp_counter += 1
             team_counter += 1
-
+            
+    # Generate 1 additional cross-conference matchup per team
+    # *Without same div pairs as above (reverse the ordered conf's divisions)
+    afc_divs_reversed = afc_divs.reverse()
+    div_pairs_2 = [[t1.teams.all(), t2.teams.all()] for t1, t2 in zip(afc_divs_reversed, nfc_divs)]
+    for div_pair in div_pairs_2:
+        for t1, t2, in zip(div_pair[0], div_pair[1]):
+            matchups.append([t1, t2])
+            
     return matchups
-
 
 def count_matchups(matchups):
     # Generator expression to test amount of matches per team
     total_matchups = Counter(x for match in matchups for x in match)
     # Generator expression to test amount of home games per team
     home_matchups = Counter(match[0] for match in matchups)
-
 
 def set_schedule(matchups, limit=500):
     # `limit` is a computation limit passed on to the AlgorithmX solver. If
@@ -149,7 +150,7 @@ def set_schedule(matchups, limit=500):
     matchup = [add_column() for matchup_idx in range(len(matchups))]
 
     # `team_in_week[team][week]` represents the fact that `team` has appeared during `week` (either in a matchup or as a bye).
-    team_in_week = {team: [add_column() for week in range(17)] for team in teams}
+    team_in_week = {team: [add_column() for week in range(18)] for team in teams}
 
     # `team_bye[team]` represents the fact that `team` has a bye week.
     team_bye = {team: add_column() for team in teams}
@@ -162,7 +163,7 @@ def set_schedule(matchups, limit=500):
     # Add rows for matchup assignments.
     for matchup_idx in range(len(matchups)):
         team1, team2 = matchups[matchup_idx]
-        for week in range(17):
+        for week in range(18):
             tag = (
                 'match', (matchup_idx, week),
                 'Matchup %s in week %d' % (matchups[matchup_idx], week)
@@ -203,7 +204,7 @@ def set_schedule(matchups, limit=500):
         for solution in solver.solve(limit=limit):
 
             # A solution was found! Convert it to a schedule and return it.
-            schedule = [[] for week in range(17)]
+            schedule = [[] for week in range(18)]
             for (tp, args, desc) in solution:
                 if tp == 'match':
                     matchup_idx, week = args
@@ -212,7 +213,6 @@ def set_schedule(matchups, limit=500):
             return schedule
 
         # No solution was found. Shuffle and retry!
-
 
 def create_schedule(league_id):
 
@@ -224,9 +224,6 @@ def create_schedule(league_id):
 
     return schedule
 
-## Test
-# schedule = create_schedule("32bd4f53-126a-4e85-b20a-d1614145b377")
-# i = 1
-# for week in schedule:
-#     print(f'Week {i}', week)
-#     i += 1
+# Test
+def test_schedule(league_id="fe386ad0-5c1c-4c55-87e8-755fe1b14543"):
+    schedule = create_schedule(league_id)
