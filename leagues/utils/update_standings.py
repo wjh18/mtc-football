@@ -1,7 +1,7 @@
-from ..models import TeamStanding, TeamRanking
+from ..models import TeamStanding, TeamRanking, Division, Conference
 
-from django.db.models import F, Window
-from django.db.models.functions import Rank
+from django.db.models import Q, F, Window, Case, When, Value, IntegerField
+from django.db.models.functions import DenseRank
 
 
 def update_standings_for_byes(season, current_week):
@@ -68,99 +68,125 @@ def update_standings(season, current_week, matchups):
                 week_number=current_week + 1, wins=wins, losses=losses,
                 ties=ties, streak=streak, points_for=points_for,
                 points_against=points_against)
+
+def generate_division_rankings(season):
+    divisions = Division.objects.filter(conference__league=season.league)
+    division_rankings = {}
+    for division in divisions:
+        division_rank_qs = TeamStanding.objects.filter(
+            week_number=season.week_number + 1,
+            team__division__exact=division
+        ).annotate(
+            rank=Window(
+                expression=DenseRank(),
+                order_by=[
+                    F('wins').desc(), F('losses'),
+                    F('points_for').desc(),
+                    F('points_against')
+                ],
+            )
+        )
+        division_rankings[division] = division_rank_qs
+        for team in division.teams.all():
+            for division_rank in division_rankings[division]:
+                if division_rank.team == team:
+                    TeamRanking.objects.create(
+                        standing=division_rank,
+                        division_ranking=division_rank.rank
+                    )
+    return division_rankings
+    
+def generate_conference_rankings(season):
+    conferences = Conference.objects.filter(league=season.league)
+    for conference in conferences:
+        
+        top_4_standings = TeamStanding.objects.filter(
+            team__division__conference=conference,
+            ranking__division_ranking=1,
+            week_number=season.week_number + 1).annotate(
+                rank=Window(
+                    expression=DenseRank(),
+                    order_by=[
+                        F('wins').desc(), F('losses'),
+                        F('points_for').desc(),
+                        F('points_against')
+                    ],
+                )
+            )
+
+        bottom_12_standings = TeamStanding.objects.filter(
+            team__division__conference=conference,
+            week_number=season.week_number + 1).exclude(
+                ranking__division_ranking=1).annotate(
+                    rank=Window(
+                        expression=DenseRank(),
+                        order_by=[
+                            F('wins').desc(), F('losses'),
+                            F('points_for').desc(),
+                            F('points_against')
+                        ],
+                    )
+                )
+                           
+        for top_4_with_rank in top_4_standings:
+            print(top_4_with_rank.rank)
+            team_ranking = TeamRanking.objects.get(
+                standing=top_4_with_rank,
+            )
+            team_ranking.conference_ranking = top_4_with_rank.rank
+            team_ranking.save()
             
+        for bottom_12_with_rank in bottom_12_standings:
+            print(bottom_12_with_rank.rank)
+            team_ranking = TeamRanking.objects.get(
+                standing=bottom_12_with_rank,
+            )
+            team_ranking.conference_ranking = bottom_12_with_rank.rank + 4
+            team_ranking.save()
+
+def get_league_rankings(season):
+    league_rank_qs = TeamStanding.objects.filter(
+        week_number=season.week_number + 1,
+    ).annotate(
+        rank=Window(
+            expression=DenseRank(),
+            order_by=[
+                F('wins').desc(), F('losses'),
+                F('points_for').desc(),
+                F('points_against')
+            ],
+        )
+    )
+    return league_rank_qs
+          
 def update_rankings(season):
     """
     Update league rankings based on new standings for next week.
     """
+    generate_division_rankings(season)
+    generate_conference_rankings(season)
+    league_rankings = get_league_rankings(season)
+    
     for team in season.league.teams.all():
-        division_rank_qs = TeamStanding.objects.filter(
-            week_number=season.week_number + 1,
-            team__division__exact=team.division
-        ).annotate(
-            rank=Window(
-                expression=Rank(),
-                order_by=[
-                    F('wins').desc(), F('losses'),
-                    F('points_for').desc(),
-                    F('points_against')
-                ],
-            )
-        )
-        for standing in division_rank_qs:
-            if standing.team == team:
-                division_rank = standing.rank
-             
-        conference_rank_qs = TeamStanding.objects.filter(
-            week_number=season.week_number + 1,
-            team__division__conference__exact=team.division.conference
-        ).annotate(
-            rank=Window(
-                expression=Rank(),
-                order_by=[
-                    F('wins').desc(), F('losses'),
-                    F('points_for').desc(),
-                    F('points_against')
-                ],
-            )
-        )
-        for standing in conference_rank_qs:
-            if standing.team == team:
-                conference_rank = standing.rank
                 
-        league_rank_qs = TeamStanding.objects.filter(
-                week_number=season.week_number + 1,
-        ).annotate(
-            rank=Window(
-                expression=Rank(),
-                order_by=[
-                    F('wins').desc(), F('losses'),
-                    F('points_for').desc(),
-                    F('points_against')
-                ],
-            )
-        )
-        for standing in league_rank_qs:
-            if standing.team == team:
-                league_rank = standing.rank   
+        # for standing in division_rankings[team.division]:
+        #     if standing.team == team:
+        #         division_rank = standing.rank
                 
-        TeamRanking.objects.create(
+        # for standing in conference_rankings[team.division.conference]:
+        #     if standing.team == team:
+        #         conference_rank = standing.rank
+                
+        for standing in league_rankings:
+            if standing.team == team:
+                league_rank = standing.rank
+                
+        tr = TeamRanking.objects.get(
             standing=TeamStanding.objects.get(
                         team=team, season=season,
                         week_number=season.week_number + 1),
-            division_ranking=division_rank,
-            conference_ranking=conference_rank,
-            power_ranking=league_rank,
+            # division_ranking=division_rank,
+            # conference_ranking=conference_rank,
         )
-        
-        # standings = TeamStanding.objects.filter(week_number=season.week_number + 1)
-        # league_standings = standings.order_by(
-        #     '-wins', 'losses', '-points_for', 'points_against')
-    
-        # division_standings = standings.filter(
-        #     team__division__exact=team.division).order_by(
-        #         '-wins', 'losses', '-points_for', 'points_against')        
-        # conference_standings = standings.filter(
-        #     team__division__conference__exact=team.division.conference).order_by(
-        #         '-wins', 'losses', '-points_for', 'points_against')
-            
-        # d_rank = 1
-        # for team_standing in division_standings:
-        #     if team_standing.team == team:
-        #         team_ranking.division_ranking = d_rank
-        #         team_ranking.save()
-        #     d_rank += 1
-                
-        # c_rank = 1
-        # for team_standing in conference_standings:
-        #     if team_standing.team == team:
-        #         team_ranking.conference_ranking = c_rank
-        #         team_ranking.save()
-        #     c_rank += 1
-            
-        # l_rank = 1
-        # for team_standing in league_standings:
-        #     if team_standing.team == team:
-        #         team_ranking.power_ranking = l_rank
-        #         team_ranking.save()
-        #     l_rank += 1
+        tr.power_ranking = league_rank
+        tr.save()

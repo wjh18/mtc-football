@@ -344,9 +344,16 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         context['afc'] = Conference.objects.get(name='AFC', league=league)
         context['nfc'] = Conference.objects.get(name='NFC', league=league)
         context['league'] = league
-        context['season'] = get_object_or_404(
+        season = get_object_or_404(
             Season, league=league, is_current=True)
+        context['season'] = season
         context['type'] = self.kwargs.get('type')
+        context['division_standings'] = TeamStanding.objects.filter(
+            season=season, week_number=season.week_number).order_by(
+                'ranking__division_ranking')
+        context['conference_standings'] = TeamStanding.objects.filter(
+            season=season, week_number=season.week_number).order_by(
+                'ranking__conference_ranking')
         return context
 
 

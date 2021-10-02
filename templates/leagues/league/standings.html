@@ -20,7 +20,9 @@
         </li>
     </ul>
   </nav>
+
   <br>
+
   {% if not type %}
     {% for conference in league.conferences.all %}
       {% for division in conference.divisions.all %}
@@ -41,9 +43,9 @@
                 </tr>
               </thead>
               <tbody>
-            {% for standing in standings %}
+            {% for standing in division_standings %}
               {% if standing.team in division.teams.all %}
-              <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
+              <tr {% if standing.team.userteam %}style="background-color: orange;"{% endif %}>
                 <th scope="row">{{ standing.ranking.division_ranking }}</th>
                 <td>
                   <a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a>
@@ -65,6 +67,11 @@
   {% endif %}
 
   {% if type == "conference" %}
+    <ul>
+      <li>Top 4 teams in each conference are division leaders.</li>
+      <li>Top 7 teams in each conference clinch a playoff spot.</li>
+    </ul>
+    <br>
     {% for conference in league.conferences.all %}
       <h3>{{ conference.name }}</h3>
       <hr>
@@ -83,9 +90,17 @@
                 </tr>
               </thead>
               <tbody>
-            {% for standing in standings %}
+            {% for standing in conference_standings %}
               {% if standing.team.division in conference.divisions.all %}
-              <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
+              <tr style="{% if standing.team.userteam %}
+                            background-color: orange;
+                          {% endif %}
+                          {% if standing.ranking.conference_ranking == 4 %}
+                            border-bottom:2px dashed darkgreen;
+                          {% endif %}
+                          {% if standing.ranking.conference_ranking == 7 %}
+                            border-bottom:2px solid darkgreen;
+                          {% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
                 <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
                 <td>{{ standing.wins }}</td>
@@ -122,7 +137,7 @@
         </thead>
         <tbody>
       {% for standing in standings %}
-        <tr {% if standing.team.userteam %}style="background-color: palegreen;"{% endif %}>
+        <tr {% if standing.team.userteam %}style="background-color: orange;"{% endif %}>
           <th scope="row">{{ forloop.counter }}</th>
           <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
           <td>{{ standing.wins }}</td>
