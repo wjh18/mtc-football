@@ -68,6 +68,22 @@ def update_standings(season, current_week, matchups):
             non_conf_wins = current_standing.non_conf_wins
             non_conf_losses = current_standing.non_conf_losses
             non_conf_ties = current_standing.non_conf_ties
+            
+            if streak > 0:
+                pass # team is on a win streak
+                streak_win = streak + 1
+                streak_loss = -1
+                streak_tie = 0
+            elif streak < 0:
+                pass # team is on a losing streak
+                streak_win = 1
+                streak_loss = streak - 1
+                streak_tie = 0
+            else:
+                pass # first game of season
+                streak_win = 1
+                streak_loss = -1
+                streak_tie = streak
 
             # Update W/L/T, PF/PA, and Home/Away standings
             if team == matchup.home_team:
@@ -76,30 +92,30 @@ def update_standings(season, current_week, matchups):
                 if winner == 'Tie':
                     ties += 1
                     home_ties += 1
-                    streak = 0
+                    streak = streak_tie
                 elif winner == team:
                     wins += 1
                     home_wins += 1
-                    streak += 1
+                    streak = streak_win
                 else:
                     losses += 1
                     home_losses += 1
-                    streak = 0
+                    streak = streak_loss
             else:
                 points_for += scores['Away']
                 points_against += scores['Home']
                 if winner == 'Tie':
                     ties += 1
                     away_ties += 1
-                    streak = 0
+                    streak = streak_tie
                 elif winner == team:
                     wins += 1
                     away_wins += 1
-                    streak += 1
+                    streak = streak_win
                 else:
                     losses += 1
                     away_losses += 1
-                    streak = 0
+                    streak = streak_loss
                     
             # Update type standings    
             if matchup_type == 'Divisional':
