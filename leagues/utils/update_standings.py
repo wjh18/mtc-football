@@ -125,7 +125,18 @@ def update_standings(season, current_week, matchups):
                     non_conf_losses += 1
             
             # Update Last 5 standings
+            if current_week > 4:
+                last_5_week_num = current_week - 4
+            else:
+                last_5_week_num = current_week - (current_week - 1)
+                
+            last_5_standing = TeamStanding.objects.get(
+                team=team, season=season,
+                week_number=last_5_week_num)
             
+            last_5_wins = wins - last_5_standing.wins
+            last_5_losses = losses - last_5_standing.losses
+            last_5_ties = ties - last_5_standing.ties
 
             TeamStanding.objects.create(
                 team=team, season=season, week_number=current_week + 1,
@@ -136,8 +147,8 @@ def update_standings(season, current_week, matchups):
                 div_wins=div_wins, div_losses=div_losses, div_ties=div_ties,
                 conf_wins=conf_wins, conf_losses=conf_losses, conf_ties=conf_ties,
                 non_conf_wins=non_conf_wins, non_conf_losses=non_conf_losses,
-                non_conf_ties=non_conf_ties)
-                # last_5_wins=last_5_wins, last_5_losses=last_5_losses, last_5_ties=last_5_ties,
+                non_conf_ties=non_conf_ties, last_5_wins=last_5_wins,
+                last_5_losses=last_5_losses, last_5_ties=last_5_ties)
 
 def generate_division_rankings(season):
     """
