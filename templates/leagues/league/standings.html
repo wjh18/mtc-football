@@ -31,21 +31,24 @@
       <h3>{{ conference.name }}</h3>
       <hr>
       {% for division in conference.divisions.all %}        
-          <div class="table-responsive mb-3">
-            <table class="table table-striped">
+          <div class="table-responsive">
+            <table class="table table-striped table-fixed text-nowrap">
               <thead>
                 <tr>
                   <th scope="col">Rank</th>
-                  <th scope="col">{{ division.name }}</th>
+                  <th scope="col" style="width:15vw">{{ division.name }}</th>
                   <th scope="col">W</th>
                   <th scope="col">L</th>
                   <th scope="col">T</th>                  
                   <th scope="col">PF</th>
                   <th scope="col">PA</th>
                   <th scope="col">Streak</th>
+                  <th scope="col">Home</th>
+                  <th scope="col">Away</th>
                   <th scope="col">Div</th>
                   <th scope="col">Conf</th>
                   <th scope="col">Non-Conf</th>
+                  <th scope="col">Last 5</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,9 +65,12 @@
                 <td>{{ standing.points_for }}</td>
                 <td>{{ standing.points_against }}</td>
                 <td>{{ standing.streak }}</td>
+                <td>{{ standing.home_wins }}-{{ standing.home_losses }}-{{ standing.home_ties }}</td>
+                <td>{{ standing.away_wins }}-{{ standing.away_losses }}-{{ standing.away_ties }}</td>
                 <td>{{ standing.div_wins }}-{{ standing.div_losses }}-{{ standing.div_ties }}</td>
                 <td>{{ standing.conf_wins }}-{{ standing.conf_losses }}-{{ standing.conf_ties }}</td>
                 <td>{{ standing.non_conf_wins }}-{{ standing.non_conf_losses }}-{{ standing.non_conf_ties }}</td>
+                <td>{{ standing.last_5_wins }}-{{ standing.last_5_losses }}-{{ standing.last_5_ties }}</td>
               </tr>
               {% endif %}
             {% endfor %}
@@ -85,21 +91,24 @@
       <br>
       <h3>{{ conference.name }}</h3>
       <hr>
-          <div class="table-responsive mb-3">
-            <table class="table table-striped">
+          <div class="table-responsive">
+            <table class="table table-striped table-fixed text-nowrap">
               <thead>
                 <tr>
                   <th scope="col">Rank</th>
-                  <th scope="col">{{ conference.name }}</th>
+                  <th scope="col" style="width:15vw">{{ conference.name }}</th>
                   <th scope="col">W</th>
                   <th scope="col">L</th>
                   <th scope="col">T</th>                  
                   <th scope="col">PF</th>
                   <th scope="col">PA</th>
                   <th scope="col">Streak</th>
+                  <th scope="col">Home</th>
+                  <th scope="col">Away</th>
                   <th scope="col">Div</th>
                   <th scope="col">Conf</th>
                   <th scope="col">Non-Conf</th>
+                  <th scope="col">Last 5</th>
                 </tr>
               </thead>
               <tbody>
@@ -122,9 +131,12 @@
                 <td>{{ standing.points_for }}</td>
                 <td>{{ standing.points_against }}</td>
                 <td>{{ standing.streak }}</td>
+                <td>{{ standing.home_wins }}-{{ standing.home_losses }}-{{ standing.home_ties }}</td>
+                <td>{{ standing.away_wins }}-{{ standing.away_losses }}-{{ standing.away_ties }}</td>
                 <td>{{ standing.div_wins }}-{{ standing.div_losses }}-{{ standing.div_ties }}</td>
                 <td>{{ standing.conf_wins }}-{{ standing.conf_losses }}-{{ standing.conf_ties }}</td>
                 <td>{{ standing.non_conf_wins }}-{{ standing.non_conf_losses }}-{{ standing.non_conf_ties }}</td>
+                <td>{{ standing.last_5_wins }}-{{ standing.last_5_losses }}-{{ standing.last_5_ties }}</td>
               </tr>
               {% endif %}
             {% endfor %}
@@ -143,21 +155,24 @@
     <h3>{{ league.name }}</h3>
     <hr>
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-striped table-fixed text-nowrap">
         <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">OVR</th>
-            <th scope="col">Team</th>            
+            <th scope="col" style="width:15vw">{{ league.name }}</th>            
             <th scope="col">W</th>
             <th scope="col">L</th>
             <th scope="col">T</th>            
             <th scope="col">PF</th>
             <th scope="col">PA</th>
             <th scope="col">Streak</th>
+            <th scope="col">Home</th>
+            <th scope="col">Away</th>
             <th scope="col">Div</th>
             <th scope="col">Conf</th>
             <th scope="col">Non-Conf</th>
+            <th scope="col">Last 5</th>
           </tr>
         </thead>
         <tbody>
@@ -172,9 +187,12 @@
           <td>{{ standing.points_for }}</td>
           <td>{{ standing.points_against }}</td>
           <td>{{ standing.streak }}</td>
+          <td>{{ standing.home_wins }}-{{ standing.home_losses }}-{{ standing.home_ties }}</td>
+          <td>{{ standing.away_wins }}-{{ standing.away_losses }}-{{ standing.away_ties }}</td>
           <td>{{ standing.div_wins }}-{{ standing.div_losses }}-{{ standing.div_ties }}</td>
           <td>{{ standing.conf_wins }}-{{ standing.conf_losses }}-{{ standing.conf_ties }}</td>
           <td>{{ standing.non_conf_wins }}-{{ standing.non_conf_losses }}-{{ standing.non_conf_ties }}</td>
+          <td>{{ standing.last_5_wins }}-{{ standing.last_5_losses }}-{{ standing.last_5_ties }}</td>
         </tr>
       {% endfor %}
         </tbody>
