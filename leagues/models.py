@@ -1,4 +1,3 @@
-import uuid
 import datetime
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -11,11 +10,6 @@ from .utils.league_setup import (
 
 
 class League(models.Model):
-    # id = models.UUIDField(
-    #     primary_key=True,
-    #     default=uuid.uuid4,
-    #     editable=False,
-    # )
     user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -67,11 +61,6 @@ class Division(models.Model):
 
 
 class Team(models.Model):
-    # id = models.UUIDField(
-    #     primary_key=True,
-    #     default=uuid.uuid4,
-    #     editable=False,
-    # )
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='teams',
@@ -126,11 +115,6 @@ class UserTeam(models.Model):
 
 
 class Person(models.Model):
-    # id = models.UUIDField(
-    #     primary_key=True,
-    #     default=uuid.uuid4,
-    #     editable=False,
-    # )
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='players'

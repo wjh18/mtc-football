@@ -277,8 +277,8 @@ def create_season_details(season):
     from .schedule import create_schedule
     from ..models import Matchup, TeamStanding, TeamRanking
     from simulation.models import Scoreboard
-    league_uuid = season.league.pk
-    matchups = create_schedule(str(league_uuid))
+    league_id = season.league.pk
+    matchups = create_schedule(str(league_id))
     date = datetime.date(2021, 8, 29)
     progress_week = datetime.timedelta(days=7)
     for week_num in range(1, len(matchups) + 1):
