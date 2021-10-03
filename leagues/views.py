@@ -12,13 +12,13 @@ from leagues.utils.update_standings import (
 
 # Django imports
 from django.http import HttpResponseRedirect
-from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, F, ExpressionWrapper, FloatField
+from django.db.models.functions import Cast
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import ContextMixin
@@ -335,7 +335,11 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         season = get_object_or_404(Season, league=league, is_current=True)
         standings = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by(
-                'ranking__power_ranking')
+                'ranking__power_ranking').annotate(
+                    pt_diff=F('points_for') - F('points_against'),
+                    win_pct=ExpressionWrapper(
+                        (Cast('wins', FloatField()) / (F('wins') + F('losses') + F('ties'))),
+                        output_field=FloatField()))
         return standings
 
     def get_context_data(self, **kwargs):
@@ -350,10 +354,18 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         context['type'] = self.kwargs.get('type')
         context['division_standings'] = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by(
-                'ranking__division_ranking')
+                'ranking__division_ranking').annotate(
+                    pt_diff=F('points_for') - F('points_against'),
+                    win_pct=ExpressionWrapper(
+                        (Cast('wins', FloatField()) / (F('wins') + F('losses') + F('ties'))),
+                        output_field=FloatField()))
         context['conference_standings'] = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by(
-                'ranking__conference_ranking')
+                'ranking__conference_ranking').annotate(
+                    pt_diff=F('points_for') - F('points_against'),
+                    win_pct=ExpressionWrapper(
+                        (Cast('wins', FloatField()) / (F('wins') + F('losses') + F('ties'))),
+                        output_field=FloatField()))
         return context
 
 

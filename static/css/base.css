@@ -9,6 +9,24 @@
     margin-top: 10px;
 }
 
+.table-active {
+    background-color:yellow;
+    --bs-table-accent-bg: none !important;
+    box-shadow: none;
+}
+
+colgroup > .col-wlt {
+    background-color: rgb(247, 247, 247);
+}
+
+colgroup > .col-ha {
+    background-color: rgb(247, 247, 247);
+}
+
+colgroup > .col-recent {
+    background-color: rgb(247, 247, 247);
+}
+
 /* Teams */
 
 .team-list-wrapper {
