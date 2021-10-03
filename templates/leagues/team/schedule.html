@@ -11,14 +11,15 @@
   </h2>
   <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
   <hr>
-
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
+      <caption>{{ team.name }} Schedule - Season {{ season.season_number }}</caption>
       <thead>
         <tr>
           <th scope="col">Week</th>
           <th scope="col">Home Team</th>
           <th scope="col">Away Team</th>
+          <th scope="col">Matchup</th>
         </tr>
       </thead>
       <tbody>
@@ -27,6 +28,7 @@
             <th scope="row">{{ matchup.week_number }}</th>
             <td>{{ matchup.home_team }}</td>
             <td>{{ matchup.away_team }}</td>            
+            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a></td>
             </td>
           </tr>
         {% endfor %}

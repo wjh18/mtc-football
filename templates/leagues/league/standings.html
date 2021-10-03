@@ -22,12 +22,11 @@
   </nav>
 
   {% if not type %}
-    <br>
     <ul>
       <li>Division rankings are determined by W/L/T, PF and PA in that order.</li>
     </ul>
+    <br>
     {% for conference in league.conferences.all %}
-      <br>
       <h3>{{ conference.name }}</h3>
       <hr>
       {% for division in conference.divisions.all %}        
@@ -95,17 +94,13 @@
   {% endif %}
 
   {% if type == "conference" %}
-    <br>
-    <ul>
-      <li>Top 4 teams in each conference are division leaders.</li>
-      <li>Top 7 teams in each conference clinch a playoff spot.</li>
-    </ul>
     {% for conference in league.conferences.all %}
       <br>
-      <h3>{{ conference.name }}</h3>
+      <h3>{{ conference.name }} - Playoff Picture</h3>
       <hr>
           <div class="table-responsive">
-            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap">
+            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top">
+              <caption>Top 4 (division leaders) - Top 7 (current playoff picture)</caption>
               <colgroup>
                 <col span="2">
                 <col span="4" class="col-wlt">
@@ -173,14 +168,11 @@
 
   {% if type == "power" %}
     <br>
-    <ul>
-      <li>Power rankings are determined by W/L/T, team rating and recent performance in that order.</li>
-    </ul>
-    <br>
-    <h3>{{ league.name }}</h3>
+    <h3>{{ league.name }} Power Rankings</h3>
     <hr>
     <div class="table-responsive">
-      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap">
+      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top">
+        <caption>Power rankings are determined by W/L/T, team rating and recent performance in that order.</caption>
         <colgroup>
           <col span="2">
           <col span="4" class="col-wlt">
