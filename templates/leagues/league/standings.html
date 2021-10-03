@@ -25,13 +25,13 @@
     <ul>
       <li>Division rankings are determined by W/L/T, PF and PA in that order.</li>
     </ul>
-    <br>
     {% for conference in league.conferences.all %}
+    <br>
       <h3>{{ conference.name }}</h3>
       <hr>
       {% for division in conference.divisions.all %}        
-          <div class="table-responsive mb-3">
-            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top">
+          <div class="table-responsive mb-2">
+            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
               <caption>{{ division.name }}</caption>
               <colgroup>
                 <col span="2">
@@ -44,7 +44,7 @@
               <thead>
                 <tr>
                   <th scope="col">Rank</th>
-                  <th scope="col" style="width:15vw">{{ division.name }}</th>
+                  <th scope="col">{{ division.name }}</th>
                   <th scope="col">W</th>
                   <th scope="col">L</th>
                   <th scope="col">T</th>
@@ -99,8 +99,8 @@
       <h3>{{ conference.name }} - Playoff Picture</h3>
       <hr>
           <div class="table-responsive">
-            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top">
-              <caption>Top 4 (division leaders) - Top 7 (current playoff picture)</caption>
+            <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
+              <caption>Top 4 (division leaders) - Top 7 (playoffs)</caption>
               <colgroup>
                 <col span="2">
                 <col span="4" class="col-wlt">
@@ -112,7 +112,7 @@
               <thead>
                 <tr>
                   <th scope="col">Rank</th>
-                  <th scope="col" style="width:15vw">{{ conference.name }}</th>
+                  <th scope="col">{{ conference.name }}</th>
                   <th scope="col">W</th>
                   <th scope="col">L</th>
                   <th scope="col">T</th>
@@ -139,7 +139,7 @@
                             border-bottom:2px dashed darkgreen;
                           {% endif %}
                           {% if standing.ranking.conference_ranking == 7 %}
-                            border-bottom:2px solid darkgreen;
+                            border-bottom:2px solid firebrick;
                           {% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
                 <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
@@ -171,7 +171,7 @@
     <h3>{{ league.name }} Power Rankings</h3>
     <hr>
     <div class="table-responsive">
-      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top">
+      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
         <caption>Power rankings are determined by W/L/T, team rating and recent performance in that order.</caption>
         <colgroup>
           <col span="2">
@@ -185,7 +185,7 @@
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">OVR</th>
-            <th scope="col" style="width:15vw">{{ league.name }}</th>            
+            <th scope="col">{{ league.name }}</th>            
             <th scope="col">W</th>
             <th scope="col">L</th>
             <th scope="col">T</th>
