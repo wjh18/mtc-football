@@ -11,29 +11,36 @@
   </h2>
   <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
   <hr>
-  <div class="table-responsive">
-    <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
-      <caption>{{ team.name }} Schedule - Season {{ season.season_number }}</caption>
-      <thead>
-        <tr>
-          <th scope="col">Week</th>
-          <th scope="col">Home Team</th>
-          <th scope="col">Away Team</th>
-          <th scope="col">Matchup</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for matchup in matchups %}
-          <tr>
-            <th scope="row">{{ matchup.week_number }}</th>
-            <td>{{ matchup.home_team }}</td>
-            <td>{{ matchup.away_team }}</td>            
-            <td><a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a></td>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
+  {% for matchup in matchups %}
+    <p>
+      <span>Week {{ matchup.week_number }} - </span>
+      <span style="{% if matchup.scoreboard.get_winner == matchup.away_team %}
+                     color: darkgreen;
+                   {% else %}
+                     color: darkred;
+                   {% endif %}
+                   {% if team == matchup.away_team %}
+                     font-weight: bold;
+                   {% endif %}">
+        {{ matchup.away_team.name }}
+      </span>
+      {% if matchup.week_number < season.week_number %}
+        - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
+      {% endif %} @
+      <span style="{% if matchup.scoreboard.get_winner == matchup.home_team %}
+                     color: darkgreen;
+                   {% else %}
+                     color: darkred;
+                   {% endif %}
+                   {% if team == matchup.home_team %}
+                     font-weight: bold;
+                   {% endif %}">
+        {{ matchup.home_team.name }}
+      </span>
+      {% if matchup.week_number < season.week_number %}
+        - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
+      {% endif %} -
+      <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
+    </p>
+  {% endfor %}
 {% endblock content %}
