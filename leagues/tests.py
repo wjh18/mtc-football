@@ -11,7 +11,7 @@ class LeagueViewTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             username='leagueuser',
-            email='leagueuser@email.com',
+            email='leagueuser@example.com',
             password='testpass123'
         )
         self.league = League.objects.create(
@@ -25,15 +25,15 @@ class LeagueViewTest(TestCase):
         self.assertEqual(f'{self.league.gm_name}', 'Test GM')
 
     def test_league_list_view_for_logged_in_user(self):
-        self.client.login(email='leagueuser@email.com', password='testpass123')
-        response = self.client.get(reverse('league_list'))
+        self.client.login(email='leagueuser@example.com', password='testpass123')
+        response = self.client.get(reverse('leagues:league_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test League')
         self.assertTemplateUsed(response, 'leagues/league/league_list.html')
 
     def test_league_list_view_for_logged_out_user(self):
         self.client.logout()
-        response = self.client.get(reverse('league_list'))
+        response = self.client.get(reverse('leagues:league_list'))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response, '%s?next=/leagues/' % (reverse('account_login')))
