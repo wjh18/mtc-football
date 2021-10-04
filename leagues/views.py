@@ -118,11 +118,11 @@ class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
     model = League
     fields = ['name', 'gm_name']
     template_name = 'leagues/league/league_update.html'
-    success_message = 'League successfully updated.'
+    success_message = 'Your league has been updated successfully.'
     
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, 'Your league has been updated successfully.')
+        messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
 
@@ -131,14 +131,14 @@ class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
     Delete an individual league.
     """
     model = League
-    success_url = reverse_lazy('league_list')
+    success_url = reverse_lazy('leagues:league_list')
     template_name = 'leagues/league/league_delete.html'
     success_message = 'Your league has been deleted sucessfully.'
     
-    def delete(self, request, *args, **kwargs):
-        messages.add_message(request, messages.SUCCESS, self.success_message)
-        # messages.success(request, self.success_message)
-        return super().delete(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):        
+        perform_delete = super().delete(request, *args, **kwargs)
+        messages.success(self.request, self.success_message)
+        return perform_delete
     
 
 class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
