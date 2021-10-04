@@ -1,5 +1,6 @@
 import datetime
 from django.utils import timezone
+from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -7,7 +8,7 @@ from .utils.league_setup import (
     create_league_structure,
     create_team_players,
     create_season_details)
-
+from .utils.url_utils import random_string_generator as random_string
 
 class League(models.Model):
     user = models.ForeignKey(
@@ -18,6 +19,7 @@ class League(models.Model):
     name = models.CharField(max_length=300)
     gm_name = models.CharField(max_length=300)
     creation_date = models.DateTimeField(default=timezone.now)
+    slug = models.SlugField(blank=True, null=True, unique=True)
 
     class Meta:
         ordering = ['-creation_date']
@@ -26,6 +28,9 @@ class League(models.Model):
         return f'{self.name}'
 
     def save(self, *args, **kwargs):
+        # Generate unique slug
+        if not self.slug:
+            self.slug = slugify(self.name + "-" + random_string())
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
         # Save League instance before referencing it for Team creation
@@ -73,6 +78,7 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=3)
     overall_rating = models.PositiveSmallIntegerField(default=1)
+    slug = models.SlugField(blank=True, null=True)
 
     class Meta:
         ordering = ['location']
@@ -81,6 +87,9 @@ class Team(models.Model):
         return f'{self.location} {self.name} ({self.abbreviation})'
 
     def save(self, *args, **kwargs):
+        # Generate unique slug
+        if not self.slug:
+            self.slug = slugify(self.abbreviation)
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
         # Save Team instance before referencing it for Player creation
@@ -151,9 +160,16 @@ class Player(Person):
     run_def = models.PositiveSmallIntegerField()
     pass_def = models.PositiveSmallIntegerField()
     special_def = models.PositiveSmallIntegerField()
+    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.first_name} ' + f' {self.last_name}'
+    
+    def save(self, *args, **kwargs):
+        # Generate unique slug
+        if not self.slug:
+            self.slug = slugify(f'{self.first_name}-{self.last_name}-{random_string()}')
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("player_detail", args=[str(self.id)])
@@ -235,9 +251,18 @@ class Matchup(models.Model):
     date = models.DateField(default=datetime.date(2021, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
     is_preseason = models.BooleanField(default=False)
+    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return f'Season {str(self.season.season_number)} Week {str(self.week_number)} - {self.home_team} vs. {self.away_team}'
+    
+    def save(self, *args, **kwargs):
+        # Generate unique slug
+        if not self.slug:
+            self.slug = slugify(
+                f'{self.home_team.abbreviation}-{self.away_team.abbreviation}-season-{self.season.season_number}-week-{self.week_number}'
+            )
+        super().save(*args, **kwargs)
 
 
 class PlayerMatchStat(models.Model):
