@@ -8,8 +8,8 @@ from django.urls import reverse
 
 from .utils.league_setup import (
     create_league_structure,
-    create_team_players,
     create_season_details)
+from .utils.player_setup import create_team_players
 from .utils.url_utils import random_string_generator as random_string
 
 
@@ -172,13 +172,13 @@ class Player(Person):
     def __str__(self):
         return f'{self.first_name} ' + f' {self.last_name}'
 
-    def save(self, *args, **kwargs):
-        # Generate unique slug
-        if not self.slug:
-            self.slug = slugify(
-                f'{self.first_name}-{self.last_name}-{random_string()}'
-            )
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Generate unique slug
+    #     if not self.slug:
+    #         self.slug = slugify(
+    #             f'{self.first_name}-{self.last_name}-{random_string()}'
+    #         )
+    #     super().save(*args, **kwargs)
 
     # Find a way to pass team slug despite ManyToMany
     # def get_absolute_url(self):
