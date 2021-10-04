@@ -26,7 +26,7 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin)
 
 
-# Custom Mixins & Decorators
+### Custom Mixins & Decorators ###
 
 class LeagueContextMixin(ContextMixin):
     """
@@ -34,14 +34,15 @@ class LeagueContextMixin(ContextMixin):
     """
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['league'] = League.objects.get(pk=self.kwargs['league'])
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
         context['season'] = Season.objects.get(league=context['league'], is_current=True)
         if self.kwargs.get('team'):
-            context['team'] = Team.objects.get(pk=self.kwargs['team'])
+            context['team'] = Team.objects.get(
+                league=context['league'], slug=self.kwargs['team'])
         return context
 
 
-# Permissions Mixins & Decorators
+### Permissions Mixins & Decorators ###
 
 class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
     """
@@ -49,7 +50,7 @@ class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
     """
     def test_func(self):
         if self.kwargs.get('league'):
-            league = League.objects.get(pk=self.kwargs['league'])
+            league = League.objects.get(slug=self.kwargs['league'])
             return self.request.user == league.user
         else:
             # Fallback for generic views which has no valid kwarg
@@ -62,7 +63,7 @@ def is_league_owner(func):
     whether the user is the league owner.
     """
     def wrap(request, *args, **kwargs):
-        league = League.objects.get(pk=kwargs['league'])
+        league = League.objects.get(slug=kwargs['league'])
         if league.user == request.user:
             return func(request, *args, **kwargs)
         else:
@@ -70,7 +71,7 @@ def is_league_owner(func):
     return wrap
 
 
-# League Views
+### League Views ###
 
 class LeagueListView(LoginRequiredMixin, ListView):
     """
@@ -107,7 +108,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('team_list', args=[self.object.pk])
+        return reverse_lazy('leagues:team_list', args=[self.object.slug])
 
 
 class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
@@ -149,7 +150,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
     template_name = 'leagues/league/matchups.html'
     
     def get_queryset(self):
-        league = self.kwargs['league']
+        league = League.objects.get(slug=self.kwargs['league'])
         season = Season.objects.get(league=league, is_current=True)
         if self.kwargs.get('week_num'):
             week_number = self.kwargs['week_num']
@@ -162,10 +163,8 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['league'] = League.objects.get(pk=self.kwargs['league'])
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
         context['season'] = Season.objects.get(league=context['league'], is_current=True)
-        if self.kwargs.get('team'):
-            context['team'] = Team.objects.get(pk=self.kwargs['team'])
         context['week_num'] = self.kwargs.get('week_num', context['season'].week_number)
         context['num_weeks'] = range(1, 19)
         return context
@@ -180,148 +179,6 @@ class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
     template_name = 'leagues/league/matchup_detail.html'
 
 
-# Team Views
-
-class TeamListView(LeagueOwnerMixin, ListView):
-    """
-    List the teams belonging to the active league and provide context
-    indicating whether the user's team has been selected.
-    """
-    model = Team
-    context_object_name = 'team_list'
-    template_name = 'leagues/league/team_list.html'
-
-    def get_queryset(self):
-        return Team.objects.filter(league=self.kwargs['league'])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['league'] = League.objects.get(pk=self.kwargs['league'])
-        if UserTeam.objects.filter(league=context['league']).exists():
-            context['user_team'] = True
-        else:
-            context['user_team'] = False
-        return context
-
-
-class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
-    """
-    View additional details about an individual team.
-    """
-    model = Team
-    context_object_name = 'team'
-    template_name = 'leagues/team/team_detail.html'
-
-
-class TeamRosterView(LeagueOwnerMixin, ListView):
-    """
-    View an individual team's roster and player attributes,
-    sorted by overall rating.
-    """
-    model = Team
-    context_object_name = 'team'
-    template_name = 'leagues/team/roster.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['league'] = League.objects.get(pk=self.kwargs['league'])
-        context['team'] = Team.objects.get(pk=self.kwargs['team'])
-        context['contracts'] = context['team'].contracts.all()
-        return context
-
-
-class DepthChartView(LeagueOwnerMixin, ListView):
-    """
-    View an individual team's depth chart by position.
-    """
-    model = Team
-    context_object_name = 'team'
-    template_name = 'leagues/team/depth_chart.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['league'] = League.objects.get(pk=self.kwargs['league'])
-        context['team'] = Team.objects.get(pk=self.kwargs['team'])
-        contracts = context['team'].contracts.all()
-        player_ids = contracts.values('player_id')
-        position = self.kwargs.get('position', 'QB')
-        context['active_position'] = position
-        players = Player.objects.filter(
-            id__in=player_ids)
-        context['positions'] = list(dict.fromkeys(
-            [player.position for player in players]))
-        context['players'] = Player.objects.filter(
-            id__in=player_ids,
-            position=position).order_by('-overall_rating')
-        return context
-
-
-@login_required
-@is_league_owner
-def update_user_team(request, league):
-    """
-    Select the user-controlled team if the logged-in user is the league owner.
-    """
-    if request.method == 'POST':
-        league = get_object_or_404(League, pk=league)
-        try:
-            selected_team = league.teams.get(pk=request.POST['teams'])
-        except (KeyError, Team.DoesNotExist):
-            # Redisplay the team selection page with an error.
-            return render(request, 'leagues/league/team_list.html', {
-                'league': league,
-                'error_message': "You didn't select a team.",
-            })
-        else:
-            UserTeam.objects.create(league=league, team=selected_team)
-            messages.add_message(
-                request, messages.SUCCESS,
-                f'You are now the GM of the {selected_team.location} {selected_team.name}.')
-            return HttpResponseRedirect(
-                reverse('team_detail', args=[league.id, selected_team.id]))
-
-
-# Player views
-
-class PlayerDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
-    """
-    View additional details about an individual player in a league.
-    """
-    model = Player
-    context_object_name = 'player'
-    template_name = 'leagues/player/player_detail.html'
-
-
-# League views
-
-@login_required
-@is_league_owner
-def advance_regular_season(request, league, weeks=False):
-    """
-    Advance the season by X number of weeks if the user is the league owner.
-    """
-    league = get_object_or_404(League, pk=league)
-    season = get_object_or_404(Season, league=league, is_current=True)
-    current_week = season.week_number
-    if request.method == 'GET':
-        # Advance to end of regular season, not X number of weeks
-        if not weeks:
-            weeks = 18 - (current_week - 1)
-        # Get scores and results for the current week's matchups, then update standings
-        for week_num in range(current_week, current_week + weeks):
-            matchups = Matchup.objects.filter(
-                season=season, week_number=week_num)
-            update_standings_for_byes(season, week_num)
-            update_standings(season, week_num, matchups)
-            update_rankings(season)
-            # Progress season by X weeks and save instance
-            advance_season_weeks(season)
-            week_num += 1
-        # Success message
-        messages.add_message(request, messages.SUCCESS, f'Advanced {weeks} week(s).')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-
 class LeagueStandingsView(LeagueOwnerMixin, ListView):
     """
     View team standings by division, conference, or league-wide.
@@ -331,14 +188,14 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
     template_name = 'leagues/league/standings.html'
 
     def get_queryset(self):
-        league = self.kwargs['league']
+        league = League.objects.get(slug=self.kwargs['league'])
         season = get_object_or_404(Season, league=league, is_current=True)
         standings = TeamStanding.objects.filter(
             season=season, week_number=season.week_number).order_by(
                 'ranking__power_ranking').annotate(
                     pt_diff=F('points_for') - F('points_against'),
                     win_pct=Case(
-                        When(
+                        When(   
                             wins__gt=0,
                             then=Cast('wins', FloatField()) / (F('wins') + F('losses') + F('ties'))
                         ),
@@ -350,7 +207,7 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        league = League.objects.get(pk=self.kwargs['league'])
+        league = League.objects.get(slug=self.kwargs['league'])
         context['afc'] = Conference.objects.get(name='AFC', league=league)
         context['nfc'] = Conference.objects.get(name='NFC', league=league)
         context['league'] = league
@@ -386,6 +243,140 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
                 )
         return context
 
+@login_required
+@is_league_owner
+def advance_regular_season(request, league, weeks=False):
+    """
+    Advance the season by X number of weeks if the user is the league owner.
+    """
+    league = get_object_or_404(League, slug=league)
+    season = get_object_or_404(Season, league=league, is_current=True)
+    current_week = season.week_number
+    if request.method == 'GET':
+        # Advance to end of regular season, not X number of weeks
+        if not weeks:
+            weeks = 18 - (current_week - 1)
+        # Get scores and results for the current week's matchups, then update standings
+        for week_num in range(current_week, current_week + weeks):
+            matchups = Matchup.objects.filter(
+                season=season, week_number=week_num)
+            update_standings_for_byes(season, week_num)
+            update_standings(season, week_num, matchups)
+            update_rankings(season)
+            # Progress season by X weeks and save instance
+            advance_season_weeks(season)
+            week_num += 1
+        # Success message
+        messages.add_message(request, messages.SUCCESS, f'Advanced {weeks} week(s).')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+### Team Views ###
+
+class TeamListView(LeagueOwnerMixin, ListView):
+    """
+    List the teams belonging to the active league and provide context
+    indicating whether the user's team has been selected.
+    """
+    model = Team
+    context_object_name = 'team_list'
+    template_name = 'leagues/league/team_list.html'
+
+    def get_queryset(self):
+        return Team.objects.filter(league__slug=self.kwargs['league'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
+        if UserTeam.objects.filter(league=context['league']).exists():
+            context['user_team'] = True
+        else:
+            context['user_team'] = False
+        return context
+
+
+class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+    """
+    View additional details about an individual team.
+    """
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/team_detail.html'
+    
+    def get_queryset(self):
+        return Team.objects.filter(
+            league__slug=self.kwargs['league'], slug=self.kwargs['slug'])
+
+
+class TeamRosterView(LeagueOwnerMixin, ListView):
+    """
+    View an individual team's roster and player attributes,
+    sorted by overall rating.
+    """
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/roster.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
+        context['team'] = Team.objects.get(
+            league=context['league'], slug=self.kwargs['team'])
+        context['contracts'] = context['team'].contracts.all()
+        return context
+
+
+class DepthChartView(LeagueOwnerMixin, ListView):
+    """
+    View an individual team's depth chart by position.
+    """
+    model = Team
+    context_object_name = 'team'
+    template_name = 'leagues/team/depth_chart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
+        context['team'] = Team.objects.get(
+            league=context['league'], slug=self.kwargs['team'])
+        contracts = context['team'].contracts.all()
+        player_ids = contracts.values('player_id')
+        position = self.kwargs.get('position', 'QB')
+        context['active_position'] = position
+        players = Player.objects.filter(
+            id__in=player_ids)
+        context['positions'] = list(dict.fromkeys(
+            [player.position for player in players]))
+        context['players'] = Player.objects.filter(
+            id__in=player_ids,
+            position=position).order_by('-overall_rating')
+        return context
+
+
+@login_required
+@is_league_owner
+def update_user_team(request, league):
+    """
+    Select the user-controlled team if the logged-in user is the league owner.
+    """
+    if request.method == 'POST':
+        league = get_object_or_404(League, slug=league)
+        try:
+            selected_team = league.teams.get(pk=request.POST['teams'])
+        except (KeyError, Team.DoesNotExist):
+            # Redisplay the team selection page with an error.
+            return render(request, 'leagues/league/team_list.html', {
+                'league': league,
+                'error_message': "You didn't select a team.",
+            })
+        else:
+            UserTeam.objects.create(league=league, team=selected_team)
+            messages.add_message(
+                request, messages.SUCCESS,
+                f'You are now the GM of the {selected_team.location} {selected_team.name}.')
+            return HttpResponseRedirect(
+                reverse('leagues:team_detail', args=[league.slug, selected_team.slug]))
+
 
 class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     """
@@ -396,10 +387,23 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     template_name = 'leagues/team/schedule.html'
     
     def get_queryset(self):
-        league = self.kwargs['league']
-        team = self.kwargs['team']
+        league = League.objects.get(slug=self.kwargs['league'])
+        team = Team.objects.get(league=league, slug=self.kwargs['team'])
         season = get_object_or_404(
             Season, league=league, is_current=True)
         matchups = Matchup.objects.filter(
             Q(home_team=team) | Q(away_team=team), season=season)
         return matchups
+
+
+### Player views ###
+
+class PlayerDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+    """
+    View additional details about an individual player in a league.
+    """
+    model = Player
+    context_object_name = 'player'
+    template_name = 'leagues/player/player_detail.html'
+
+

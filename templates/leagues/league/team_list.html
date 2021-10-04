@@ -4,14 +4,14 @@
 
 {% block content %}
   <h2>Teams &middot; {{ league.name }}</h2>
-  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
+  <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
   {% if user.is_authenticated and not user_team %}
     <div class="team-list-welcome">
       <h3 class="mt-4">Welcome to your new league, {{ user }}.</h3>
       <p class="mt-3">Start by reviewing the rosters, then pick which team you want to sign onto as GM. Once you choose a team, you're locked in until your contract expires so choose wisely!</p>
     </div>
-    <form action="{% url 'update_user_team' league.pk %}" method="post">
+    <form action="{% url 'leagues:update_user_team' league.slug %}" method="post">
       {% csrf_token %}
       <div class="form-group">
         <select class="form-select mb-3" id="team-select" name="teams">
@@ -28,13 +28,13 @@
     {% for team in team_list %}
     <div class="col-4 m-3 team-list-wrapper">
       <h3 class="team-list-name">
-        <a href="{% url 'team_detail' league.pk team.pk %}">{{ team.location }} {{ team.name }}</a>
+        <a href="{{ team.get_absolute_url }}">{{ team.location }} {{ team.name }}</a>
         {% if team.userteam %}
           <span class="my-team-tag">GM</span>
         {% endif %}
       </h3>
       <p>Overall: {{ team.overall_rating }}</p>
-      <a href="{% url 'team_roster' league.pk team.pk %}">View Roster</a>
+      <a href="{% url 'leagues:team_roster' league.slug team.slug %}">View Roster</a>
     </div>
     {% endfor %}
   </div>

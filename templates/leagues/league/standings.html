@@ -4,19 +4,19 @@
 
 {% block content %}
   <h2>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h2>
-  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
+  <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
 
   <nav aria-label="...">
     <ul class="pagination pagination">
         <li class="page-item{% if not type %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'league_standings' league.pk %}">Division</a>
+          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings' league.slug %}">Division</a>
         </li>
         <li class="page-item{% if type == "conference" %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'league_standings_type' league.pk "conference"|urlencode %}">Conference</a>
+          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_type' league.slug "conference"|urlencode %}">Conference</a>
         </li>
         <li class="page-item{% if type == "power" %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'league_standings_type' league.pk "power"|urlencode %}">Power</a>
+          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_type' league.slug "power"|urlencode %}">Power</a>
         </li>
     </ul>
   </nav>
@@ -67,7 +67,7 @@
               <tr {% if standing.team.userteam %}class="table-active"{% endif %}>
                 <th scope="row">{{ standing.ranking.division_ranking }}</th>
                 <td>
-                  <a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
                 </td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>
@@ -142,7 +142,7 @@
                             border-bottom:2px solid firebrick;
                           {% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
-                <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+                <td><a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>
                 <td>{{ standing.ties }}</td>
@@ -207,7 +207,7 @@
         <tr {% if standing.team.userteam %}class="table-active"{% endif %}>
           <th scope="row">{{ forloop.counter }}</th>
           <td>{{ standing.team.overall_rating }}</td>
-          <td><a href="{% url 'team_detail' league.pk standing.team.pk %}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+          <td><a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
           <td>{{ standing.wins }}</td>
           <td>{{ standing.losses }}</td>
           <td>{{ standing.ties }}</td>   

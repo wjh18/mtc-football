@@ -40,7 +40,7 @@ class League(models.Model):
             create_league_structure(self)
 
     def get_absolute_url(self):
-        return reverse("league_detail", args=[str(self.id)])
+        return reverse("leagues:league_detail", args=[self.slug])
 
 
 class Conference(models.Model):
@@ -89,7 +89,7 @@ class Team(models.Model):
     def save(self, *args, **kwargs):
         # Generate unique slug
         if not self.slug:
-            self.slug = slugify(self.abbreviation)
+            self.slug = self.abbreviation
         # True if no instance exists, false if editing existing instance
         no_instance_exists = self._state.adding
         # Save Team instance before referencing it for Player creation
@@ -107,7 +107,7 @@ class Team(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        return reverse("team_detail", args=[str(self.id)])
+        return reverse("leagues:team_detail", args=[self.league.slug, self.slug])
 
 
 class UserTeam(models.Model):
@@ -171,8 +171,11 @@ class Player(Person):
             self.slug = slugify(f'{self.first_name}-{self.last_name}-{random_string()}')
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse("player_detail", args=[str(self.id)])
+    # Find a way to pass team slug despite ManyToMany
+    # def get_absolute_url(self):
+    #     # self.league.teams.all()
+    #     return reverse("leagues:player_detail", args=[self.league,
+    #                                                   self.contract.team.slug, self.slug])
 
 
 class Contract(models.Model):
@@ -263,6 +266,9 @@ class Matchup(models.Model):
                 f'{self.home_team.abbreviation}-{self.away_team.abbreviation}-season-{self.season.season_number}-week-{self.week_number}'
             )
         super().save(*args, **kwargs)
+        
+    def get_absolute_url(self):
+        return reverse("leagues:matchup_detail", args=[self.season.league.slug, self.slug])
 
 
 class PlayerMatchStat(models.Model):

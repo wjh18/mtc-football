@@ -10,20 +10,20 @@
         <span class="my-team-tag">GM</span>
       {% endif %}
     </h2>
-    <a href="{% url 'team_list' league.pk %}">&larr; Return to Teams</a>
+    <a href="{% url 'leagues:team_list' league.slug %}">&larr; Return to Teams</a>
     <hr>
     <div>
       {% if team.userteam %}
         <p>You're the GM of this team.</p>
       {% endif %}
       <p>Overall: {{ team.overall_rating }}</p>
-      <a href="{% url 'team_roster' league.pk team.pk %}" class="btn btn-primary" role="button">
+      <a href="{% url 'leagues:team_roster' league.slug team.slug %}" class="btn btn-primary" role="button">
         Roster
       </a>
-      <a href="{% url 'depth_chart' league.pk team.pk %}" class="btn btn-primary" role="button">
+      <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-primary" role="button">
         Depth Chart
       </a>
-      <a href="{% url 'team_schedule' league.pk team.pk %}" class="btn btn-primary" role="button">
+      <a href="{% url 'leagues:team_schedule' league.slug team.slug %}" class="btn btn-primary" role="button">
         Schedule
       </a>
     </div>

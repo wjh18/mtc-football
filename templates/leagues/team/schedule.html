@@ -9,7 +9,7 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h2>
-  <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
+  <a href="{{ team.get_absolute_url }}">&larr; Team Home</a>
   <hr>
   {% for matchup in matchups %}
     <p>
@@ -40,7 +40,7 @@
       {% if matchup.week_number < season.week_number %}
         - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
       {% endif %} -
-      <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
+      <a href="{{ matchup.get_absolute_url }}">Details</a>
     </p>
   {% endfor %}
 {% endblock content %}

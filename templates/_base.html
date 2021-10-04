@@ -20,14 +20,14 @@
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
-          <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">About</a></li>
-          <li><a href="{% url 'contact' %}" class="nav-link px-2 text-white">Contact</a></li>
+          <li><a href="{% url 'pages:about' %}" class="nav-link px-2 text-white">About</a></li>
+          <li><a href="{% url 'pages:contact' %}" class="nav-link px-2 text-white">Contact</a></li>
         </ul>
         {% if user.is_authenticated %}
-        <a href="{% url 'league_list' %}" class="btn btn-outline-light me-lg-3">
+        <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-light me-lg-3">
           My Leagues
         </a>
-        <a href="{% url 'league_create' %}" class="btn btn-warning" role="button">
+        <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
           New League
         </a>
         {% else %}
@@ -56,8 +56,8 @@
                 </button>
                 <div class="collapse show" id="start-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
-                    <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
+                    <li><a href="{% url 'leagues:league_list' %}" class="link-dark rounded">My Leagues</a></li>
+                    <li><a href="{% url 'leagues:league_create' %}" class="link-dark rounded">New League</a></li>
                   </ul>
                 </div>
               </li>

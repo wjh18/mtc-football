@@ -9,7 +9,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     # Local apps
-    path('', include('pages.urls')),
-    path('leagues/', include('leagues.urls')),
-    path('simulation/', include('simulation.urls')),
+    path('', include('pages.urls', namespace='pages')),
+    path('leagues/', include('leagues.urls', namespace='leagues')),
+    path('simulation/', include('simulation.urls', namespace='simulation')),
 ]

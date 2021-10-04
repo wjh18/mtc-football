@@ -10,7 +10,7 @@
         <span class="my-team-tag">GM</span>
       {% endif %}
     </h2>
-    <a href="{% url 'team_roster' league.pk team.pk %}">&larr; Return to Roster</a>
+    <a href="{% url 'leagues:team_roster' league.slug team.slug %}">&larr; Return to Roster</a>
     <hr>
     <div>
       {% if team.userteam %}
@@ -74,7 +74,7 @@
           </thead>
           <tbody>
             <tr>
-              <th scope="row"><a href="{% url 'player_detail' league.pk team.pk player.pk %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+              <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
               <td>{{ player.age }}</td>
               <td>{{ player.experience }}</td>
               <td>{{ player.position }}</td>

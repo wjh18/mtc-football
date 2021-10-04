@@ -9,7 +9,7 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h2>
-  <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
+  <a href="{{ team.get_absolute_url }}">&larr; Team Home</a>
   <hr>
   <div class="table-responsive">
     <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
@@ -42,7 +42,7 @@
       <tbody>
     {% for contract in contracts|dictsortreversed:"player.overall_rating" %}
       <tr>
-        <th scope="row"><a href="{% url 'player_detail' league.pk team.pk contract.player.pk %}">{{ contract.player.first_name }} {{ contract.player.last_name }}</a></th>
+        <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug contract.player.slug %}">{{ contract.player.first_name }} {{ contract.player.last_name }}</a></th>
         <td>{{ contract.player.age }}</td>
         <td>{{ contract.player.experience }}</td>
         <td>{{ contract.player.position }}</td>

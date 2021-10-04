@@ -24,9 +24,9 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {% comment %} Only show if league's current season is in 'Regular Season' (5) phase {% endcomment %}
-              <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 1|urlencode %}">1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'advance_regular_season' league.pk 4|urlencode %}">4 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'advance_regular_season_full' league.pk %}">End of regular season</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 1|urlencode %}">1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 4|urlencode %}">4 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season_full' league.slug %}">End of regular season</a></li>
             </ul>
             <span class="ms-4">League: {{ league.name }}</span>
           </div>
@@ -60,8 +60,8 @@
                   </button>
                   <div class="collapse show" id="start-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="{% url 'league_list' %}" class="link-dark rounded">My Leagues</a></li>
-                      <li><a href="{% url 'league_create' %}" class="link-dark rounded">New League</a></li>
+                      <li><a href="{% url 'leagues:league_list' %}" class="link-dark rounded">My Leagues</a></li>
+                      <li><a href="{% url 'leagues:league_create' %}" class="link-dark rounded">New League</a></li>
                     </ul>
                   </div>
                 </li>
@@ -73,11 +73,11 @@
                   <div class="collapse show" id="league-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                       <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home ({{ league.name }})</a></li>
-                      <li><a href="{% url 'team_list' league.pk %}" class="link-dark rounded">Teams</a></li>
-                      <li><a href="{% url 'league_standings' league.pk %}" class="link-dark rounded">Standings</a></li>
-                      <li><a href="{% url 'weekly_matchups' league.pk %}" class="link-dark rounded">Matchups</a></li>
-                      <li><a href="{% url 'league_delete' league.pk %}" class="link-dark rounded">Delete League</a></li>
-                      <li><a href="{% url 'league_edit' league.pk %}" class="link-dark rounded">Edit League</a></li>
+                      <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark rounded">Teams</a></li>
+                      <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark rounded">Standings</a></li>
+                      <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark rounded">Matchups</a></li>
+                      <li><a href="{% url 'leagues:league_delete' league.slug %}" class="link-dark rounded">Delete League</a></li>
+                      <li><a href="{% url 'leagues:league_edit' league.slug %}" class="link-dark rounded">Edit League</a></li>
                     </ul>
                   </div>
                 </li>
@@ -89,10 +89,10 @@
                     </button>
                     <div class="collapse show" id="team-collapse">
                       <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="{% url 'team_detail' league.pk league.userteam.team.pk %}" class="link-dark rounded">Home ({{ league.userteam.team.abbreviation }})</a></li>
-                        <li><a href="{% url 'team_roster' league.pk league.userteam.team.pk %}" class="link-dark rounded">Roster</a></li>
-                        <li><a href="{% url 'depth_chart' league.pk league.userteam.team.pk %}" class="link-dark rounded">Depth Chart</a></li>
-                        <li><a href="{% url 'team_schedule' league.pk league.userteam.team.pk %}" class="link-dark rounded">Schedule</a></li>
+                        <li><a href="{{ league.userteam.team.get_absolute_url }}" class="link-dark rounded">Home ({{ league.userteam.team.abbreviation }})</a></li>
+                        <li><a href="{% url 'leagues:team_roster' league.slug league.userteam.team.slug %}" class="link-dark rounded">Roster</a></li>
+                        <li><a href="{% url 'leagues:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark rounded">Depth Chart</a></li>
+                        <li><a href="{% url 'leagues:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark rounded">Schedule</a></li>
                       </ul>
                     </div>
                   </li>

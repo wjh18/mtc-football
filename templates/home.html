@@ -9,10 +9,10 @@
         <h2>Welcome to Pigskin Prowess!</h2>
         <p>Get started by viewing your active leagues or create a new one to start from scratch.</p>
         <div>
-        <a href="{% url 'league_list' %}" class="btn btn-outline-dark me-2" role="button">
+        <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-dark me-2" role="button">
           My Leagues
         </a>
-        <a href="{% url 'league_create' %}" class="btn btn-warning" role="button">
+        <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
           New League
         </a>
         </div>

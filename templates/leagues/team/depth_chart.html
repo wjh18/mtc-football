@@ -9,14 +9,14 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h2>
-  <a href="{% url 'team_detail' league.pk team.pk %}">&larr; Team Home</a>
+  <a href="{{ team.get_absolute_url }}">&larr; Team Home</a>
   <hr>
 
   <nav aria-label="...">
     <ul class="pagination pagination-sm">
       {% for position in positions %}
         <li class="page-item{% if active_position == position %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'depth_chart_pos' league.pk team.pk position|urlencode %}">{{ position }}</a>
+          <a class="page-link" aria-current="page" href="{% url 'leagues:depth_chart_pos' league.slug team.slug position|urlencode %}">{{ position }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -54,7 +54,7 @@
 
     {% for player in players %}
       <tr>
-        <th scope="row"><a href="{% url 'player_detail' league.pk team.pk player.pk %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+        <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
         <td>{{ player.age }}</td>
         <td>{{ player.experience }}</td>
         <td>{{ player.position }}</td>

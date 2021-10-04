@@ -4,14 +4,14 @@
 
 {% block content %}
   <h2>Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
-  <a href="{% url 'league_detail' league.pk %}">&larr; League Home</a>
+  <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
 
   <nav aria-label="...">
     <ul class="pagination pagination-sm">
       {% for w in num_weeks %}
         <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}">
-          <a class="page-link" href="{% url 'weekly_matchups_by_week' league.pk w %}">W{{ w }}</a>
+          <a class="page-link" href="{% url 'leagues:weekly_matchups_by_week' league.slug w %}">W{{ w }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -32,7 +32,7 @@
       {% if matchup.week_number < season.week_number %}
         - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
       {% endif %} -
-      <a href="{% url 'matchup_detail' league.pk matchup.pk %}">Details</a>
+      <a href="{{ matchup.get_absolute_url }}">Details</a>
     </p>
   {% endfor %}
 {% endblock content %}

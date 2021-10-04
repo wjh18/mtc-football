@@ -5,7 +5,7 @@
 {% block content %}
   <div class="row">
     <h2>Home &middot; {{ league.name }}</h2>
-    <p><a href="{% url 'league_list' %}">&larr; Return to Leagues</a></p>
+    <p><a href="{% url 'leagues:league_list' %}">&larr; Return to Leagues</a></p>
     <hr>
     <div class="col-6">
       <h3>League Info</h3>
@@ -15,21 +15,21 @@
       </ul>
     </div>
     <div class="pt-2 pb-3">
-        <a href="{% url 'team_list' league.pk %}" class="btn btn-primary" role="button">
+        <a href="{% url 'leagues:team_list' league.slug %}" class="btn btn-primary" role="button">
           Teams
         </a>
-        <a href="{% url 'league_standings' league.pk %}" class="btn btn-primary" role="button">
+        <a href="{% url 'leagues:league_standings' league.slug %}" class="btn btn-primary" role="button">
           Standings
         </a>
-        <a href="{% url 'weekly_matchups' league.pk %}" class="btn btn-primary" role="button">
+        <a href="{% url 'leagues:weekly_matchups' league.slug %}" class="btn btn-primary" role="button">
           Matchups
         </a>
         <br>
         <br>
-        <a href="{% url 'league_edit' league.pk %}" class="btn btn-dark" role="button">
+        <a href="{% url 'leagues:league_edit' league.slug %}" class="btn btn-dark" role="button">
           Edit League
         </a>
-        <a href="{% url 'league_delete' league.pk %}" class="btn btn-danger" role="button">
+        <a href="{% url 'leagues:league_delete' league.slug %}" class="btn btn-danger" role="button">
           Delete League
         </a>
       </div>
