@@ -7,7 +7,7 @@ from .models import League
 
 
 class LeagueViewTest(TestCase):
-    
+
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             username='leagueuser',
@@ -25,7 +25,8 @@ class LeagueViewTest(TestCase):
         self.assertEqual(f'{self.league.gm_name}', 'Test GM')
 
     def test_league_list_view_for_logged_in_user(self):
-        self.client.login(email='leagueuser@example.com', password='testpass123')
+        self.client.login(email='leagueuser@example.com',
+                          password='testpass123')
         response = self.client.get(reverse('leagues:league_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test League')
@@ -40,5 +41,3 @@ class LeagueViewTest(TestCase):
         response = self.client.get(
             '%s?next=/leagues/' % (reverse('account_login')))
         self.assertContains(response, 'Log In')
-
-

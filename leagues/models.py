@@ -1,14 +1,17 @@
 import datetime
+
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+
 from .utils.league_setup import (
     create_league_structure,
     create_team_players,
     create_season_details)
 from .utils.url_utils import random_string_generator as random_string
+
 
 class League(models.Model):
     user = models.ForeignKey(
@@ -28,10 +31,10 @@ class League(models.Model):
         return f'{self.name}'
 
     def save(self, *args, **kwargs):
-        # Generate unique slug
+        # Generate a unique slug
         if not self.slug:
             self.slug = slugify(self.name + "-" + random_string())
-        # True if no instance exists, false if editing existing instance
+        # True if no instance exists, False if editing existing instance
         no_instance_exists = self._state.adding
         # Save League instance before referencing it for Team creation
         super().save(*args, **kwargs)
@@ -87,10 +90,10 @@ class Team(models.Model):
         return f'{self.location} {self.name} ({self.abbreviation})'
 
     def save(self, *args, **kwargs):
-        # Generate unique slug
+        # Generate a unique slug
         if not self.slug:
             self.slug = self.abbreviation
-        # True if no instance exists, false if editing existing instance
+        # True if no instance exists, False if editing existing instance
         no_instance_exists = self._state.adding
         # Save Team instance before referencing it for Player creation
         super().save(*args, **kwargs)
@@ -99,6 +102,9 @@ class Team(models.Model):
             create_team_players(self)
 
     def update_team_overall(self):
+        """
+        Called when player ratings are changed to update team rating.
+        """
         player_ratings = [
             contract.player.overall_rating for contract in self.contracts.all()
         ]
@@ -107,7 +113,8 @@ class Team(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        return reverse("leagues:team_detail", args=[self.league.slug, self.slug])
+        return reverse("leagues:team_detail",
+                       args=[self.league.slug, self.slug])
 
 
 class UserTeam(models.Model):
@@ -164,18 +171,20 @@ class Player(Person):
 
     def __str__(self):
         return f'{self.first_name} ' + f' {self.last_name}'
-    
+
     def save(self, *args, **kwargs):
         # Generate unique slug
         if not self.slug:
-            self.slug = slugify(f'{self.first_name}-{self.last_name}-{random_string()}')
+            self.slug = slugify(
+                f'{self.first_name}-{self.last_name}-{random_string()}'
+            )
         super().save(*args, **kwargs)
 
     # Find a way to pass team slug despite ManyToMany
     # def get_absolute_url(self):
     #     # self.league.teams.all()
-    #     return reverse("leagues:player_detail", args=[self.league,
-    #                                                   self.contract.team.slug, self.slug])
+    #     return reverse("leagues:player_detail",
+    #                     args=[self.league, self.contract.team.slug, self.slug])
 
 
 class Contract(models.Model):
@@ -190,7 +199,8 @@ class Contract(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.player.first_name} {self.player.last_name} - {self.team.location} {self.team.name} (Contract)'
+        return f'{self.player.first_name} {self.player.last_name} \
+                - {self.team.location} {self.team.name} (Contract)'
 
 
 class Season(models.Model):
@@ -218,15 +228,16 @@ class Season(models.Model):
         return f'Season {str(self.season_number)} - {self.league.name}'
 
     def save(self, *args, **kwargs):
-        # True if no instance exists, false if editing existing instance
+        # True if no instance exists, False if editing existing instance
         no_instance_exists = self._state.adding
-        # Save Season instance before referencing it for schedule / Matchup creation
-        super().save(*args, **kwargs)        
+        # Save Season instance before referencing it for schedule creation
+        super().save(*args, **kwargs)
         # Only perform if instance doesn't exist yet (initial save)
         if no_instance_exists:
             create_season_details(self)
 
     def get_byes(self):
+        """Obtain teams with a bye week on the current week"""
         matchups = self.matchups.filter(week_number=self.week_number)
         teams_in_league = {team for team in self.league.teams.all()}
         teams_playing_this_week = set()
@@ -257,18 +268,22 @@ class Matchup(models.Model):
     slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
-        return f'Season {str(self.season.season_number)} Week {str(self.week_number)} - {self.home_team} vs. {self.away_team}'
-    
+        return f'Season {str(self.season.season_number)} \
+                Week {str(self.week_number)} \
+                - {self.home_team} vs. {self.away_team}'
+
     def save(self, *args, **kwargs):
-        # Generate unique slug
+        # Generate a unique slug
         if not self.slug:
             self.slug = slugify(
-                f'{self.home_team.abbreviation}-{self.away_team.abbreviation}-season-{self.season.season_number}-week-{self.week_number}'
+                f'{self.home_team.abbreviation}-{self.away_team.abbreviation} \
+                -season-{self.season.season_number}-week-{self.week_number}'
             )
         super().save(*args, **kwargs)
-        
+
     def get_absolute_url(self):
-        return reverse("leagues:matchup_detail", args=[self.season.league.slug, self.slug])
+        return reverse("leagues:matchup_detail",
+                       args=[self.season.league.slug, self.slug])
 
 
 class PlayerMatchStat(models.Model):
@@ -338,7 +353,7 @@ class PlayerMatchStat(models.Model):
     penalty_yds = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'Single Statline for {self.player.first_name} ' + f'{self.player.last_name}'
+        return f'Statline for {self.player.first_name} {self.player.last_name}'
 
 
 class TeamStanding(models.Model):
@@ -377,7 +392,8 @@ class TeamStanding(models.Model):
     last_5_ties = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.team.name} standings for Week {self.week_number} Season {self.season.season_number}'
+        return f'{self.team.name} standings for Week {self.week_number} \
+                Season {self.season.season_number}'
 
 
 class TeamRanking(models.Model):
@@ -388,6 +404,6 @@ class TeamRanking(models.Model):
     power_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)
     division_ranking = models.PositiveSmallIntegerField(default=1)
-    
+
     def __str__(self):
         return f'Rankings for {self.standing}'

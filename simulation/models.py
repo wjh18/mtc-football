@@ -17,7 +17,6 @@ class Scoreboard(models.Model):
     )
     home_score = models.PositiveSmallIntegerField(default=0)
     away_score = models.PositiveSmallIntegerField(default=0)
-    # game_clock =
     quarter = models.PositiveSmallIntegerField(
         default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     home_timeouts = models.PositiveSmallIntegerField(
@@ -25,14 +24,21 @@ class Scoreboard(models.Model):
     away_timeouts = models.PositiveSmallIntegerField(
         default=3, validators=[MinValueValidator(0), MaxValueValidator(3)])
     # home_possession = models.BooleanField()
-    # down = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
-    # distance = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)])
-    # field_position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)])
+    # down = models.PositiveSmallIntegerField(
+    #     validators=[MinValueValidator(1), MaxValueValidator(4)]
+    # )
+    # distance = models.PositiveSmallIntegerField(
+    #     validators=[MinValueValidator(1), MaxValueValidator(99)]
+    # )
+    # field_position = models.PositiveSmallIntegerField(
+    #     validators=[MinValueValidator(1), MaxValueValidator(99)]
+    # )
 
     def __str__(self):
-        return f'Scoreboard for Match (week {str(self.matchup.week_number)}) Season {str(self.matchup.season.season_number)} - {self.matchup.season.league.name}'
+        return f'Scoreboard for {self.matchup}'
 
     def get_score(self):
+        """Obtain match score based on random dice rolls"""
         self.home_score = random.randint(0, 50)
         self.away_score = random.randint(0, 50)
         self.save()
@@ -40,6 +46,7 @@ class Scoreboard(models.Model):
         return {'Home': self.home_score, 'Away': self.away_score}
 
     def get_winner(self):
+        """Determine match winner based on final score"""
         if self.home_score > self.away_score:
             return self.matchup.home_team
         elif self.away_score > self.home_score:

@@ -4,8 +4,7 @@ from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
     Season, Matchup, PlayerMatchStat,
-    TeamStanding, TeamRanking,
-)
+    TeamStanding, TeamRanking,)
 
 
 class ConferenceInline(admin.TabularInline):

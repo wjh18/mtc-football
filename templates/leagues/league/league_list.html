@@ -12,25 +12,25 @@
   {% if not leagues %}
   <p>No leagues to display. Please create one above.</p>
   {% else %}
-  <div class="table-responsive">
+  <div class="table-responsive mt-2">
     <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
       <thead>
         <tr>
-          <th scope="col">League Name</th>
-          <th scope="col"></th>
-          <th scope="col"></th>
+          <th scope="col">League Name</th>          
           <th scope="col">Created</th>
           <th scope="col">GM</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         {% for league in leagues %}
           <tr>
-            <th scope="row"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></th>
-            <td><a href="{% url 'leagues:league_edit' league.slug %}">Edit Info</a></td>
-            <td><a href="{% url 'leagues:league_delete' league.slug %}" style="color:red;">Delete League</a>
+            <th scope="row"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></th>            
             <td>{{ league.creation_date }}</td>
-            <td>{{ league.gm_name }}</td>            
+            <td>{{ league.gm_name }}</td>
+            <td><a href="{% url 'leagues:league_edit' league.slug %}">Edit Info</a></td>
+            <td><a href="{% url 'leagues:league_delete' league.slug %}" style="color:red;">Delete League</a>            
             </td>
           </tr>
         {% endfor %}
