@@ -17,6 +17,7 @@ class Scoreboard(models.Model):
     )
     home_score = models.PositiveSmallIntegerField(default=0)
     away_score = models.PositiveSmallIntegerField(default=0)
+    is_final = models.BooleanField(default=False)
     quarter = models.PositiveSmallIntegerField(
         default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     home_timeouts = models.PositiveSmallIntegerField(

@@ -6,7 +6,7 @@ from ..models import TeamStanding, TeamRanking, Division, Conference
 
 def get_matchup_type(matchup):
     """
-    Determine whether the matchups is Divisional, Conference or Non-Conference.
+    Determine whether the matchup is Divisional, Conference or Non-Conference.
     """
     home_team = matchup.home_team
     away_team = matchup.away_team

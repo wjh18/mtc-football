@@ -256,7 +256,7 @@ class Matchup(models.Model):
     )
     date = models.DateField(default=datetime.date(2021, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
-    is_preseason = models.BooleanField(default=False)
+    is_postseason = models.BooleanField(default=False)
     slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
