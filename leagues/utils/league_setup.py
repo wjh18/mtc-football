@@ -121,21 +121,6 @@ def create_season_details(season):
     progress_week = datetime.timedelta(days=7)
     date = season.start_date - progress_week
 
-    # # Create matchups based on schedule (non-bulk)
-    # for week_num in range(1, len(matchups) + 1):
-    #     for matchup in matchups[week_num - 1]:
-    #         new_matchup = Matchup.objects.create(
-    #             home_team=matchup[0],
-    #             away_team=matchup[1],
-    #             season=season,
-    #             week_number=week_num,
-    #             date=date
-    #         )
-    #         Scoreboard.objects.create(
-    #             matchup=new_matchup
-    #         )
-    #     date += progress_week
-
     # Bulk create Matchups based on schedule
     matchup_objs = Matchup.objects.bulk_create([
         Matchup(
