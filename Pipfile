@@ -13,6 +13,7 @@ django-extensions = "*"
 pygraphviz = "*"
 crispy-bootstrap5 = "*"
 algorithm-x = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 
