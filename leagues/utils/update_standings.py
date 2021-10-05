@@ -1,7 +1,8 @@
-from ..models import TeamStanding, TeamRanking, Division, Conference
-
 from django.db.models import F, Window
 from django.db.models.functions import DenseRank
+
+from ..models import TeamStanding, TeamRanking, Division, Conference
+
 
 def get_matchup_type(matchup):
     """
@@ -15,6 +16,7 @@ def get_matchup_type(matchup):
         return 'Conference'
     else:
         return 'Non-Conference'
+
 
 def update_standings_for_byes(season, current_week):
     """
@@ -30,6 +32,7 @@ def update_standings_for_byes(season, current_week):
         current_standing._state.adding = True
         current_standing.week_number = current_week + 1
         current_standing.save()
+
                        
 def update_standings(season, current_week, matchups):
     """
@@ -166,6 +169,7 @@ def update_standings(season, current_week, matchups):
                 non_conf_ties=non_conf_ties, last_5_wins=last_5_wins,
                 last_5_losses=last_5_losses, last_5_ties=last_5_ties)
 
+
 def generate_division_rankings(season):
     """
     Generate division rankings based on new standings for next week.
@@ -194,6 +198,7 @@ def generate_division_rankings(season):
                         standing=division_rank,
                         division_ranking=division_rank.rank
                     )
+
     
 def generate_conference_rankings(season):
     """
@@ -244,6 +249,7 @@ def generate_conference_rankings(season):
             team_ranking.conference_ranking = bottom_12_with_rank.rank + 4
             team_ranking.save()
 
+
 def generate_league_rankings(season):
     """
     Generate league rankings based on new standings for next week.
@@ -262,7 +268,9 @@ def generate_league_rankings(season):
             ],
         )
     )
+
     return league_rank_qs
+
           
 def update_rankings(season):
     """

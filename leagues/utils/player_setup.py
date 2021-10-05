@@ -228,13 +228,14 @@ def create_team_players(team):
     Creates players and generates their starting attributes on a per-team basis
     - called during initial save of new Team instance in models.py.
     """
-    PlayerModel = apps.get_model('leagues.Player')
-    # Read player names from CSV, generate attributes and create players
+    Player = apps.get_model('leagues.Player')
+
+    # Read player names from CSV, generate attributes
     player_attributes = generate_player_attributes()
 
-    # Bulk Create players
-    player_objs = PlayerModel.objects.bulk_create([
-        PlayerModel(
+    # Bulk create players
+    player_objs = Player.objects.bulk_create([
+        Player(
             league=team.league,
             slug=slugify(f'{player["first_name"]}-{player["last_name"]}\
                 -{random_string()}'),
@@ -242,8 +243,8 @@ def create_team_players(team):
         ) for player in player_attributes
     ])
 
-    # Bulk Create ManyToMany Player -> Teams through Contract
-    ThroughModel = PlayerModel.team.through
+    # Bulk create ManyToMany Player -> Teams through Contract
+    ThroughModel = Player.team.through
     ThroughModel.objects.bulk_create([
         ThroughModel(
             team=team,

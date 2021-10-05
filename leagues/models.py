@@ -172,14 +172,6 @@ class Player(Person):
     def __str__(self):
         return f'{self.first_name} ' + f' {self.last_name}'
 
-    # def save(self, *args, **kwargs):
-    #     # Generate unique slug
-    #     if not self.slug:
-    #         self.slug = slugify(
-    #             f'{self.first_name}-{self.last_name}-{random_string()}'
-    #         )
-    #     super().save(*args, **kwargs)
-
     # Find a way to pass team slug despite ManyToMany
     # def get_absolute_url(self):
     #     # self.league.teams.all()
@@ -271,15 +263,6 @@ class Matchup(models.Model):
         return f'Season {str(self.season.season_number)} \
                 Week {str(self.week_number)} \
                 - {self.home_team} vs. {self.away_team}'
-
-    def save(self, *args, **kwargs):
-        # Generate a unique slug
-        if not self.slug:
-            self.slug = slugify(
-                f'{self.home_team.abbreviation}-{self.away_team.abbreviation} \
-                -season-{self.season.season_number}-week-{self.week_number}'
-            )
-        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("leagues:matchup_detail",
