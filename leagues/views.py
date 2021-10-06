@@ -203,8 +203,14 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         league = League.objects.get(slug=self.kwargs['league'])
         season = get_object_or_404(Season, league=league, is_current=True)
 
+        # Show final regular season standings during playoffs
+        if season.week_number >= 19:
+            week_number = 19
+        else:
+            week_number = season.week_number
+
         standings = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number
+            season=season, week_number=week_number
         ).order_by(
             'ranking__power_ranking'
         ).annotate(
@@ -235,8 +241,14 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         context['nfc'] = Conference.objects.get(name='NFC', league=league)
         context['type'] = self.kwargs.get('type')
 
+        # Show final regular season standings during playoffs
+        if season.week_number >= 19:
+            week_number = 19
+        else:
+            week_number = season.week_number
+
         context['division_standings'] = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number
+            season=season, week_number=week_number
         ).order_by(
             'ranking__division_ranking'
         ).annotate(
@@ -253,7 +265,7 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         )
 
         context['conference_standings'] = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number
+            season=season, week_number=week_number
         ).order_by(
             'ranking__conference_ranking'
         ).annotate(
@@ -349,7 +361,7 @@ def advance_playoffs(request, league):
 
     if request.method == 'GET' and 19 <= current_week <= 22:
         matchups = Matchup.objects.filter(
-                season=season, week_number=current_week)
+            season=season, week_number=current_week)
 
         for matchup in matchups:
             scores = matchup.scoreboard.get_score()

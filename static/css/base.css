@@ -66,3 +66,23 @@ colgroup > .col-recent {
     margin-left: 15px;
     position: absolute;
 }
+
+/* Playoffs */
+
+.bracket-wrapper {
+    height: 100px;
+    width: 200px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    border: 1px solid rgb(123, 123, 123);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.bracket-heading {
+    text-decoration: none;
+    font-size: 20px;
+}
+
+/*.round-heading {
+    text-align: center;
+}*/

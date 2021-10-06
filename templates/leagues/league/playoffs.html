@@ -3,6 +3,7 @@
 {% block title %}Playoffs | {{ league.name }}{% endblock title %}
 
 {% block content %}
+
   <h2>
     Playoff Picture &middot; Season {{ season.season_number }}
     {% if team.userteam %}
@@ -11,4 +12,65 @@
   </h2>
   <a href="{{ league.get_absolute_url }}">&larr; League Home</a>
   <hr>
+
+  <div class="row">
+
+      <div class="col">
+        <h3 class="round-heading">Wildcard</h3>
+        {% for matchup in matchups %}
+          {% if matchup.week_number == 19 %}
+            <div class="col-4 m-3 bracket-wrapper">
+              <h3 class="bracket-heading">
+                <a href="{{ matchup.get_absolute_url }}">{{ matchup.away_team.name }} @ {{ matchup.home_team.name }}</a>
+              </h3>
+              <p>{{ matchup.scoreboard.away_score }} | {{ matchup.scoreboard.home_score }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="col">
+        <h3>Divisional</h3>
+        {% for matchup in matchups %}
+          {% if matchup.week_number == 20 %}
+            <div class="col-4 m-3 bracket-wrapper">
+              <h3 class="bracket-heading">
+                <a href="{{ matchup.get_absolute_url }}">{{ matchup.away_team.name }} @ {{ matchup.home_team.name }}</a>
+              </h3>
+              <p>{{ matchup.scoreboard.away_score }} | {{ matchup.scoreboard.home_score }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="col">
+        <h3>Conference</h3>
+        {% for matchup in matchups %}
+          {% if matchup.week_number == 21 %}
+            <div class="col-4 m-3 bracket-wrapper">
+              <h3 class="bracket-heading">
+                <a href="{{ matchup.get_absolute_url }}">{{ matchup.away_team.name }} @ {{ matchup.home_team.name }}</a>
+              </h3>
+              <p>{{ matchup.scoreboard.away_score }} | {{ matchup.scoreboard.home_score }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="col">
+        <h3>Super Bowl</h3>
+        {% for matchup in matchups %}
+          {% if matchup.week_number == 22 %}
+            <div class="col-4 m-3 bracket-wrapper">
+              <h3 class="bracket-heading">
+                <a href="{{ matchup.get_absolute_url }}">{{ matchup.away_team.name }} @ {{ matchup.home_team.name }}</a>
+              </h3>
+              <p>{{ matchup.scoreboard.away_score }} | {{ matchup.scoreboard.home_score }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
 {% endblock content %}
