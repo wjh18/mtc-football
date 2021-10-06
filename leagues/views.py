@@ -10,14 +10,13 @@ from leagues.utils.update_standings import (
     update_rankings)
 
 # Django imports
-from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from django.db.models import Q, F, ExpressionWrapper, FloatField, When, Case
+from django.db.models import Q, F, FloatField, When, Case
 from django.db.models.functions import Cast
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -162,6 +161,8 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
 
         if self.kwargs.get('week_num'):
             week_number = self.kwargs['week_num']
+        elif season.week_number >= 23:
+            week_number = 22
         else:
             week_number = season.week_number
 
@@ -175,8 +176,13 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
         context['league'] = League.objects.get(slug=self.kwargs['league'])
         context['season'] = Season.objects.get(league=context['league'],
                                                is_current=True)
-        context['week_num'] = self.kwargs.get('week_num',
-                                              context['season'].week_number)
+        season = context['season']
+        if season.week_number >= 23:
+            week_number = 22
+        else:
+            week_number = season.week_number
+            
+        context['week_num'] = self.kwargs.get('week_num', week_number)
         context['num_weeks'] = range(1, 23)
 
         return context
@@ -344,7 +350,7 @@ def advance_regular_season(request, league, weeks=False):
                              f'Advanced {weeks} week(s).')
     else:
         messages.add_message(request, messages.WARNING,
-                             f"It's playoff time, can't advance regular season.")
+            f"It's playoff time, can't advance regular season.")
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -359,16 +365,12 @@ def advance_playoffs(request, league):
     season = get_object_or_404(Season, league=league, is_current=True)
     current_week = season.week_number
 
-    if request.method == 'GET' and 19 <= current_week <= 22:
-        matchups = Matchup.objects.filter(
-            season=season, week_number=current_week)
-
-        for matchup in matchups:
-            scores = matchup.scoreboard.get_score()
-            winner = matchup.scoreboard.get_winner()
-
+    if request.method == 'GET' and 19 <= current_week <= 22:        
         # Progress season by X weeks and save instance
         advance_season_weeks(season)
+    else:
+        messages.add_message(request, messages.WARNING,
+            f"It's the regular season, can't advance playoffs.")
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
