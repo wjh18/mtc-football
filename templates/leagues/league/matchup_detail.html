@@ -3,7 +3,17 @@
 {% block title %}Matchup | {{ matchup.home_team }} vs. {{ matchup.away_team }}{% endblock title %}
 
 {% block content %}
-  <h2>Matchup &middot; Week {{ matchup.week_number }} &middot; Season {{ season.season_number }}</h2>
+  {% if matchup.week_number <= 18 %}
+    <h2>Regular Season
+  {% elif matchup.week_number == 19 %}
+    <h2>Wildcard Round
+  {% elif matchup.week_number == 20 %}
+    <h2>Divisional Round
+  {% elif matchup.week_number == 21 %}
+    <h2>Conference Finals
+  {% elif matchup.week_number == 22 %}
+    <h2>Super Bowl {{ season.season_number }}
+  {% endif %}&middot; Week {{ matchup.week_number }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'leagues:weekly_matchups' league.slug %}">&larr; Matchups</a>
   <hr>
   

@@ -53,6 +53,9 @@ class Conference(models.Model):
         related_name='conferences'
     )
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return f'{self.name} - {self.league.name}'
 
@@ -63,6 +66,9 @@ class Division(models.Model):
         Conference, on_delete=models.CASCADE,
         related_name='divisions'
     )
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f'{self.name} - {self.conference.league.name}'
@@ -375,8 +381,8 @@ class TeamStanding(models.Model):
     last_5_ties = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.team.name} standings for Week {self.week_number} \
-                Season {self.season.season_number}'
+        return f'{self.team.name} standings for Week {self.week_number}' + \
+               f' Season {self.season.season_number}'
 
 
 class TeamRanking(models.Model):

@@ -1,0 +1,14 @@
+{% extends 'leagues/_league_base.html' %}
+
+{% block title %}Playoffs | {{ league.name }}{% endblock title %}
+
+{% block content %}
+  <h2>
+    Playoff Picture &middot; Season {{ season.season_number }}
+    {% if team.userteam %}
+      <span class="my-team-tag">GM</span>
+    {% endif %}
+  </h2>
+  <a href="{{ league.get_absolute_url }}">&larr; League Home</a>
+  <hr>
+{% endblock content %}

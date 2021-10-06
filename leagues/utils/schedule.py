@@ -8,10 +8,10 @@ from django.apps import apps
 
 
 def fetch_league_structure(league):
-    division_model = apps.get_model('leagues.Division')
+    Division = apps.get_model('leagues.Division')
     teams = league.teams.all()
     conferences = league.conferences.all()
-    divisions = division_model.objects.filter(conference__in=conferences)
+    divisions = Division.objects.filter(conference__in=conferences)
 
     league_structure = {
         'teams': teams,
@@ -268,8 +268,8 @@ def set_schedule(matchups, limit=500):
 
 def create_schedule(league_id):
 
-    league_model = apps.get_model('leagues.League')
-    league = league_model.objects.get(pk=league_id)
+    League = apps.get_model('leagues.League')
+    league = League.objects.get(pk=league_id)
     league_structure = fetch_league_structure(league)
     matchups = generate_matchups(league_structure)
     schedule = set_schedule(matchups)

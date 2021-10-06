@@ -3,7 +3,17 @@
 {% block title %}Weekly Matchups | Week {{ week_num }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
 
 {% block content %}
-  <h2>Matchups &middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
+  {% if week_num <= 18 %}
+    <h2>Regular Season
+  {% elif week_num == 19 %}
+    <h2>Wildcard Round
+  {% elif week_num == 20 %}
+    <h2>Divisional Round
+  {% elif week_num == 21 %}
+    <h2>Conference Finals
+  {% elif week_num == 22 %}
+    <h2>Super Bowl {{ season.season_number }}
+  {% endif %}&middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
 
@@ -18,21 +28,25 @@
   </nav>
   
   <br>
-  {% for matchup in matchups %}
-    <p>
-      <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
-        {{ matchup.away_team.name }}
-      </span>
-      {% if matchup.week_number < season.week_number %}
-        - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
-      {% endif %} @
-      <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
-        {{ matchup.home_team.name }}
-      </span>
-      {% if matchup.week_number < season.week_number %}
-        - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
-      {% endif %} -
-      <a href="{{ matchup.get_absolute_url }}">Details</a>
-    </p>
-  {% endfor %}
+  {% if matchups %}
+    {% for matchup in matchups %}
+      <p>
+        <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+          {{ matchup.away_team.name }}
+        </span>
+        {% if matchup.week_number < season.week_number %}
+          - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
+        {% endif %} @
+        <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+          {{ matchup.home_team.name }}
+        </span>
+        {% if matchup.week_number < season.week_number %}
+          - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
+        {% endif %} -
+        <a href="{{ matchup.get_absolute_url }}">Details</a>
+      </p>
+    {% endfor %}
+  {% else %}
+    <p>No matchups yet for this week.</p>
+  {% endif %}
 {% endblock content %}

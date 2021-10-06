@@ -24,9 +24,10 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {% comment %} Only show if league's current season is in 'Regular Season' (5) phase {% endcomment %}
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 1|urlencode %}">1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 4|urlencode %}">4 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season_full' league.slug %}">End of regular season</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 1|urlencode %}">Regular Season 1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 4|urlencode %}">Regular Season 4 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season_full' league.slug %}">End of Regular Season</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_playoffs' league.slug %}">Playoffs 1 Week</a></li>
             </ul>
             <span class="ms-4">League: {{ league.name }}</span>
           </div>
@@ -76,6 +77,7 @@
                       <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark rounded">Teams</a></li>
                       <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark rounded">Standings</a></li>
                       <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark rounded">Matchups</a></li>
+                      <li><a href="{% url 'leagues:playoffs' league.slug %}" class="link-dark rounded">Playoffs</a></li>
                       <li><a href="{% url 'leagues:league_delete' league.slug %}" class="link-dark rounded">Delete League</a></li>
                       <li><a href="{% url 'leagues:league_edit' league.slug %}" class="link-dark rounded">Edit League</a></li>
                     </ul>

@@ -42,6 +42,7 @@ class Scoreboard(models.Model):
         """Obtain match score based on random dice rolls"""
         self.home_score = random.randint(0, 50)
         self.away_score = random.randint(0, 50)
+        self.is_final = True
         self.save()
 
         return {'Home': self.home_score, 'Away': self.away_score}

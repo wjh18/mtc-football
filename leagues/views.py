@@ -177,7 +177,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
                                                is_current=True)
         context['week_num'] = self.kwargs.get('week_num',
                                               context['season'].week_number)
-        context['num_weeks'] = range(1, 19)
+        context['num_weeks'] = range(1, 23)
 
         return context
 
@@ -272,20 +272,50 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
         return context
 
 
+class PlayoffsView(LeagueOwnerMixin, ListView):
+    """
+    View playoff matchups / bracket for the current season
+    """
+    model = Matchup
+    context_object_name = 'matchups'
+    template_name = 'leagues/league/playoffs.html'
+
+    def get_queryset(self):
+        league = League.objects.get(slug=self.kwargs['league'])
+        season = Season.objects.get(league=league, is_current=True)
+
+        return Matchup.objects.filter(
+            season__league=league,
+            is_postseason=True
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['league'] = League.objects.get(slug=self.kwargs['league'])
+        context['season'] = Season.objects.get(league=context['league'],
+                                               is_current=True)
+        return context
+
+
 @login_required
 @is_league_owner
 def advance_regular_season(request, league, weeks=False):
     """
-    Advance the season by X number of weeks if the user is the league owner.
+    Advance the regular season by chosen number of weeks.
     """
     league = get_object_or_404(League, slug=league)
     season = get_object_or_404(Season, league=league, is_current=True)
     current_week = season.week_number
+    regular_season_weeks = 18
 
-    if request.method == 'GET':
+    if request.method == 'GET' and current_week <= regular_season_weeks:
+
         # Advance to end of regular season, not X number of weeks
-        if not weeks:
-            weeks = 18 - (current_week - 1)
+        # Limit number of weeks if it sims past end of reg season
+        week_limit = regular_season_weeks - (current_week - 1)
+        if not weeks or weeks > week_limit:
+            weeks = week_limit
+
         # Get scores and results for current week's matchups, update standings
         for week_num in range(current_week, current_week + weeks):
             matchups = Matchup.objects.filter(
@@ -296,9 +326,37 @@ def advance_regular_season(request, league, weeks=False):
             # Progress season by X weeks and save instance
             advance_season_weeks(season)
             week_num += 1
+
         # Success message
         messages.add_message(request, messages.SUCCESS,
                              f'Advanced {weeks} week(s).')
+    else:
+        messages.add_message(request, messages.WARNING,
+                             f"It's playoff time, can't advance regular season.")
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@is_league_owner
+def advance_playoffs(request, league):
+    """
+    Advance the playoffs by chosen number of weeks
+    """
+    league = get_object_or_404(League, slug=league)
+    season = get_object_or_404(Season, league=league, is_current=True)
+    current_week = season.week_number
+
+    if request.method == 'GET' and 19 <= current_week <= 22:
+        matchups = Matchup.objects.filter(
+                season=season, week_number=current_week)
+
+        for matchup in matchups:
+            scores = matchup.scoreboard.get_score()
+            winner = matchup.scoreboard.get_winner()
+
+        # Progress season by X weeks and save instance
+        advance_season_weeks(season)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -438,7 +496,7 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         season = get_object_or_404(Season, league=league, is_current=True)
         matchups = Matchup.objects.filter(
             Q(home_team=team) | Q(away_team=team), season=season
-        )
+        ).order_by('week_number')
 
         return matchups
 
