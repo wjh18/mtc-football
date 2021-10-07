@@ -12,23 +12,30 @@
   {% elif matchup.week_number == 21 %}
     <h2>Conference Finals
   {% elif matchup.week_number == 22 %}
-    <h2>Super Bowl {{ season.season_number }}
+    <h2>Championship {{ season.season_number }}
   {% endif %}&middot; Week {{ matchup.week_number }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'leagues:weekly_matchups' league.slug %}">&larr; Matchups</a>
   <hr>
   
-  <p>
-    <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
-      {{ matchup.away_team.name }}
-    </span>
-    {% if matchup.week_number < season.week_number %}
-      - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
-    {% endif %} @
-    <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
-      {{ matchup.home_team.name }}
-    </span>
-    {% if matchup.week_number < season.week_number %}
-      - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
-    {% endif %}
-  </p>
+  <div class="matchup-wrapper">
+    <a class="matchup-link" href="{{ matchup.get_absolute_url }}">                
+      <p class="matchup-teams">
+        <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+          {{ matchup.away_team.abbreviation }}
+        </span>
+        @
+        <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
+          {{ matchup.home_team.abbreviation }}
+        </span>
+      </p>
+      <p class="matchup-score">
+        {% if matchup.week_number < season.week_number %}
+          {{ matchup.scoreboard.away_score }}
+        {% endif %}
+        {% if matchup.week_number < season.week_number %}
+          - {{ matchup.scoreboard.home_score }}
+        {% endif %}
+      </p>                
+    </a>
+  </div>
 {% endblock content %}

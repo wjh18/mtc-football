@@ -1,5 +1,7 @@
 import datetime
 
+from django.apps import apps
+
 from .playoffs_setup import (advance_to_wildcard_playoffs,
     advance_to_divisional_playoffs, advance_to_conference_playoffs,
     advance_to_championship, sim_championship_matchup)
@@ -30,3 +32,14 @@ def advance_season_weeks(season, weeks=1):
     season.current_date += datetime.timedelta(days=(weeks * 7))
     season.week_number += weeks
     season.save()
+
+
+def advance_to_next_season(season):
+    """End the current season and create a new one."""
+    # End the current season
+    season.is_current = False
+    season.save()
+    # Create a new season, is current by default
+    Season = apps.get_model('leagues.Season')
+    Season.objects.create(league=season.league,
+                          season_number=season.season_number + 1)

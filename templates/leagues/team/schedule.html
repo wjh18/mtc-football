@@ -1,10 +1,10 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}Schedule | {{ team.name }}{% endblock title %}
+{% block title %}Schedule | {{ team.abbreviation }} | Season {{ season.season_number }}{% endblock title %}
 
 {% block content %}
   <h2>
-    Schedule - {{ team }}
+    Schedule &middot; {{ team }} &middot; Season {{ season.season_number }}
     {% if team.userteam %}
       <span class="my-team-tag">GM</span>
     {% endif %}

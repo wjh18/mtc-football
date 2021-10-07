@@ -3,7 +3,8 @@ from .models import (
     League, Player, Team, UserTeam,
     Season, Matchup, TeamStanding,
     Conference)
-from leagues.utils.advance_season import advance_season_weeks
+from leagues.utils.advance_season import (
+    advance_season_weeks, advance_to_next_season)
 from leagues.utils.update_standings import (
     update_standings_for_byes,
     update_standings,
@@ -377,7 +378,6 @@ def advance_regular_season(request, league, weeks=False):
             advance_season_weeks(season)
             week_num += 1
 
-        # Success message
         messages.add_message(request, messages.SUCCESS,
                              f'Advanced {weeks} week(s).')
     else:
@@ -400,9 +400,31 @@ def advance_playoffs(request, league):
     if request.method == 'GET' and 19 <= current_week <= 22:        
         # Progress season by X weeks and save instance
         advance_season_weeks(season)
+        messages.add_message(request, messages.SUCCESS,
+                             f'Advanced playoffs by 1 week.')
     else:
         messages.add_message(request, messages.WARNING,
-            f"It's the regular season, can't advance playoffs.")
+            f"Sorry, the playoffs are over!")
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@is_league_owner
+def advance_next_season(request, league):
+    """
+    Advance to the next season
+    """
+    league = get_object_or_404(League, slug=league)
+    season = get_object_or_404(Season, league=league, is_current=True)
+    current_week = season.week_number
+
+    if request.method == 'GET' and current_week >= 23:        
+        # Progress season by X weeks and save instance
+        advance_to_next_season(season)
+    else:
+        messages.add_message(request, messages.WARNING,
+            f"We aren't at the end of the season yet!")
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

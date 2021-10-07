@@ -131,7 +131,7 @@ def create_season_details(season):
             date=(date+progress_week),
             slug=slugify(
                 f'{matchup[0].abbreviation}-{matchup[1].abbreviation} \
-                -season-{season.season_number}-week-{week_num}'
+                -week-{week_num}-season-{season.season_number}'
             )
         ) for week_num in range(1, len(matchups) + 1) \
           for matchup in matchups[week_num - 1]

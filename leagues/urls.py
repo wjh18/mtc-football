@@ -35,6 +35,8 @@ urlpatterns = [
          views.advance_regular_season, name='advance_regular_season_full'),
     path('<slug:league>/advance-playoffs/',
          views.advance_playoffs, name='advance_playoffs'),
+    path('<slug:league>/advance-next-season/',
+         views.advance_next_season, name='advance_next_season'),
     # League standings views
     path('<slug:league>/standings/',
          views.LeagueStandingsView.as_view(), name='league_standings'),

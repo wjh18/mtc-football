@@ -28,6 +28,7 @@
               <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 4|urlencode %}">Regular Season 4 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season_full' league.slug %}">End of Regular Season</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_playoffs' league.slug %}">Playoffs 1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_next_season' league.slug %}">Next Season</a></li>
             </ul>
             <span class="ms-4">League: {{ league.name }}</span>
           </div>
@@ -50,7 +51,7 @@
       <div class="row">
         {% if user.is_authenticated %}
           {% block sidebar %}
-            <div class="col-2 flex-shrink-0 mt-5 bg-white">
+            <div class="col-2 flex-shrink-0 mt-4 bg-white">
               <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                 <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
               </a>
@@ -115,7 +116,7 @@
             </div>
           {% endblock sidebar %}
         {% endif %}
-        <div class="col-10 mt-5">
+        <div class="col-10 mt-4">
           {% block content %}
           {% endblock content %}
         </div>

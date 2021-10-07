@@ -26,15 +26,14 @@
   {% endif %}
   <div class="row">
     {% for team in team_list %}
-    <div class="col-4 m-3 team-list-wrapper">
+    <div class="col-4 m-3 team-list-wrapper"{% if team.userteam %}style="background-color:yellow;"{% endif %}>
       <h3 class="team-list-name">
         <a href="{{ team.get_absolute_url }}">{{ team.location }} {{ team.name }}</a>
-        {% if team.userteam %}
-          <span class="my-team-tag">GM</span>
-        {% endif %}
       </h3>
-      <p>Overall: {{ team.overall_rating }}</p>
-      <a href="{% url 'leagues:team_roster' league.slug team.slug %}">View Roster</a>
+      <p class="team-rating">{{ team.overall_rating }} Overall</p>
+      <a href="{% url 'leagues:depth_chart' league.slug team.slug %}">
+        <p class="team-depth-link">Depth Chart</p>
+      </a>
     </div>
     {% endfor %}
   </div>

@@ -178,6 +178,7 @@ def generate_division_rankings(season):
     division_rankings = {}
     for division in divisions:
         division_rank_qs = TeamStanding.objects.filter(
+            season=season,
             week_number=season.week_number + 1,
             team__division__exact=division
         ).annotate(
@@ -208,6 +209,7 @@ def generate_conference_rankings(season):
     for conference in conferences:
         
         top_4_conference = TeamStanding.objects.filter(
+            season=season,
             team__division__conference=conference,
             ranking__division_ranking=1,
             week_number=season.week_number + 1).annotate(
@@ -222,6 +224,7 @@ def generate_conference_rankings(season):
             )
 
         bottom_12_conference = TeamStanding.objects.filter(
+            season=season,
             team__division__conference=conference,
             week_number=season.week_number + 1).exclude(
                 ranking__division_ranking=1).annotate(
@@ -255,6 +258,7 @@ def generate_league_rankings(season):
     Generate league rankings based on new standings for next week.
     """
     league_rank_qs = TeamStanding.objects.filter(
+        season=season,
         week_number=season.week_number + 1,
     ).annotate(
         rank=Window(
