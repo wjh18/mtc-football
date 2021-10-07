@@ -46,22 +46,23 @@ def update_standings(season, current_week, matchups):
         for team in (matchup.home_team, matchup.away_team):
             current_standing = TeamStanding.objects.get(
                 team=team, season=season,
-                week_number=current_week)       
-            # Get current regular standings data        
+                week_number=current_week)  
+                 
+            # Get current regular standings        
             wins = current_standing.wins
             losses = current_standing.losses
             ties = current_standing.ties
             streak = current_standing.streak
             points_for = current_standing.points_for
             points_against = current_standing.points_against
-            # Get current home/away standings data
+            # Get current home and away standings
             home_wins = current_standing.home_wins
             home_losses = current_standing.home_losses
             home_ties = current_standing.home_ties
             away_wins = current_standing.away_wins
             away_losses = current_standing.away_losses
             away_ties = current_standing.away_ties
-            # Get current type standings data
+            # Get current entity standings
             div_wins = current_standing.div_wins
             div_losses = current_standing.div_losses
             div_ties = current_standing.div_ties
@@ -257,7 +258,7 @@ def generate_league_rankings(season):
     """
     Generate league rankings based on new standings for next week.
     """
-    league_rank_qs = TeamStanding.objects.filter(
+    league_rankings = TeamStanding.objects.filter(
         season=season,
         week_number=season.week_number + 1,
     ).annotate(
@@ -273,19 +274,7 @@ def generate_league_rankings(season):
         )
     )
 
-    return league_rank_qs
-
-          
-def update_rankings(season):
-    """
-    Update league rankings based on new standings for next week.
-    """
-    generate_division_rankings(season)
-    generate_conference_rankings(season)
-    league_rankings = generate_league_rankings(season)
-    
-    for team in season.league.teams.all():
-                
+    for team in season.league.teams.all():           
         for standing in league_rankings:
             if standing.team == team:
                 league_rank = standing.rank
@@ -297,3 +286,14 @@ def update_rankings(season):
         )
         tr.power_ranking = league_rank
         tr.save()
+
+          
+def update_rankings(season):
+    """
+    Update league rankings based on new standings for next week.
+    """
+    generate_division_rankings(season)
+    generate_conference_rankings(season)
+    generate_league_rankings(season)
+    
+    
