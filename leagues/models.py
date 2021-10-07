@@ -117,6 +117,21 @@ class Team(models.Model):
         team_overall = int(sum(player_ratings) / 53)
         self.overall_rating = team_overall
         self.save()
+        
+    def check_bye_week(self, season):
+        """Find a team's bye week"""
+        home_matchup_weeks = self.home_matchups.filter(
+            season=season, is_postseason=False).values_list(
+                'week_number', flat=True)
+        away_matchup_weeks = self.away_matchups.filter(
+            season=season, is_postseason=False).values_list(
+                'week_number', flat=True)
+        
+        matchup_weeks = home_matchup_weeks.union(away_matchup_weeks)
+        weeks_set = {w for w in range(1, 19)}
+        bye_week = list(weeks_set - set(matchup_weeks))[0]
+        
+        return bye_week
 
     def get_absolute_url(self):
         return reverse("leagues:team_detail",
