@@ -34,14 +34,10 @@ urlpatterns = [
          views.DepthChartView.as_view(), name='depth_chart_pos'),
     
     # League advancement views
-    path('<slug:league>/advance-regular-season/<int:weeks>/',
-         views.advance_regular_season, name='advance_regular_season'),
-    path('<slug:league>/advance-regular-season/',
-         views.advance_regular_season, name='advance_regular_season_full'),
-    path('<slug:league>/advance-playoffs/',
-         views.advance_playoffs, name='advance_playoffs'),
-    path('<slug:league>/advance-next-season/',
-         views.advance_next_season, name='advance_next_season'),
+    path('<slug:league>/advance-season/<int:weeks>/',
+         views.advance_season, name='advance_season'),
+    path('<slug:league>/advance-season/',
+         views.advance_season, name='advance_season_phase'),
     
     # League standings views
     path('<slug:league>/standings/',

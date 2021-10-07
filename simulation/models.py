@@ -32,6 +32,15 @@ class Scoreboard(models.Model):
         """Obtain match score based on random dice rolls"""
         self.home_score = random.randint(0, 50)
         self.away_score = random.randint(0, 50)
+        
+        # If postseason and a tie, break it with an "overtime" roll
+        if self.matchup.is_postseason and self.home_score == self.away_score:
+            overtime_pts = random.choice([self.home_score, self.away_score])
+            if overtime_pts == self.home_score:
+                self.home_score += random.randint(3, 7)
+            else:
+                self.away_score += random.randint(3, 7)
+            
         self.is_final = True
         self.save()
 

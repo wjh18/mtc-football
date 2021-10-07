@@ -26,7 +26,7 @@ def advance_season_weeks(season, weeks=1):
         advance_to_championship(season)
     elif next_week == 23:
         # Sim championship, enter offseason
-        champion = sim_championship_matchup(season)
+        sim_championship_matchup(season)
         season.phase = 6
 
     season.current_date += datetime.timedelta(days=(weeks * 7))
@@ -41,7 +41,7 @@ def advance_to_next_season(season):
     season.save()
     # Create a new season, is current by default
     Season = apps.get_model('leagues.Season')
-    new_season_start = season.start_date + datetime.timedelta(years=1)
+    new_season_start = season.start_date + datetime.timedelta(days=365)
     Season.objects.create(league=season.league,
                           season_number=season.season_number + 1,
-                          date=new_season_start)
+                          start_date=new_season_start)

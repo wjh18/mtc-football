@@ -1,15 +1,3 @@
-# App imports
-from .models import (
-    League, Player, Team, UserTeam,
-    Season, Matchup, TeamStanding,
-    Conference)
-from leagues.utils.advance_season import (
-    advance_season_weeks, advance_to_next_season)
-from leagues.utils.update_standings import (
-    update_standings_for_byes,
-    update_standings,
-    update_rankings)
-
 # Django imports
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -24,6 +12,18 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin)
+
+# App imports
+from .models import (
+    League, Player, Team, UserTeam,
+    Season, Matchup, TeamStanding,
+    Conference)
+from leagues.utils.advance_season import (
+    advance_season_weeks, advance_to_next_season)
+from leagues.utils.update_standings import (
+    update_standings_for_byes,
+    update_standings,
+    update_rankings)
 
 
 ### Custom Mixins & Decorators ###
@@ -350,81 +350,61 @@ class PlayoffsView(LeagueOwnerMixin, ListView):
 
 @login_required
 @is_league_owner
-def advance_regular_season(request, league, weeks=False):
+def advance_season(request, league, weeks=False):
     """
-    Advance the regular season by chosen number of weeks.
+    Advance the regular season, playoffs or to the next season.
     """
     league = get_object_or_404(League, slug=league)
     season = get_object_or_404(Season, league=league, is_current=True)
     current_week = season.week_number
-    regular_season_weeks = 18
+    REGULAR_SEASON_WEEKS = 18
+    LAST_WEEK_OF_PLAYOFFS = 22
 
-    if request.method == 'GET' and current_week <= regular_season_weeks:
-
+    if request.method == 'GET':
         # Advance to end of regular season, not X number of weeks
-        # Limit number of weeks if it sims past end of reg season
-        week_limit = regular_season_weeks - (current_week - 1)
-        if not weeks or weeks > week_limit:
-            weeks = week_limit
+        if current_week <= REGULAR_SEASON_WEEKS:
+            # Limit number of weeks if it sims past end of reg season
+            week_limit = REGULAR_SEASON_WEEKS - (current_week - 1)
+            if not weeks or weeks > week_limit:
+                weeks = week_limit
 
-        # Get scores and results for current week's matchups, update standings
-        for week_num in range(current_week, current_week + weeks):
-            matchups = Matchup.objects.filter(
-                season=season, week_number=week_num)
-            update_standings_for_byes(season, week_num)
-            update_standings(season, week_num, matchups)
-            update_rankings(season)
-            # Progress season by X weeks and save instance
-            advance_season_weeks(season)
-            week_num += 1
+            # Get scores and results for each week's matchups, update standings
+            for week_num in range(current_week, current_week + weeks):
+                matchups = Matchup.objects.filter(
+                    season=season, week_number=week_num,
+                    scoreboard__is_final=False)
+                update_standings_for_byes(season, week_num)
+                update_standings(season, week_num, matchups)
+                update_rankings(season)
+                # Progress season by X weeks and save instance
+                advance_season_weeks(season)
+                week_num += 1
 
-        messages.add_message(request, messages.SUCCESS,
-                             f'Advanced {weeks} week(s).')
-    else:
-        messages.add_message(request, messages.WARNING,
-            f"It's playoff time, can't advance regular season.")
-
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-
-@login_required
-@is_league_owner
-def advance_playoffs(request, league):
-    """
-    Advance the playoffs by chosen number of weeks
-    """
-    league = get_object_or_404(League, slug=league)
-    season = get_object_or_404(Season, league=league, is_current=True)
-    current_week = season.week_number
-
-    if request.method == 'GET' and 19 <= current_week <= 22:        
-        # Progress season by X weeks and save instance
-        advance_season_weeks(season)
-        messages.add_message(request, messages.SUCCESS,
-                             f'Advanced playoffs by 1 week.')
-    else:
-        messages.add_message(request, messages.WARNING,
-            f"Sorry, the playoffs are over!")
-
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-
-@login_required
-@is_league_owner
-def advance_next_season(request, league):
-    """
-    Advance to the next season
-    """
-    league = get_object_or_404(League, slug=league)
-    season = get_object_or_404(Season, league=league, is_current=True)
-    current_week = season.week_number
-
-    if request.method == 'GET' and current_week >= 23:        
-        # Progress season by X weeks and save instance
-        advance_to_next_season(season)
-    else:
-        messages.add_message(request, messages.WARNING,
-            f"We aren't at the end of the season yet!")
+            messages.add_message(request, messages.SUCCESS,
+                                f'Advanced regular season by {weeks} week(s).')
+            
+        # Advance playoffs by X weeks and save instance
+        elif REGULAR_SEASON_WEEKS + 1 <= current_week <= LAST_WEEK_OF_PLAYOFFS:
+            # Limit number of weeks if it sims past end of reg season
+            week_limit = LAST_WEEK_OF_PLAYOFFS - (current_week - 1)
+            if not weeks or weeks > week_limit:
+                weeks = week_limit
+                
+            # Get scores and results for each playoff round
+            for week_num in range(current_week, current_week + weeks):
+                advance_season_weeks(season)
+                
+            messages.add_message(request, messages.SUCCESS,
+                                f'Advanced playoffs by {weeks} week(s).')
+            
+        # Conclude the season and start a new one
+        elif current_week >= LAST_WEEK_OF_PLAYOFFS + 1:        
+            advance_to_next_season(season)
+            messages.add_message(request, messages.SUCCESS,
+                                f'A new season has been started.')
+        else:
+            messages.add_message(request, messages.WARNING,
+                f"Sorry, we aren't in the right part of the season for that!")
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

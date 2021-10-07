@@ -24,11 +24,11 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {% comment %} Only show if league's current season is in 'Regular Season' (5) phase {% endcomment %}
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 1|urlencode %}">Regular Season 1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season' league.slug 4|urlencode %}">Regular Season 4 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_regular_season_full' league.slug %}">End of Regular Season</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_playoffs' league.slug %}">Playoffs 1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_next_season' league.slug %}">Next Season</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 1|urlencode %}">1 Week</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 2|urlencode %}">2 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 4|urlencode %}">4 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 8|urlencode %}">8 Weeks</a></li>
+              <li><a class="dropdown-item" href="{% url 'leagues:advance_season_phase' league.slug %}">End of Current Phase</a></li>
             </ul>
             <span class="ms-4">League: {{ league.name }}</span>
           </div>

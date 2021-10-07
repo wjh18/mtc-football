@@ -2,6 +2,7 @@ from django.apps import apps
 from django.utils.text import slugify
 from django.db.models import Q
 
+
 def get_playoff_teams_by_conf(season):
     """
     Return conference standings ordered by conf rank.
