@@ -41,5 +41,7 @@ def advance_to_next_season(season):
     season.save()
     # Create a new season, is current by default
     Season = apps.get_model('leagues.Season')
+    new_season_start = season.start_date + datetime.timedelta(years=1)
     Season.objects.create(league=season.league,
-                          season_number=season.season_number + 1)
+                          season_number=season.season_number + 1,
+                          date=new_season_start)

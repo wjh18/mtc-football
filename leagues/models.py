@@ -18,8 +18,8 @@ class League(models.Model):
         on_delete=models.CASCADE,
         related_name='leagues'
     )
-    name = models.CharField(max_length=300)
-    gm_name = models.CharField(max_length=300)
+    name = models.CharField(max_length=50)
+    gm_name = models.CharField(max_length=50)
     creation_date = models.DateTimeField(default=timezone.now)
     slug = models.SlugField(blank=True, null=True, unique=True)
 
@@ -33,11 +33,11 @@ class League(models.Model):
         # Generate a unique slug
         if not self.slug:
             self.slug = slugify(self.name + "-" + random_string())
-        # True if no instance exists, False if editing existing instance
+        # False if saving an existing instance
         no_instance_exists = self._state.adding
-        # Save League instance before referencing it for Team creation
+        # Save League instance before creating its structure
         super().save(*args, **kwargs)
-        # Only perform if instance doesn't exist yet (initial save)
+        # Only create structure on initial save() call
         if no_instance_exists:
             create_league_structure(self)
 
@@ -46,7 +46,7 @@ class League(models.Model):
 
 
 class Conference(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=50)
     league = models.ForeignKey(
         League, on_delete=models.CASCADE,
         related_name='conferences'
@@ -82,8 +82,8 @@ class Team(models.Model):
         Division, on_delete=models.CASCADE,
         related_name='teams',
     )
-    location = models.CharField(max_length=100)
-    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
     abbreviation = models.CharField(max_length=3)
     overall_rating = models.PositiveSmallIntegerField(default=1)
     slug = models.SlugField(blank=True, null=True)
@@ -98,11 +98,11 @@ class Team(models.Model):
         # Generate a unique slug
         if not self.slug:
             self.slug = self.abbreviation
-        # True if no instance exists, False if editing existing instance
+        # False if saving an existing instance
         no_instance_exists = self._state.adding
-        # Save Team instance before referencing it for Player creation
+        # Save Team instance before creating players
         super().save(*args, **kwargs)
-        # Only perform if instance doesn't exist yet (initial save)
+        # Only create players on initial save() call
         if no_instance_exists:
             create_team_players(self)
 
@@ -111,7 +111,8 @@ class Team(models.Model):
         Called when player ratings are changed to update team rating.
         """
         player_ratings = [
-            contract.player.overall_rating for contract in self.contracts.all()
+            contract.player.overall_rating \
+            for contract in self.contracts.all()
         ]
         team_overall = int(sum(player_ratings) / 53)
         self.overall_rating = team_overall
@@ -175,13 +176,14 @@ class Player(Person):
     slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.first_name} ' + f' {self.last_name}'
+        return f'{self.first_name} {self.last_name}'
 
     # Find a way to pass team slug despite ManyToMany
     # def get_absolute_url(self):
     #     # self.league.teams.all()
     #     return reverse("leagues:player_detail",
-    #                     args=[self.league, self.contract.team.slug, self.slug])
+    #                     args=[self.league, self.contract.team.slug,
+    #                           self.slug])
 
 
 class Contract(models.Model):
@@ -215,7 +217,6 @@ class Season(models.Model):
     )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
-    duration = models.DurationField(default=datetime.timedelta(weeks=52))
     phase = models.PositiveSmallIntegerField(default=4, choices=PHASES)
     season_number = models.PositiveSmallIntegerField(default=1)
     week_number = models.PositiveSmallIntegerField(default=1)
@@ -225,11 +226,11 @@ class Season(models.Model):
         return f'Season {str(self.season_number)} - {self.league.name}'
 
     def save(self, *args, **kwargs):
-        # True if no instance exists, False if editing existing instance
+        # False if saving an existing instance
         no_instance_exists = self._state.adding
-        # Save Season instance before referencing it for schedule creation
+        # Save Season instance before creating schedule
         super().save(*args, **kwargs)
-        # Only perform if instance doesn't exist yet (initial save)
+        # Only create schedule on initial save() call
         if no_instance_exists:
             create_season_details(self)
 
@@ -238,11 +239,12 @@ class Season(models.Model):
         matchups = self.matchups.filter(week_number=self.week_number)
         teams_in_league = {team for team in self.league.teams.all()}
         teams_playing_this_week = set()
+        
         for matchup in matchups:
             teams_playing_this_week.add(matchup.home_team)
             teams_playing_this_week.add(matchup.away_team)
+            
         teams_with_bye = teams_in_league - teams_playing_this_week
-
         return teams_with_bye
 
 
@@ -267,7 +269,7 @@ class Matchup(models.Model):
     def __str__(self):
         return f'Season {str(self.season.season_number)} \
                 Week {str(self.week_number)} \
-                - {self.home_team} vs. {self.away_team}'
+                - {self.away_team} @ {self.home_team}'
 
     def get_absolute_url(self):
         return reverse("leagues:matchup_detail",
@@ -283,7 +285,7 @@ class PlayerMatchStat(models.Model):
         Matchup, on_delete=models.CASCADE,
         related_name='player_stats',
     )
-    # Passing Offense
+    # Passing offense
     passing_comps = models.SmallIntegerField(default=0)
     passing_atts = models.SmallIntegerField(default=0)
     passing_yds = models.SmallIntegerField(default=0)
@@ -291,13 +293,13 @@ class PlayerMatchStat(models.Model):
     passing_ints = models.SmallIntegerField(default=0)
     passing_fds = models.SmallIntegerField(default=0)
     times_sacked = models.SmallIntegerField(default=0)
-    # Receiving Offense
+    # Receiving offense
     receptions = models.SmallIntegerField(default=0)
     receiving_targets = models.SmallIntegerField(default=0)
     receiving_yds = models.SmallIntegerField(default=0)
     receiving_tds = models.SmallIntegerField(default=0)
     receiving_fds = models.SmallIntegerField(default=0)
-    # Rushing Offense
+    # Rushing offense
     rushing_atts = models.SmallIntegerField(default=0)
     rushing_yds = models.SmallIntegerField(default=0)
     rushing_tds = models.SmallIntegerField(default=0)
@@ -313,13 +315,13 @@ class PlayerMatchStat(models.Model):
     qb_hits = models.SmallIntegerField(default=0)
     sacks = models.SmallIntegerField(default=0)
     safeties = models.SmallIntegerField(default=0)
-    # Kicker Scoring
+    # Kicker scoring
     field_goals = models.SmallIntegerField(default=0)
     field_goal_atts = models.SmallIntegerField(default=0)
     field_goal_long = models.SmallIntegerField(default=0)
     extra_points = models.SmallIntegerField(default=0)
     extra_point_atts = models.SmallIntegerField(default=0)
-    # Kicking & Punting
+    # Kicking and punting
     kickoffs = models.SmallIntegerField(default=0)
     kickoff_yds = models.SmallIntegerField(default=0)
     touchbacks = models.SmallIntegerField(default=0)
@@ -337,11 +339,11 @@ class PlayerMatchStat(models.Model):
     kick_return_tds = models.SmallIntegerField(default=0)
     kick_return_long = models.SmallIntegerField(default=0)
     # Penalties
-    penalties = models.IntegerField(default=0)
-    penalty_yds = models.IntegerField(default=0)
+    penalties = models.SmallIntegerField(default=0)
+    penalty_yds = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'Statline for {self.player.first_name} {self.player.last_name}'
+        return f'Statline for {self.player} in {self.matchup}'
 
 
 class TeamStanding(models.Model):
@@ -354,18 +356,21 @@ class TeamStanding(models.Model):
         related_name='team_standings',
     )
     week_number = models.PositiveSmallIntegerField(default=1)
+    # Basic standings
     wins = models.SmallIntegerField(default=0)
     losses = models.SmallIntegerField(default=0)
     ties = models.SmallIntegerField(default=0)
     points_for = models.SmallIntegerField(default=0)
     points_against = models.SmallIntegerField(default=0)
     streak = models.SmallIntegerField(default=0)
+    # Home and away records
     home_wins = models.SmallIntegerField(default=0)
     home_losses = models.SmallIntegerField(default=0)
     home_ties = models.SmallIntegerField(default=0)
     away_wins = models.SmallIntegerField(default=0)
     away_losses = models.SmallIntegerField(default=0)
     away_ties = models.SmallIntegerField(default=0)
+    # Division, conference, and non-conf records
     div_wins = models.SmallIntegerField(default=0)
     div_losses = models.SmallIntegerField(default=0)
     div_ties = models.SmallIntegerField(default=0)
@@ -375,6 +380,7 @@ class TeamStanding(models.Model):
     non_conf_wins = models.SmallIntegerField(default=0)
     non_conf_losses = models.SmallIntegerField(default=0)
     non_conf_ties = models.SmallIntegerField(default=0)
+    # Record for last 5 games
     last_5_wins = models.SmallIntegerField(default=0)
     last_5_losses = models.SmallIntegerField(default=0)
     last_5_ties = models.SmallIntegerField(default=0)
@@ -389,9 +395,11 @@ class TeamRanking(models.Model):
         TeamStanding, related_name='ranking',
         on_delete=models.CASCADE,
     )
-    power_ranking = models.PositiveSmallIntegerField(default=1)
-    conference_ranking = models.PositiveSmallIntegerField(default=1)
     division_ranking = models.PositiveSmallIntegerField(default=1)
+    conference_ranking = models.PositiveSmallIntegerField(default=1)
+    power_ranking = models.PositiveSmallIntegerField(default=1)
 
     def __str__(self):
-        return f'Rankings for {self.standing}'
+        return f'{self.standing.team.name}' + \
+               f'rankings for Week {self.standing.week_number}' + \
+               f' Season {self.standing.season.season_number}'
