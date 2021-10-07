@@ -28,6 +28,7 @@ class LeagueViewTest(TestCase):
         self.client.login(email='leagueuser@example.com',
                           password='testpass123')
         response = self.client.get(reverse('leagues:league_list'))
+        
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test League')
         self.assertTemplateUsed(response, 'leagues/league/league_list.html')
@@ -35,6 +36,7 @@ class LeagueViewTest(TestCase):
     def test_league_list_view_for_logged_out_user(self):
         self.client.logout()
         response = self.client.get(reverse('leagues:league_list'))
+        
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response, '%s?next=/leagues/' % (reverse('account_login')))

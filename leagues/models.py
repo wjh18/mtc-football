@@ -1,14 +1,13 @@
 import datetime
 
+from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-from django.contrib.auth import get_user_model
-from django.db import models
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
-from .utils.league_setup import (
-    create_league_structure,
-    create_season_details)
+from .utils.league_setup import (create_league_structure,
+                                 create_season_details)
 from .utils.player_setup import create_team_players
 from .utils.url_utils import random_string_generator as random_string
 

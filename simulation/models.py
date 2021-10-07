@@ -24,16 +24,6 @@ class Scoreboard(models.Model):
         default=3, validators=[MinValueValidator(0), MaxValueValidator(3)])
     away_timeouts = models.PositiveSmallIntegerField(
         default=3, validators=[MinValueValidator(0), MaxValueValidator(3)])
-    # home_possession = models.BooleanField()
-    # down = models.PositiveSmallIntegerField(
-    #     validators=[MinValueValidator(1), MaxValueValidator(4)]
-    # )
-    # distance = models.PositiveSmallIntegerField(
-    #     validators=[MinValueValidator(1), MaxValueValidator(99)]
-    # )
-    # field_position = models.PositiveSmallIntegerField(
-    #     validators=[MinValueValidator(1), MaxValueValidator(99)]
-    # )
 
     def __str__(self):
         return f'Scoreboard for {self.matchup}'

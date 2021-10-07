@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import (
     League, Conference, Division,
     UserTeam, Team, Player, Contract,
@@ -37,9 +36,7 @@ class DivisionAdmin(admin.ModelAdmin):
 
 
 class PlayerInline(admin.TabularInline):
-    """
-    Used to show contracts on both Team Admin and Player Admin
-    """
+    """Show contracts on both Team and Player Admin"""
     model = Player.team.through
     fields = ('player', 'is_active',)
     readonly_fields = ('player',)
@@ -64,6 +61,7 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ('first_name',)
 
 
+# Register models and model admins
 admin.site.register(League, LeagueAdmin)
 admin.site.register(Conference, ConferenceAdmin)
 admin.site.register(Division, DivisionAdmin)
