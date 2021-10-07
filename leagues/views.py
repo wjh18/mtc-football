@@ -167,7 +167,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
             week_number = season.week_number
 
         return Matchup.objects.filter(
-            season__league=league,
+            season=season,
             week_number=week_number
         )
 
@@ -176,14 +176,34 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
         context['league'] = League.objects.get(slug=self.kwargs['league'])
         context['season'] = Season.objects.get(league=context['league'],
                                                is_current=True)
+        league = context['league']
         season = context['season']
-        if season.week_number >= 23:
+        if self.kwargs.get('week_num'):
+            week_number = self.kwargs['week_num']
+        elif season.week_number >= 23:
             week_number = 22
         else:
             week_number = season.week_number
             
         context['week_num'] = self.kwargs.get('week_num', week_number)
         context['num_weeks'] = range(1, 23)
+        
+        context['divisional_matchups'] = Matchup.objects.filter(
+            season=season,
+            week_number=week_number,
+            home_team__division=F('away_team__division')
+        )
+        
+        context['conference_matchups'] = Matchup.objects.filter(
+            season=season,
+            week_number=week_number,
+            home_team__division__conference=F('away_team__division__conference'),            
+        ).exclude(home_team__division=F('away_team__division'))
+        
+        context['non_conf_matchups'] = Matchup.objects.filter(
+            season=season,
+            week_number=week_number
+        ).exclude(home_team__division__conference=F('away_team__division__conference'))
 
         return context
 
@@ -312,6 +332,18 @@ class PlayoffsView(LeagueOwnerMixin, ListView):
         context['league'] = League.objects.get(slug=self.kwargs['league'])
         context['season'] = Season.objects.get(league=context['league'],
                                                is_current=True)
+        season = context['season']
+        
+        matchups = Matchup.objects.filter(
+            season=season,
+            is_postseason=True
+        )
+        
+        context['wildcard_matchups'] = matchups.filter(week_number=19)
+        context['divisional_matchups'] = matchups.filter(week_number=20)
+        context['conference_matchups'] = matchups.filter(week_number=21)
+        context['championship_matchups'] = matchups.filter(week_number=22)
+        
         return context
 
 

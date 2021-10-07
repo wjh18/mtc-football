@@ -67,22 +67,38 @@ colgroup > .col-recent {
     position: absolute;
 }
 
-/* Playoffs */
+/* Matchups */
 
-.bracket-wrapper {
-    height: 100px;
-    width: 200px;
+.matchup-type {
+    margin-top: 30px;
+}
+
+.matchup-wrapper {
+    display: inline-block;
+    margin: 0px 10px 0px 10px;
+    box-sizing: border-box;
+    height: 80px;
+    width: 150px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    border: 1px solid rgb(123, 123, 123);
-    border-radius: 10px;
-    padding: 10px;
+    margin: 15px 10px 15px 10px;
 }
 
-.bracket-heading {
+.matchup-link {
+    height: 80px;
+    width: 150px;
+    display: block;
     text-decoration: none;
-    font-size: 20px;
 }
 
-/*.round-heading {
+.matchup-teams {
+    font-size: 18px;
     text-align: center;
-}*/
+    color: black;
+    margin: 12px 0 5px 0;
+}
+
+.matchup-score {
+    text-align: center;
+    color: black;
+    font-size: 16px;
+}
