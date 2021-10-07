@@ -22,7 +22,7 @@
                    {% if team == matchup.away_team %}
                      font-weight: bold;
                    {% endif %}">
-        {{ matchup.away_team.name }}
+        {{ matchup.away_team.abbreviation }}
       </span>
       {% if matchup.week_number < season.week_number %}
         - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
@@ -35,7 +35,7 @@
                    {% if team == matchup.home_team %}
                      font-weight: bold;
                    {% endif %}">
-        {{ matchup.home_team.name }}
+        {{ matchup.home_team.abbreviation }}
       </span>
       {% if matchup.week_number < season.week_number %}
         - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
