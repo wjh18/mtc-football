@@ -159,9 +159,14 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
     def get_queryset(self):
         league = League.objects.get(slug=self.kwargs['league'])
         season = Season.objects.get(league=league, is_current=True)
-
-        if self.kwargs.get('week_num'):
-            week_number = self.kwargs['week_num']
+        week_num = self.kwargs.get('week_num')
+        
+        if week_num or week_num == 0:
+            
+            if week_num not in range(1, 23):
+                raise Http404("Invalid week number supplied")                
+            week_number = self.kwargs['week_num']    
+            
         elif season.week_number >= 23:
             week_number = 22
         else:
@@ -269,7 +274,12 @@ class LeagueStandingsView(LeagueOwnerMixin, ListView):
 
         context['afc'] = Conference.objects.get(name='AFC', league=league)
         context['nfc'] = Conference.objects.get(name='NFC', league=league)
-        context['type'] = self.kwargs.get('type')
+        type = self.kwargs.get('type')
+            
+        if type:
+            if type not in ('conference', 'power'):
+                raise Http404("Invalid standings type supplied")
+            context['type'] = self.kwargs.get('type')
 
         # Show final regular season standings during playoffs
         if season.week_number >= 19:
