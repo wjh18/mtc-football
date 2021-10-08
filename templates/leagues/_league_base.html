@@ -16,8 +16,8 @@
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="{% url 'leagues:league_detail' league.slug %}" class="text-white text-decoration-none">
           <h1 class="logo mb-0">{{ league.name }}</h1>   
-          <span class="m-0">Season X{{ season.season_number }}</span> &middot; 
-          <span class="m-0">Regular Season{{ season.phase }}</span>   
+          <span class="m-0">Season {{ season.season_number }}</span> &middot; 
+          <span class="m-0">{{ season.get_phase_display }}</span>   
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-5">
           <div class="dropdown">          
