@@ -9,19 +9,19 @@
 
   <nav aria-label="...">
     <ul class="pagination pagination">
-        <li class="page-item{% if not type %} active" aria-current="page{% endif %}">
+        <li class="page-item{% if not entity %} active" aria-current="page{% endif %}">
           <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings' league.slug %}">Division</a>
         </li>
-        <li class="page-item{% if type == "conference" %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_type' league.slug "conference"|urlencode %}">Conference</a>
+        <li class="page-item{% if entity == "conference" %} active" aria-current="page{% endif %}">
+          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_entity' league.slug "conference"|urlencode %}">Conference</a>
         </li>
-        <li class="page-item{% if type == "power" %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_type' league.slug "power"|urlencode %}">Power</a>
+        <li class="page-item{% if entity == "power" %} active" aria-current="page{% endif %}">
+          <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings_entity' league.slug "power"|urlencode %}">Power</a>
         </li>
     </ul>
   </nav>
 
-  {% if not type %}
+  {% if not entity %}
     <ul>
       <li>Division rankings are determined by W/L/T, PF and PA in that order.</li>
     </ul>
@@ -93,7 +93,7 @@
     {% endfor %}
   {% endif %}
 
-  {% if type == "conference" %}
+  {% if entity == "conference" %}
     {% for conference in league.conferences.all %}
       <br>
       <h3>{{ conference.name }} - Playoff Picture</h3>
@@ -166,7 +166,7 @@
     {% endfor %}
   {% endif %}
 
-  {% if type == "power" %}
+  {% if entity == "power" %}
     <br>
     <h3>{{ league.name }} Power Rankings</h3>
     <hr>

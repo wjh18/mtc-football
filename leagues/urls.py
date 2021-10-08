@@ -40,17 +40,17 @@ urlpatterns = [
     # League standings views
     path('<slug:league>/standings/',
          views.LeagueStandingsView.as_view(), name='league_standings'),
-    path('<slug:league>/standings/<str:type>/',
-         views.LeagueStandingsView.as_view(), name='league_standings_type'),
+    path('<slug:league>/standings/<str:entity>/',
+         views.LeagueStandingsView.as_view(), name='league_standings_entity'),
     
     # League schedule and matchup views
     path('<slug:league>/teams/<slug:team>/schedule/',
          views.TeamScheduleView.as_view(), name='team_schedule'),
-    path('<slug:league>/weekly-matchups/',
+    path('<slug:league>/matchups/',
          views.WeeklyMatchupsView.as_view(), name='weekly_matchups'),
-    path('<slug:league>/weekly-matchups/<int:week_num>/',
+    path('<slug:league>/matchups/week/<int:week_num>/',
          views.WeeklyMatchupsView.as_view(), name='weekly_matchups_by_week'),
-    path('<slug:league>/weekly-matchups/<slug:slug>/',
+    path('<slug:league>/matchups/<slug:slug>/',
          views.MatchupDetailView.as_view(), name='matchup_detail'),
     path('<slug:league>/playoffs/',
          views.PlayoffsView.as_view(), name='playoffs'),
