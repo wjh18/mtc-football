@@ -1,5 +1,5 @@
 # Django imports
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
@@ -495,13 +495,16 @@ class DepthChartView(LeagueOwnerMixin, ListView):
 
         contracts = context['team'].contracts.all()
         player_ids = contracts.values('player_id')
-        position = self.kwargs.get('position', 'QB')
-        context['active_position'] = position
-
         players = Player.objects.filter(id__in=player_ids)
+        
         context['positions'] = list(dict.fromkeys(
-            [player.position for player in players]
-        ))
+            [player.position for player in players]))
+        position = self.kwargs.get('position', 'QB')
+        
+        if position not in context['positions']:
+            raise Http404("Position does not exist")
+        
+        context['active_position'] = position
         context['players'] = Player.objects.filter(
             id__in=player_ids,
             position=position
