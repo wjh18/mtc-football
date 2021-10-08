@@ -117,6 +117,19 @@
           {% endfor %}
         </div>
       {% endif %}
+      
+      {% if bye_teams %}
+        <div>
+          <h3 class="matchup-type">Bye Weeks</h3>
+          {% for bye_team in bye_teams %}
+            <div class="matchup-wrapper">
+              <a class="matchup-link" href="{% url 'leagues:team_schedule' league.slug bye_team.slug %}">
+                <p class="bye-team"><span>{{ bye_team.abbreviation }}</span></p>
+              </a>
+            </div>
+        {% endfor %}
+        </div>
+      {% endif %}
 
     {% else %}
       <p>No matchups yet for this week.</p>

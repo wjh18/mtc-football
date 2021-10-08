@@ -205,6 +205,8 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
             season=season,
             week_number=week_number
         ).exclude(home_team__division__conference=F('away_team__division__conference'))
+        
+        context['bye_teams'] = season.get_byes(week_number)
 
         return context
 
@@ -547,6 +549,17 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         ).order_by('week_number')
 
         return matchups
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        league = League.objects.get(slug=self.kwargs['league'])
+        team = Team.objects.get(league=league, slug=self.kwargs['team'])
+        season = get_object_or_404(Season, league=league, is_current=True)
+        
+        context['bye_week'] = team.check_bye_week(season)
+        
+        return context
 
 
 ### Player views ###

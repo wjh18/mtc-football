@@ -110,3 +110,9 @@ colgroup > .col-recent {
     color: black;
     font-size: 16px;
 }
+
+.bye-team {
+    font-size: 22px;
+    text-align: center;
+    margin-top: 22px;
+}

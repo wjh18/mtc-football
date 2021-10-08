@@ -42,5 +42,8 @@
       {% endif %} -
       <a href="{{ matchup.get_absolute_url }}">Details</a>
     </p>
+    {% if matchup.week_number == bye_week|add:"-1" %}
+      <p>Week {{ bye_week }} - Bye week</p>
+    {% endif %}
   {% endfor %}
 {% endblock content %}

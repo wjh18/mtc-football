@@ -249,9 +249,14 @@ class Season(models.Model):
         if no_instance_exists:
             create_season_details(self)
 
-    def get_byes(self):
+    def get_byes(self, week_num=False):
         """Obtain teams with a bye week on the current week"""
-        matchups = self.matchups.filter(week_number=self.week_number)
+        if not week_num:
+            week_number = self.week_number
+        else:
+            week_number = week_num
+            
+        matchups = self.matchups.filter(week_number=week_number)
         teams_in_league = {team for team in self.league.teams.all()}
         teams_playing_this_week = set()
         
