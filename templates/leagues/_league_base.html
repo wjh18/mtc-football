@@ -14,34 +14,26 @@
   {% block header %}
   <header class="p-3 bg-dark text-white">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <h1 class="logo">Pigskin Prowess</h1>      
+        <a href="{% url 'leagues:league_detail' league.slug %}" class="text-white text-decoration-none">
+          <h1 class="logo mb-0">{{ league.name }}</h1>   
+          <span class="m-0">Season X{{ season.season_number }}</span> &middot; 
+          <span class="m-0">Regular Season{{ season.phase }}</span>   
         </a>
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-2">
-          {% comment %} <div class="dropdown"> {% endcomment %}
-            {% comment %} <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Advance
-            </button> {% endcomment %}
-            <form action="{% url 'leagues:advance_season' league.slug %}" method="post">
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-5">
+          <div class="dropdown">          
+            <form action="{% url 'leagues:advance_season' league.slug %}" method="post" class="advance-form">
               {% csrf_token %}
-              <select class="form-select" name="advance" id="advance-select" onchange="this.form.submit()">
-                <option disabled selected value>-- Simulate --</option>                
+              <select class="form-select form-select-lg" name="advance" id="advance-select" onchange="this.form.submit()">
+                <option disabled selected value>Advance</option>                
                 <option value="1">1 Week</option>
                 <option value="2">2 Weeks</option>
                 <option value="4">4 Weeks</option>
                 <option value="8">8 Weeks</option>
-                <option value="nextphase">To next phase</option>
+                <option value="end">End of phase</option>
               </select>
-            </form>
-            {% comment %} <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 1|urlencode %}">1 Week</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 2|urlencode %}">2 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 4|urlencode %}">4 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 8|urlencode %}">8 Weeks</a></li>
-              <li><a class="dropdown-item" href="{% url 'leagues:advance_season_phase' league.slug %}">End of Current Phase</a></li>
-            </ul> {% endcomment %}
-            {% comment %} <span class="ms-4">League: {{ league.name }}</span> {% endcomment %}
-          {% comment %} </div> {% endcomment %}
+            </form>            
+          </div>
+          
         </ul>
     </div>    
   </header>
@@ -84,7 +76,7 @@
                   </button>
                   <div class="collapse show" id="league-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home ({{ league.name }})</a></li>
+                      <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Home</a></li>
                       <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark rounded">Teams</a></li>
                       <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark rounded">Standings</a></li>
                       <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark rounded">Matchups</a></li>
