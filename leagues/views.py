@@ -352,7 +352,7 @@ class PlayoffsView(LeagueOwnerMixin, ListView):
 
 @login_required
 @is_league_owner
-def advance_season(request, league, weeks=False):
+def advance_season(request, league):
     """
     Advance the regular season, playoffs or to the next season.
     """
@@ -362,10 +362,17 @@ def advance_season(request, league, weeks=False):
     REGULAR_SEASON_WEEKS = 18
     LAST_WEEK_OF_PLAYOFFS = 22
 
-    if request.method == 'GET':
-        # Advance to end of regular season, not X number of weeks
+    if request.method == 'POST':
+        
+        # Advance by X weeks or until end of phase
+        if request.POST['advance'].isdigit():
+            weeks = int(request.POST['advance'])
+        else:
+            weeks = False
+
+        # Advance regular season
         if current_week <= REGULAR_SEASON_WEEKS:
-            # Limit number of weeks if it sims past end of reg season
+            # Limit number of weeks if sim goes past end of reg season
             week_limit = REGULAR_SEASON_WEEKS - (current_week - 1)
             if not weeks or weeks > week_limit:
                 weeks = week_limit
@@ -385,7 +392,7 @@ def advance_season(request, league, weeks=False):
             messages.add_message(request, messages.SUCCESS,
                                 f'Advanced regular season by {weeks} week(s).')
             
-        # Advance playoffs by X weeks and save instance
+        # Advance playoffs
         elif REGULAR_SEASON_WEEKS + 1 <= current_week <= LAST_WEEK_OF_PLAYOFFS:
             # Limit number of weeks if it sims past end of reg season
             week_limit = LAST_WEEK_OF_PLAYOFFS - (current_week - 1)

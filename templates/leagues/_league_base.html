@@ -18,20 +18,30 @@
           <h1 class="logo">Pigskin Prowess</h1>      
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-2">
-          <div class="dropdown">
-            <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+          {% comment %} <div class="dropdown"> {% endcomment %}
+            {% comment %} <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
               Advance
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              {% comment %} Only show if league's current season is in 'Regular Season' (5) phase {% endcomment %}
+            </button> {% endcomment %}
+            <form action="{% url 'leagues:advance_season' league.slug %}" method="post">
+              {% csrf_token %}
+              <select class="form-select" name="advance" id="advance-select" onchange="this.form.submit()">
+                <option disabled selected value>-- Simulate --</option>                
+                <option value="1">1 Week</option>
+                <option value="2">2 Weeks</option>
+                <option value="4">4 Weeks</option>
+                <option value="8">8 Weeks</option>
+                <option value="nextphase">To next phase</option>
+              </select>
+            </form>
+            {% comment %} <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 1|urlencode %}">1 Week</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 2|urlencode %}">2 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 4|urlencode %}">4 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_season' league.slug 8|urlencode %}">8 Weeks</a></li>
               <li><a class="dropdown-item" href="{% url 'leagues:advance_season_phase' league.slug %}">End of Current Phase</a></li>
-            </ul>
-            <span class="ms-4">League: {{ league.name }}</span>
-          </div>
+            </ul> {% endcomment %}
+            {% comment %} <span class="ms-4">League: {{ league.name }}</span> {% endcomment %}
+          {% comment %} </div> {% endcomment %}
         </ul>
     </div>    
   </header>

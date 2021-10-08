@@ -14,8 +14,8 @@
     <form action="{% url 'leagues:update_user_team' league.slug %}" method="post">
       {% csrf_token %}
       <div class="form-group">
-        <select class="form-select mb-3" id="team-select" name="teams">
-          <option disabled selected value> -- Select your team -- </option>
+        <select class="form-select mb-3" name="teams" id="team-select">
+          <option disabled selected value>-- Select your team --</option>
           {% for team in team_list %}
           <option value="{{ team.pk }}">{{ team.location }} {{ team.name }}</option>
           {% endfor %}
