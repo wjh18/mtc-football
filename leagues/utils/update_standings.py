@@ -149,6 +149,10 @@ def update_standings(season, current_week, matchups):
                 last_5_week_num = current_week - 4
             else:
                 last_5_week_num = current_week - (current_week - 1)
+            
+            bye_week = team.check_bye_week(season)
+            if last_5_week_num <= bye_week <= current_week:
+                last_5_week_num -= 1
                 
             last_5_standing = TeamStanding.objects.get(
                 team=team, season=season,
