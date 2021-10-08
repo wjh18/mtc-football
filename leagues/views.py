@@ -205,8 +205,9 @@ class WeeklyMatchupsView(LeagueOwnerMixin, ListView):
             season=season,
             week_number=week_number
         ).exclude(home_team__division__conference=F('away_team__division__conference'))
-        
-        context['bye_teams'] = season.get_byes(week_number)
+
+        if week_number <= 18:        
+            context['bye_teams'] = season.get_byes(week_number)
 
         return context
 
