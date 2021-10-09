@@ -132,6 +132,13 @@ class Team(models.Model):
         bye_week = list(weeks_set - set(matchup_weeks))[0]
         
         return bye_week
+    
+    def get_current_record(self):
+        """Get a team's current W/L/T record"""
+        season = Season.objects.get(league=self.league, is_current=True)
+        standing = TeamStanding.objects.get(
+            team=self, season=season, week_number=season.week_number)
+        return f'({standing.wins}-{standing.losses}-{standing.ties})'
 
     def get_absolute_url(self):
         return reverse("leagues:team_detail",
@@ -287,9 +294,8 @@ class Matchup(models.Model):
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f'Season {str(self.season.season_number)} \
-                Week {str(self.week_number)} \
-                - {self.away_team} @ {self.home_team}'
+        return f'''{self.away_team.abbreviation} @ {self.home_team.abbreviation}
+                - Week {self.week_number} - {self.season}'''
 
     def get_absolute_url(self):
         return reverse("leagues:matchup_detail",

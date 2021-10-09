@@ -5,15 +5,17 @@
     margin-right: 20px;
 }
 
+#advance-form {
+    
+}
+
 #advance-select {
     background-color: #3bd05d;
     border-radius: 0;
     border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-}
-
-#game-state-details {
-    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.16), 0 5px 10px rgba(0,0,0,0.23); 
+    height: 45px;
+    font-size: 18px; 
 }
 
 .messages {
@@ -95,7 +97,7 @@ colgroup > .col-recent {
     display: inline-block;
     margin: 0px 10px 0px 10px;
     box-sizing: border-box;
-    height: 80px;
+    height: 120px;
     width: 150px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     margin: 15px 10px 15px 10px;
@@ -103,27 +105,49 @@ colgroup > .col-recent {
 }
 
 .matchup-link {
-    height: 80px;
+    height: 120px;
     width: 150px;
     display: block;
     text-decoration: none;
 }
 
 .matchup-teams {
-    font-size: 18px;
+    font-size: 22px;
     text-align: center;
     color: black;
-    margin: 12px 0 5px 0;
+    margin: 10px 0 0 0;
 }
 
 .matchup-score {
     text-align: center;
     color: black;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.matchup-date {
+    text-align: center;
+    color: black;
+    font-size: 14px;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.matchup-records {
+    color: black;
+    font-size: 14px;
+    text-align: center;
+    margin: 0 0 0 0;
+}
+
+.matchup-record {
+    margin: 0 5px 0 5px;
 }
 
 .bye-team {
-    font-size: 22px;
+    font-size: 24px;
     text-align: center;
-    margin-top: 22px;
+    margin-top: 25px;
+    margin-bottom: 5px;
 }

@@ -1,6 +1,6 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}Weekly Matchups | Week {{ week_num }} | Season {{ season.season_number }} | {{ league.name }}{% endblock title %}
+{% block title %}Matchups | Week {{ week_num }} - {{ season }}{% endblock title %}
 
 {% block content %}
   {% if week_num <= 18 %}
@@ -36,7 +36,7 @@
           <h3 class="matchup-type">Divisional Matchups</h3>
           {% for matchup in divisional_matchups %}
             <div class="matchup-wrapper">
-              <a class="matchup-link" href="{{ matchup.get_absolute_url }}">                
+              <a class="matchup-link" href="{{ matchup.get_absolute_url }}">                             
                 <p class="matchup-teams">
                   <span {% if matchup.scoreboard.get_winner == matchup.away_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
                     {{ matchup.away_team.abbreviation }}
@@ -45,15 +45,21 @@
                   <span {% if matchup.scoreboard.get_winner == matchup.home_team %}style="color: darkgreen;"{% else %}style="color: darkred;"{% endif %}>
                     {{ matchup.home_team.abbreviation }}
                   </span>
-                </p>
-                <p class="matchup-score">
-                  {% if matchup.week_number < season.week_number %}
+                </p>  
+                <p class="matchup-records">
+                  <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+                  <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+                </p>               
+                {% if matchup.week_number < season.week_number %}
+                  <p class="matchup-score">
                     {{ matchup.scoreboard.away_score }}
-                  {% endif %}
-                  {% if matchup.week_number < season.week_number %}
                     - {{ matchup.scoreboard.home_score }}
-                  {% endif %}
-                </p>                
+                  </p>
+                {% else %}
+                  <p class="matchup-date">
+                    {{ matchup.date }}
+                  </p>
+                {% endif %}              
               </a>
             </div>
           {% endfor %}
@@ -75,14 +81,20 @@
                     {{ matchup.home_team.abbreviation }}
                   </span>
                 </p>
-                <p class="matchup-score">
-                  {% if matchup.week_number < season.week_number %}
+                <p class="matchup-records">
+                  <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+                  <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+                </p>  
+                {% if matchup.week_number < season.week_number %}
+                  <p class="matchup-score">
                     {{ matchup.scoreboard.away_score }}
-                  {% endif %}
-                  {% if matchup.week_number < season.week_number %}
                     - {{ matchup.scoreboard.home_score }}
-                  {% endif %}
-                </p>                
+                  </p>
+                {% else %}
+                  <p class="matchup-date">
+                    {{ matchup.date }}
+                  </p>
+                {% endif %}               
               </a>
             </div>
           {% endfor %}
@@ -104,14 +116,20 @@
                     {{ matchup.home_team.abbreviation }}
                   </span>
                 </p>
-                <p class="matchup-score">
-                  {% if matchup.week_number < season.week_number %}
+                <p class="matchup-records">
+                  <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+                  <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+                </p>                  
+                {% if matchup.week_number < season.week_number %}
+                  <p class="matchup-score">
                     {{ matchup.scoreboard.away_score }}
-                  {% endif %}
-                  {% if matchup.week_number < season.week_number %}
                     - {{ matchup.scoreboard.home_score }}
-                  {% endif %}
-                </p>                
+                  </p>
+                {% else %}
+                  <p class="matchup-date">
+                    {{ matchup.date }}
+                  </p>
+                {% endif %}
               </a>
             </div>
           {% endfor %}
@@ -125,7 +143,10 @@
             <div class="matchup-wrapper">
               <a class="matchup-link" href="{% url 'leagues:team_schedule' league.slug bye_team.slug %}">
                 <p class="bye-team"><span>{{ bye_team.abbreviation }}</span></p>
-              </a>
+                <p class="matchup-records">
+                  <span class="matchup-record">{{ bye_team.get_current_record }}</span>                
+                </p>                  
+              </a>              
             </div>
         {% endfor %}
         </div>

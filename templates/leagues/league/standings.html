@@ -1,6 +1,6 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}Standings | {{ league.name }}{% endblock title %}
+{% block title %}Standings | Week {{ season.week_number }} - {{ season }}{% endblock title %}
 
 {% block content %}
   <h2>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h2>

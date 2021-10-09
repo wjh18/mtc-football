@@ -1,11 +1,11 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}{{ team.location }} {{ team.name }} ({{ team.abbreviation }}) | {{ league.name }}{% endblock title %}
+{% block title %}{{ player }} | {{ team.abbreviation }} - {{ league }}{% endblock title %}
 
 {% block content %}
   <div>
     <h2>
-      {{ player.first_name }} {{ player.last_name }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; ({{ team.abbreviation }})
+      {{ player }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; ({{ team.abbreviation }})
       {% if team.userteam %}
         <span class="my-team-tag">GM</span>
       {% endif %}
@@ -74,7 +74,7 @@
           </thead>
           <tbody>
             <tr>
-              <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+              <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug player.slug %}">{{ player }}</a></th>
               <td>{{ player.age }}</td>
               <td>{{ player.experience }}</td>
               <td>{{ player.position }}</td>

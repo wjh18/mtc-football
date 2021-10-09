@@ -1,6 +1,6 @@
 {% extends 'leagues/_league_base.html' %}
 
-{% block title %}Playoffs | {{ league.name }}{% endblock title %}
+{% block title %}Playoffs | {{ season }}{% endblock title %}
 
 {% block content %}
 
@@ -30,14 +30,20 @@
                   {{ matchup.home_team.abbreviation }}
                 </span>
               </p>
-              <p class="matchup-score">
-                {% if matchup.week_number < season.week_number %}
+              <p class="matchup-records">
+                <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+                <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+              </p>
+              {% if matchup.week_number < season.week_number %}
+                <p class="matchup-score">
                   {{ matchup.scoreboard.away_score }}
-                {% endif %}
-                {% if matchup.week_number < season.week_number %}
                   - {{ matchup.scoreboard.home_score }}
-                {% endif %}
-              </p>                
+                </p>
+              {% else %}
+                <p class="matchup-date">
+                  {{ matchup.date }}
+                </p>
+              {% endif %}              
             </a>
           </div>
         {% endfor %}

@@ -1,13 +1,13 @@
 {% extends 'leagues/_league_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Delete League | {{ league.name }}{% endblock title %}
+{% block title %}Delete League | {{ league }}{% endblock title %}
 
 {% block content %}
-  <h2>Delete &middot; {{ league.name }}</h2>
+  <h2>Delete &middot; {{ league }}</h2>
   <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
-  <p>Are you sure you want to delete <i>{{ league.name }}</i>?<br>
+  <p>Are you sure you want to delete <i>{{ league }}</i>?<br>
   <strong>This action is irreversible</strong> and all league data will be lost.</p>
   <form method="post">
     {% csrf_token %}
