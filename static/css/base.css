@@ -23,7 +23,7 @@
 }
 
 .table-active {
-    background-color:yellow;
+    background-color:#ffc107;
     --bs-table-accent-bg: none !important;
     box-shadow: none;
 }
@@ -148,6 +148,10 @@ colgroup > .col-recent {
 .bye-team {
     font-size: 24px;
     text-align: center;
-    margin-top: 25px;
-    margin-bottom: 5px;
+    margin-top: 26px;
+    margin-bottom: 0px;
+}
+
+.bye-matchup-record {
+    font-size: 16px;
 }

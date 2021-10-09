@@ -255,7 +255,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         standings = TeamStanding.objects.filter(
             season=season, week_number=week_number
-        ).order_by('ranking__power_ranking'
+        ).order_by('ranking__power_ranking', '-team__overall_rating'
         ).annotate(
             pt_diff=F('points_for') - F('points_against'),
             win_pct=Case(
@@ -290,7 +290,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context['division_standings'] = TeamStanding.objects.filter(
             season=season, week_number=week_number
-        ).order_by('ranking__division_ranking'
+        ).order_by('ranking__division_ranking', '-team__overall_rating'
         ).annotate(
             pt_diff=F('points_for') - F('points_against'),
             win_pct=Case(
@@ -306,7 +306,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context['conference_standings'] = TeamStanding.objects.filter(
             season=season, week_number=week_number
-        ).order_by('ranking__conference_ranking'
+        ).order_by('ranking__conference_ranking', '-team__overall_rating'
         ).annotate(
             pt_diff=F('points_for') - F('points_against'),
             win_pct=Case(
