@@ -130,7 +130,7 @@ def create_season_details(season):
             week_number=week_num,
             date=(date+progress_week),
             slug=slugify(
-                f'{matchup[0].abbreviation}-{matchup[1].abbreviation} \
+                f'{matchup[1].abbreviation}-{matchup[0].abbreviation} \
                 -week-{week_num}-season-{season.season_number}'
             )
         ) for week_num in range(1, len(matchups) + 1) \

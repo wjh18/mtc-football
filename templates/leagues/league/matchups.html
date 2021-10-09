@@ -13,6 +13,8 @@
     <h2>Conference Finals
   {% elif week_num == 22 %}
     <h2>Championship
+  {% else %}
+    <h2> Offseason
   {% endif %}&middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
   <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
@@ -32,7 +34,7 @@
   <div class="row">
     {% if matchups %}
       {% if divisional_matchups %}
-        <div>
+        <div class="matchup-section">
           <h3 class="matchup-type">Divisional Matchups</h3>
           {% for matchup in divisional_matchups %}
             <div class="matchup-wrapper">
@@ -67,7 +69,7 @@
       {% endif %}
 
       {% if conference_matchups %}
-        <div>
+        <div class="matchup-section">
           <h3 class="matchup-type">Conference Matchups</h3>
           {% for matchup in conference_matchups %}
             <div class="matchup-wrapper">
@@ -102,7 +104,7 @@
       {% endif %}
 
       {% if non_conf_matchups %}
-        <div>
+        <div class="matchup-section">
           <h3 class="matchup-type">Non-Conference Matchups</h3>
           {% for matchup in non_conf_matchups %}
             <div class="matchup-wrapper">
@@ -137,7 +139,7 @@
       {% endif %}
       
       {% if bye_teams %}
-        <div>
+        <div class="matchup-section">
           <h3 class="matchup-type">Bye Weeks</h3>
           {% for bye_team in bye_teams %}
             <div class="matchup-wrapper">
@@ -151,7 +153,8 @@
         {% endfor %}
         </div>
       {% endif %}
-
+    {% elif week_num == 23 %}
+      <p>The season is over. Advance at least 1 week to start the next season.</p>
     {% else %}
       <p>No matchups yet for this week.</p>
     {% endif %}

@@ -21,7 +21,7 @@ from .models import (
 from leagues.utils.advance_season import (
     advance_season_weeks, advance_to_next_season)
 from leagues.utils.update_standings import (
-    update_standings_for_byes,
+    update_standings_for_off_weeks,
     update_standings,
     update_rankings)
 
@@ -170,7 +170,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         season = Season.objects.get(league=league, is_current=True)    
             
         week_kw = self.kwargs.get('week_num', False)
-        weeks = range(1, 23)
+        weeks = range(1, 24)
         
         # Only accept valid week parameters in URL      
         if week_kw and (week_kw not in weeks or week_kw == 0):           
@@ -189,7 +189,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         season = Season.objects.get(league=league, is_current=True)
         
         week_kw = self.kwargs.get('week_num', False)  
-        weeks = range(1, 23)
+        weeks = range(1, 24)
 
         # Only accept valid week parameters in URL              
         if week_kw and (week_kw not in weeks or week_kw == 0):           
@@ -385,7 +385,7 @@ def advance_season(request, league):
                 matchups = Matchup.objects.filter(
                     season=season, week_number=week_num,
                     scoreboard__is_final=False)
-                update_standings_for_byes(season, week_num)
+                update_standings_for_off_weeks(season, week_num, byes=True)
                 update_standings(season, week_num, matchups)
                 update_rankings(season)
                 # Progress season by X weeks and save instance

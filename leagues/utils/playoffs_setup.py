@@ -54,8 +54,8 @@ def generate_wildcard_matchups(season, conf_standings):
                 date=season.current_date,
                 is_postseason=True,
                 slug=slugify(
-                    f'{matchup[0].team.abbreviation}-\
-                      {matchup[1].team.abbreviation}-\
+                    f'{matchup[1].team.abbreviation}-\
+                      {matchup[0].team.abbreviation}-\
                       season-{season.season_number}-\
                       {matchup[0].team.division.conference}-wildcard'
                 )
@@ -102,13 +102,13 @@ def generate_divisional_matchups(season, conf_standings, wc_winners):
             Q(team__in=wc_winners) | Q(ranking__conference_ranking=1)
         )
         
-        # Set wildcard matchup constants based on conf ranks
+        # Set divisional matchup constants based on conf ranks
         MATCHUPS = [
             (cs[0], cs[3]),
             (cs[1], cs[2])
         ]
 
-        # Bulk create wildcard Matchups
+        # Bulk create divisional Matchups
         divisional_matchups = Matchup.objects.bulk_create([
             Matchup(
                 home_team=matchup[0].team,
@@ -118,15 +118,15 @@ def generate_divisional_matchups(season, conf_standings, wc_winners):
                 date=season.current_date,
                 is_postseason=True,
                 slug=slugify(
-                    f'{matchup[0].team.abbreviation}-\
-                      {matchup[1].team.abbreviation}-\
+                    f'{matchup[1].team.abbreviation}-\
+                      {matchup[0].team.abbreviation}-\
                       season-{season.season_number}-\
                       {matchup[0].team.division.conference}-divisional'
                 )
             ) for matchup in MATCHUPS
         ])
 
-        # Bulk create Scoreboards for wildcard Matchups
+        # Bulk create Scoreboards for divisional Matchups
         Scoreboard.objects.bulk_create([
             Scoreboard(matchup=matchup) for matchup in divisional_matchups])
 
@@ -164,12 +164,12 @@ def generate_conference_matchups(season, conf_standings, div_winners):
         # Filter conf standings by teams who won div
         cs = cs.filter(Q(team__in=div_winners))
         
-        # Set wildcard matchup constants based on conf ranks
+        # Set conference matchup constants based on conf ranks
         MATCHUPS = [
             (cs[0], cs[1])
         ]
 
-        # Bulk create wildcard Matchups
+        # Bulk create conference Matchups
         conference_matchups = Matchup.objects.bulk_create([
             Matchup(
                 home_team=matchup[0].team,
@@ -179,15 +179,15 @@ def generate_conference_matchups(season, conf_standings, div_winners):
                 date=season.current_date,
                 is_postseason=True,
                 slug=slugify(
-                    f'{matchup[0].team.abbreviation}-\
-                      {matchup[1].team.abbreviation}-\
+                    f'{matchup[1].team.abbreviation}-\
+                      {matchup[0].team.abbreviation}-\
                       season-{season.season_number}-\
                       {matchup[0].team.division.conference}-conference-final'
                 )
             ) for matchup in MATCHUPS
         ])
 
-        # Bulk create Scoreboards for wildcard Matchups
+        # Bulk create Scoreboards for conference Matchups
         Scoreboard.objects.bulk_create([
             Scoreboard(matchup=matchup) for matchup in conference_matchups])
 
@@ -209,7 +209,7 @@ def sim_conference_matchups(season):
     return winners
 
 
-### Conference final matchups and sim
+### Championship matchups and sim
 
 def generate_championship_matchup(season, conf_winners):
     """
@@ -227,13 +227,13 @@ def generate_championship_matchup(season, conf_winners):
         date=season.current_date,
         is_postseason=True,
         slug=slugify(
-            f'{conf_winners[0].abbreviation}-\
-                {conf_winners[1].abbreviation}-\
+            f'{conf_winners[1].abbreviation}-\
+                {conf_winners[0].abbreviation}-\
                 season-{season.season_number}-championship'
         )
     )
     
-    # Bulk create Scoreboards for wildcard Matchups
+    # Create Scoreboard for championship Matchup
     Scoreboard.objects.create(matchup=championship_matchup)
 
 

@@ -18,13 +18,22 @@ def get_matchup_type(matchup):
         return 'Non-Conference'
 
 
-def update_standings_for_byes(season, current_week):
+def update_standings_for_off_weeks(season, current_week,
+                                   byes=False, postseason=False):
     """
-    Update the standings of teams that have a 'bye' week this week
-    by copying their current week's TeamStanding instance.
+    Update the standings of teams that have an off week this week
+    (bye or missed playoffs) by copying their current week's
+    TeamStanding instance.
     """
-    byes = season.get_byes()
-    for team in byes:
+    if byes:
+        teams = season.get_byes()
+    elif postseason:
+        #teams = nonplayoffteams
+        pass
+    else:
+        teams = season.league.teams.all()
+        
+    for team in teams:
         current_standing = TeamStanding.objects.get(
             team=team, season=season,
             week_number=current_week)

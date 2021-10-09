@@ -426,9 +426,20 @@ class TeamRanking(models.Model):
         TeamStanding, related_name='ranking',
         on_delete=models.CASCADE,
     )
+    # Regular season
     division_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)
     power_ranking = models.PositiveSmallIntegerField(default=1)
+    # Postseason clinches
+    clinch_bye = models.BooleanField(default=False)
+    clinch_div = models.BooleanField(default=False)
+    clinch_berth = models.BooleanField(default=False)
+    clinch_none = models.BooleanField(default=False)
+    # Postseason advancement
+    won_wild = models.BooleanField(default=False)
+    won_div = models.BooleanField(default=False)
+    won_conf = models.BooleanField(default=False)
+    won_champ = models.BooleanField(default=False)
 
     def __str__(self):
         return f'''{self.standing.team.abbreviation} rankings -
