@@ -136,11 +136,14 @@ class Team(models.Model):
     def get_current_record(self):
         """Get a team's current W/L/T record"""        
         season = Season.objects.get(league=self.league, is_current=True)
-        # Show final regular season standings during playoffs
-        if season.week_number >= 19:
-            week_number = 19
-        else:
-            week_number = season.week_number
+        
+        # # Show final regular season standings during playoffs
+        # if season.week_number >= 19:
+        #     week_number = 19
+        # else:
+        #     week_number = season.week_number
+        week_number = season.week_number
+        
         standing = TeamStanding.objects.get(
             team=self, season=season, week_number=week_number)
         return f'({standing.wins}-{standing.losses}-{standing.ties})'

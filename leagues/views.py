@@ -125,7 +125,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy('leagues:team_list', args=[self.object.slug])
 
 
-class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
+class LeagueUpdateView(LeagueOwnerMixin, LeagueContextMixin, UpdateView):
     """
     Update an individual league's details.
     """
@@ -141,7 +141,7 @@ class LeagueUpdateView(LeagueOwnerMixin, UpdateView):
         return super().form_valid(form)
 
 
-class LeagueDeleteView(LeagueOwnerMixin, DeleteView):
+class LeagueDeleteView(LeagueOwnerMixin, LeagueContextMixin, DeleteView):
     """
     Delete an individual league.
     """
@@ -247,11 +247,12 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         league = League.objects.get(slug=self.kwargs['league'])
         season = Season.objects.get(league=league, is_current=True)
 
-        # Show final regular season standings during playoffs
-        if season.week_number >= 19:
-            week_number = 19
-        else:
-            week_number = season.week_number
+        # # Show final regular season standings during playoffs
+        # if season.week_number >= 19:
+        #     week_number = 19
+        # else:
+        #     week_number = season.week_number
+        week_number = season.week_number
 
         standings = TeamStanding.objects.filter(
             season=season, week_number=week_number
@@ -282,11 +283,12 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             raise Http404("Invalid standings entity supplied")    
         context['entity'] = entity
 
-        # Show final regular season standings during playoffs
-        if season.week_number >= 19:
-            week_number = 19
-        else:
-            week_number = season.week_number
+        # # Show final regular season standings during playoffs
+        # if season.week_number >= 19:
+        #     week_number = 19
+        # else:
+        #     week_number = season.week_number
+        week_number = season.week_number
 
         context['division_standings'] = TeamStanding.objects.filter(
             season=season, week_number=week_number

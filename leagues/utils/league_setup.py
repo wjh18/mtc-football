@@ -117,10 +117,6 @@ def create_season_details(season):
     league_id = season.league.pk
     matchups = create_schedule(str(league_id))
 
-    # Set start date for week 1 and week value
-    progress_week = datetime.timedelta(days=7)
-    date = season.start_date - progress_week
-
     # Bulk create Matchups based on schedule
     matchup_objs = Matchup.objects.bulk_create([
         Matchup(
@@ -128,7 +124,7 @@ def create_season_details(season):
             away_team=matchup[1],
             season=season,
             week_number=week_num,
-            date=(date+progress_week),
+            date=season.start_date+(week_num*datetime.timedelta(days=7)),
             slug=slugify(
                 f'{matchup[1].abbreviation}-{matchup[0].abbreviation} \
                 -week-{week_num}-season-{season.season_number}'
