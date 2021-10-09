@@ -26,7 +26,7 @@ class Scoreboard(models.Model):
         default=3, validators=[MinValueValidator(0), MaxValueValidator(3)])
 
     def __str__(self):
-        return f'Scoreboard for {self.matchup}'
+        return f'Scoreboard - {self.matchup}'
 
     def get_score(self):
         """Obtain match score based on random dice rolls"""

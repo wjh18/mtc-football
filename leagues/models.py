@@ -56,7 +56,7 @@ class Conference(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f'{self.name} - {self.league.name}'
+        return f'{self.name} - {self.league}'
 
 
 class Division(models.Model):
@@ -70,7 +70,7 @@ class Division(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f'{self.name} - {self.conference.league.name}'
+        return f'{self.name} - {self.conference.league}'
 
 
 class Team(models.Model):
@@ -134,10 +134,15 @@ class Team(models.Model):
         return bye_week
     
     def get_current_record(self):
-        """Get a team's current W/L/T record"""
+        """Get a team's current W/L/T record"""        
         season = Season.objects.get(league=self.league, is_current=True)
+        # Show final regular season standings during playoffs
+        if season.week_number >= 19:
+            week_number = 19
+        else:
+            week_number = season.week_number
         standing = TeamStanding.objects.get(
-            team=self, season=season, week_number=season.week_number)
+            team=self, season=season, week_number=week_number)
         return f'({standing.wins}-{standing.losses}-{standing.ties})'
 
     def get_absolute_url(self):
@@ -155,7 +160,7 @@ class UserTeam(models.Model):
     is_active_team = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'User team: {self.team.name}'
+        return f'User team - {self.team.abbreviation} - {self.league}'
 
 
 class Person(models.Model):
@@ -220,8 +225,8 @@ class Contract(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.player.first_name} {self.player.last_name} \
-                - {self.team.location} {self.team.name} (Contract)'
+        return f'''{self.player} contract - 
+                {self.team.abbreviation} - {self.team.league}'''
 
 
 class Season(models.Model):
@@ -245,7 +250,7 @@ class Season(models.Model):
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'Season {str(self.season_number)} - {self.league.name}'
+        return f'Season {self.season_number} - {self.league}'
 
     def save(self, *args, **kwargs):
         # False if saving an existing instance
@@ -369,7 +374,7 @@ class PlayerMatchStat(models.Model):
     penalty_yds = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'Statline for {self.player} in {self.matchup}'
+        return f'{self.player} stats - {self.matchup}'
 
 
 class TeamStanding(models.Model):
@@ -412,8 +417,8 @@ class TeamStanding(models.Model):
     last_5_ties = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.team.name} standings for Week {self.week_number}' + \
-               f' Season {self.season.season_number}'
+        return f'''{self.team.abbreviation} standings -
+                Week {self.week_number} - {self.season}'''
 
 
 class TeamRanking(models.Model):
@@ -426,6 +431,6 @@ class TeamRanking(models.Model):
     power_ranking = models.PositiveSmallIntegerField(default=1)
 
     def __str__(self):
-        return f'{self.standing.team.name}' + \
-               f'rankings for Week {self.standing.week_number}' + \
-               f' Season {self.standing.season.season_number}'
+        return f'''{self.standing.team.abbreviation} rankings -
+                Week {self.standing.week_number} -
+                {self.standing.season}'''
