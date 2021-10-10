@@ -159,3 +159,13 @@ colgroup > .col-recent {
 .bye-matchup-record {
     font-size: 16px;
 }
+
+/* Standings */
+.clinches {
+    color: darkgreen;
+    font-size: 12px;
+    margin-left: 5px;
+}
+.no-clinch {
+    color: darkred;
+}

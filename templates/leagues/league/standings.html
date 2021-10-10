@@ -67,7 +67,22 @@
               <tr {% if standing.team.userteam %}class="table-active"{% endif %}>
                 <th scope="row">{{ standing.ranking.division_ranking }}</th>
                 <td>
-                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a> 
+                  <span class="clinches">
+                    {% if standing.ranking.clinch_bye %}
+                      Z
+                    {% elif standing.ranking.clinch_div %}
+                      Y
+                    {% elif standing.ranking.clinch_berth %}
+                      X
+                  </span>
+                    {% elif standing.ranking.clinch_none %}
+                  <span class="no-clinch">
+                      O
+                  </span>
+                    {% else %}
+                    {% endif %}
+                  
                 </td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>

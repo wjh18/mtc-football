@@ -16,14 +16,14 @@ from django.contrib.auth.mixins import (
 # App imports
 from .models import (
     League, Player, Team, UserTeam,
-    Season, Matchup, TeamStanding,
-    Conference)
+    Season, Matchup, TeamStanding)
 from leagues.utils.advance_season import (
     advance_season_weeks, advance_to_next_season)
 from leagues.utils.update_standings import (
     copy_standings_for_byes,
     update_standings,
     update_rankings)
+from leagues.utils.playoffs_setup import update_running_playoff_clinches
 
 
 ### Custom Mixins & Decorators ###
@@ -388,6 +388,7 @@ def advance_season(request, league):
                 copy_standings_for_byes(season, week_num)
                 update_standings(season, week_num, matchups)
                 update_rankings(season)
+                update_running_playoff_clinches(season)
                 # Progress season by X weeks and save instance
                 advance_season_weeks(season)
                 week_num += 1

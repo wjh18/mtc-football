@@ -3,9 +3,10 @@ from django.utils.text import slugify
 from django.db.models import Q
 
 
-def update_playoff_clinches(season):
+def update_final_playoff_clinches(season):
     """
-    Update playoff clinches based on div and conf ranking.
+    Update final playoff clinches based on div and conf ranking
+    at the end of the season.
     """
     TeamRanking = apps.get_model('leagues.TeamRanking')
     league_rankings = TeamRanking.objects.filter(
@@ -26,6 +27,60 @@ def update_playoff_clinches(season):
             ranking.clinch_none = True
         
         ranking.save()
+        
+
+def update_running_div_clinches(standings):
+    """
+    Update div clinches mid-season based on
+    how many games back the second ranking team is.
+    """
+    
+    # Div rank 1's who haven't clinched div yet
+    div_lead_standings = standings.filter(
+        ranking__division_ranking=1, ranking__clinch_div=False)
+    
+    for rank_1 in div_lead_standings:
+        
+        # Div rank 2's in same div as div rank 1's
+        rank_2 = standings.get(
+            ranking__division_ranking=2,
+            team__division=rank_1.team.division)
+        
+        rank_1_wins = rank_1.wins + 0.5*rank_1.ties
+         
+        rank_2_gp = rank_2.wins + rank_2.losses + rank_2.ties
+        rank_2_gl = 17 - rank_2_gp
+        rank_2_wins = rank_2.wins + 0.5*rank_2.ties
+        rank_2_gb = rank_1_wins - rank_2_wins
+
+        # Rank 1 clinches div (rank 2 is too many games behind)        
+        if rank_2_gb > rank_2_gl:
+            rank_1.ranking.clinch_div = True
+            rank_1.ranking.save()
+            
+            
+def update_running_conf_clinches(standings):
+    """
+    Update conf clinches mid-season based on
+    how many games back the second ranking team is.
+    """
+    pass
+
+
+def update_running_playoff_berths(standings):
+    """
+    Update playoff berths mid-season based on
+    how many games back the eight ranking team is.
+    """
+    pass
+
+
+def update_running_missed_playoffs(standings):
+    """
+    Update teams who missed playoffs mid-season based on
+    how many games back the eight ranking team is.
+    """
+    pass
   
         
 def update_playoff_rankings(season, round_type, winner):
@@ -313,10 +368,28 @@ def sim_championship_matchup(season):
     return winner
 
 
+### Running clinches helper function
+
+def update_running_playoff_clinches(season):
+    """
+    Update playoff clinches mid-season based on
+    how many games back lower rankings teams are.
+    """
+    TeamStanding = apps.get_model('leagues.TeamStanding')
+    standings = TeamStanding.objects.filter(
+        season=season, week_number=season.week_number + 1)
+    
+    # if season.week_number > 1:
+    update_running_div_clinches(standings)
+    update_running_conf_clinches(standings)
+    update_running_playoff_berths(standings)
+    update_running_missed_playoffs(standings)
+
+
 ### Functions to set up each playoff round
 
 def advance_to_wildcard_playoffs(season):
-    update_playoff_clinches(season)
+    update_final_playoff_clinches(season)
     conf_standings = get_playoff_teams_by_conf(season)
     generate_wildcard_matchups(season, conf_standings)
 

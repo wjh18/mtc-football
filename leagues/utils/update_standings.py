@@ -1,5 +1,5 @@
 from django.db.models import F, Q, Window
-from django.db.models.functions import DenseRank
+from django.db.models.functions import Rank
 from django.apps import apps
 
 from ..models import TeamStanding, TeamRanking, Division, Conference
@@ -189,11 +189,12 @@ def generate_division_rankings(season):
             team__division__exact=division
         ).annotate(
             rank=Window(
-                expression=DenseRank(),
+                expression=Rank(),
                 order_by=[
                     F('wins').desc(), F('losses'),
                     F('points_for').desc(),
-                    F('points_against')
+                    F('points_against'),
+                    F('team__location')
                 ],
             )
         )
@@ -220,11 +221,12 @@ def generate_conference_rankings(season):
             ranking__division_ranking=1,
             week_number=season.week_number + 1).annotate(
                 rank=Window(
-                    expression=DenseRank(),
+                    expression=Rank(),
                     order_by=[
                         F('wins').desc(), F('losses'),
                         F('points_for').desc(),
-                        F('points_against')
+                        F('points_against'),
+                        F('team__location')
                     ],
                 )
             )
@@ -235,11 +237,12 @@ def generate_conference_rankings(season):
             week_number=season.week_number + 1).exclude(
                 ranking__division_ranking=1).annotate(
                     rank=Window(
-                        expression=DenseRank(),
+                        expression=Rank(),
                         order_by=[
                             F('wins').desc(), F('losses'),
                             F('points_for').desc(),
-                            F('points_against')
+                            F('points_against'),
+                            F('team__location')
                         ],
                     )
                 )
@@ -268,13 +271,14 @@ def generate_league_rankings(season):
         week_number=season.week_number + 1,
     ).annotate(
         rank=Window(
-            expression=DenseRank(),
+            expression=Rank(),
             order_by=[
                 F('wins').desc(), F('losses'),
                 F('team__overall_rating'),
                 F('streak').desc(),
                 F('points_for').desc(),
-                F('points_against')
+                F('points_against'),
+                F('team__location')
             ],
         )
     )
