@@ -21,7 +21,7 @@ from .models import (
 from leagues.utils.advance_season import (
     advance_season_weeks, advance_to_next_season)
 from leagues.utils.update_standings import (
-    update_standings_for_off_weeks,
+    copy_standings_for_byes,
     update_standings,
     update_rankings)
 
@@ -247,12 +247,11 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         league = League.objects.get(slug=self.kwargs['league'])
         season = Season.objects.get(league=league, is_current=True)
 
-        # # Show final regular season standings during playoffs
-        # if season.week_number >= 19:
-        #     week_number = 19
-        # else:
-        #     week_number = season.week_number
-        week_number = season.week_number
+        # Show final regular season standings during playoffs
+        if season.week_number >= 19:
+            week_number = 19
+        else:
+            week_number = season.week_number
 
         standings = TeamStanding.objects.filter(
             season=season, week_number=week_number
@@ -283,12 +282,11 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             raise Http404("Invalid standings entity supplied")    
         context['entity'] = entity
 
-        # # Show final regular season standings during playoffs
-        # if season.week_number >= 19:
-        #     week_number = 19
-        # else:
-        #     week_number = season.week_number
-        week_number = season.week_number
+        # Show final regular season standings during playoffs
+        if season.week_number >= 19:
+            week_number = 19
+        else:
+            week_number = season.week_number
 
         context['division_standings'] = TeamStanding.objects.filter(
             season=season, week_number=week_number
@@ -387,7 +385,7 @@ def advance_season(request, league):
                 matchups = Matchup.objects.filter(
                     season=season, week_number=week_num,
                     scoreboard__is_final=False)
-                update_standings_for_off_weeks(season, week_num, byes=True)
+                copy_standings_for_byes(season, week_num)
                 update_standings(season, week_num, matchups)
                 update_rankings(season)
                 # Progress season by X weeks and save instance
@@ -405,8 +403,8 @@ def advance_season(request, league):
                 weeks = week_limit
                 
             # Get scores and results for each playoff round
-            for week_num in range(current_week, current_week + weeks):
-                advance_season_weeks(season)
+            for week_num in range(current_week, current_week + weeks):                           
+                advance_season_weeks(season)                
                 
             messages.add_message(request, messages.SUCCESS,
                                 f'Advanced playoffs by {weeks} week(s).')

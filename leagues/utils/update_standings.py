@@ -1,5 +1,6 @@
-from django.db.models import F, Window
+from django.db.models import F, Q, Window
 from django.db.models.functions import DenseRank
+from django.apps import apps
 
 from ..models import TeamStanding, TeamRanking, Division, Conference
 
@@ -18,21 +19,12 @@ def get_matchup_type(matchup):
         return 'Non-Conference'
 
 
-def update_standings_for_off_weeks(season, current_week,
-                                   byes=False, postseason=False):
+def copy_standings_for_byes(season, current_week):
     """
-    Update the standings of teams that have an off week this week
-    (bye or missed playoffs) by copying their current week's
-    TeamStanding instance.
+    Duplicate the standings of teams that have a regular season
+    bye week by copying their current week's TeamStanding instance.
     """
-    if byes:
-        teams = season.get_byes()
-    elif postseason:
-        #teams = nonplayoffteams
-        pass
-    else:
-        teams = season.league.teams.all()
-        
+    teams = season.get_byes()
     for team in teams:
         current_standing = TeamStanding.objects.get(
             team=team, season=season,
@@ -307,6 +299,4 @@ def update_rankings(season):
     """
     generate_division_rankings(season)
     generate_conference_rankings(season)
-    generate_league_rankings(season)
-    
-    
+    generate_league_rankings(season) 
