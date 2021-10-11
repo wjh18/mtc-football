@@ -17,12 +17,7 @@ from django.contrib.auth.mixins import (
 from .models import (
     League, Player, Team, UserTeam,
     Season, Matchup, TeamStanding)
-from leagues.utils.season import (
-    advance_season_weeks, advance_to_next_season)
-from leagues.utils.standings import (
-    copy_standings_for_byes, update_standings)
-from leagues.utils.rankings import update_rankings
-from leagues.utils.playoffs import update_running_playoff_clinches
+from leagues.utils.season import advance_season_by_weeks
 
 
 ### Custom Mixins & Decorators ###
@@ -360,71 +355,16 @@ def advance_season(request, league):
     """
     league = get_object_or_404(League, slug=league)
     season = get_object_or_404(Season, league=league, is_current=True)
-    current_week = season.week_number
-    REGULAR_SEASON_WEEKS = 18
-    LAST_WEEK_OF_PLAYOFFS = 22
-
+    
     if request.method == 'POST':
-        
-        # Advance by X weeks or until end of phase
+        # Get number of weeks from form submission
         if request.POST['advance'].isdigit():
             weeks = int(request.POST['advance'])
         else:
             weeks = False
-
-        # Advance regular season
-        if current_week <= REGULAR_SEASON_WEEKS:
-            # Limit number of weeks if sim goes past end of reg season
-            week_limit = REGULAR_SEASON_WEEKS - (current_week - 1)
-            if not weeks or weeks > week_limit:
-                weeks = week_limit
-                
-            success_message = f'Advanced regular season by {weeks} week(s).'
-
-            # Get scores and results for each week's matchups, update standings
-            for week_num in range(current_week, current_week + weeks):
-                matchups = Matchup.objects.filter(
-                    season=season, week_number=week_num,
-                    scoreboard__is_final=False)
-                copy_standings_for_byes(season, week_num)
-                update_standings(season, week_num, matchups)
-                update_rankings(season)
-                update_running_playoff_clinches(season)
-                # Progress season by X weeks and save instance
-                advance_season_weeks(season)
-                if week_num == REGULAR_SEASON_WEEKS:
-                    success_message += f''' The first week of the postseason 
-                        has begun.'''
-                week_num += 1
-
-            messages.add_message(request, messages.SUCCESS, success_message)
             
-        # Advance playoffs
-        elif REGULAR_SEASON_WEEKS + 1 <= current_week <= LAST_WEEK_OF_PLAYOFFS:
-            # Limit number of weeks if it sims past end of reg season
-            week_limit = LAST_WEEK_OF_PLAYOFFS - (current_week - 1)
-            if not weeks or weeks > week_limit:
-                weeks = week_limit
-                
-            success_message = f'Advanced playoffs by {weeks} week(s).'
-                
-            # Get scores and results for each playoff round
-            for week_num in range(current_week, current_week + weeks):                           
-                advance_season_weeks(season)
-                if week_num == LAST_WEEK_OF_PLAYOFFS:
-                    success_message += f""" You've entered the offseason.
-                        Advance at least one week to start a new season."""
-                
-            messages.add_message(request, messages.SUCCESS, success_message)
-            
-        # Conclude the season and start a new one
-        elif current_week >= LAST_WEEK_OF_PLAYOFFS + 1:        
-            advance_to_next_season(season)
-            messages.add_message(request, messages.SUCCESS,
-                                f'A new season has begun.')
-        else:
-            messages.add_message(request, messages.WARNING,
-                f"Sorry, we aren't in the right part of the season for that!")
+        # Advance by X weeks or until end of phase
+        advance_season_by_weeks(request, season, weeks)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

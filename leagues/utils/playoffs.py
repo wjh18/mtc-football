@@ -42,8 +42,6 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         lead_ranking = Q(ranking__conference_ranking=1)
         clinch_false = Q(ranking__clinch_bye=False)
         next_ranking = Q(ranking__conference_ranking=2)
-    else:
-        pass
     
     # Div or conf rank 1's who haven't clinched div or conf yet
     lead_standings = standings.filter(lead_ranking, clinch_false)
@@ -56,8 +54,6 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         elif conf:
             match_entity = Q(
                 team__division__conference=rank_1.team.division.conference)
-        else:
-            pass
         
         # Div rank 2's in same div as div rank 1's
         rank_2 = standings.get(next_ranking, match_entity)
@@ -76,9 +72,7 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
                 rank_1.ranking.clinch_berth = True
             elif conf:
                 rank_1.ranking.clinch_bye = True 
-                rank_1.ranking.clinch_berth = True           
-            else:
-                pass
+                rank_1.ranking.clinch_berth = True
             
             rank_1.ranking.save()
             

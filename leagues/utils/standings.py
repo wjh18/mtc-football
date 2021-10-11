@@ -15,7 +15,7 @@ def get_matchup_type(matchup):
         return 'Non-Conference'
 
 
-def copy_standings_for_byes(season, current_week):
+def dupe_standings_for_byes(season, current_week):
     """
     Duplicate the standings of teams that have a regular season
     bye week by copying their current week's TeamStanding instance.
