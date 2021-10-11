@@ -5,7 +5,7 @@ import csv
 from django.apps import apps
 from django.utils.text import slugify
 
-from .url_utils import random_string_generator as random_string
+from .text import random_string_generator as random_string
 
 
 def read_player_names_from_csv():

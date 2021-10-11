@@ -6,10 +6,10 @@ from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .utils.league_setup import (create_league_structure,
-                                 create_season_details)
-from .utils.player_setup import create_team_players
-from .utils.url_utils import random_string_generator as random_string
+from .utils.setup import (
+    create_league_structure, create_season_details)
+from .utils.players import create_team_players
+from .utils.text import random_string_generator as random_string
 
 
 class League(models.Model):

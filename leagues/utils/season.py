@@ -2,7 +2,7 @@ import datetime
 
 from django.apps import apps
 
-from .playoffs_setup import (advance_to_wildcard_playoffs,
+from .playoffs import (advance_to_wildcard_playoffs,
     advance_to_divisional_playoffs, advance_to_conference_playoffs,
     advance_to_championship, sim_championship_matchup)
 

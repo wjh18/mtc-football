@@ -210,8 +210,8 @@ def generate_wildcard_matchups(season, conf_rankings):
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
-                      season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference.name}-wildcard'
+                      {matchup[0].standing.team.division.conference.name}-wildcard-\
+                      season-{season.season_number}'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -278,8 +278,8 @@ def generate_divisional_matchups(season, conf_rankings, wc_winners):
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
-                      season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference.name}-divisional'
+                      {matchup[0].standing.team.division.conference.name}-divisional-\
+                      season-{season.season_number}'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -342,8 +342,8 @@ def generate_conference_matchups(season, conf_rankings, div_winners):
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
-                      season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference.name}-conference-final'
+                      {matchup[0].standing.team.division.conference.name}-championship-\
+                      season-{season.season_number}'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -393,7 +393,7 @@ def generate_championship_matchup(season, conf_winners):
         slug=slugify(
             f'{conf_winners[1].abbreviation}-\
                 {conf_winners[0].abbreviation}-\
-                season-{season.season_number}-championship'
+                championship-season-{season.season_number}'
         )
     )
     

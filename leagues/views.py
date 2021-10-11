@@ -17,13 +17,12 @@ from django.contrib.auth.mixins import (
 from .models import (
     League, Player, Team, UserTeam,
     Season, Matchup, TeamStanding)
-from leagues.utils.advance_season import (
+from leagues.utils.season import (
     advance_season_weeks, advance_to_next_season)
-from leagues.utils.update_standings import (
-    copy_standings_for_byes,
-    update_standings,
-    update_rankings)
-from leagues.utils.playoffs_setup import update_running_playoff_clinches
+from leagues.utils.standings import (
+    copy_standings_for_byes, update_standings)
+from leagues.utils.rankings import update_rankings
+from leagues.utils.playoffs import update_running_playoff_clinches
 
 
 ### Custom Mixins & Decorators ###
