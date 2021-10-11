@@ -21,14 +21,14 @@ def copy_standings_for_byes(season, current_week):
     bye week by copying their current week's TeamStanding instance.
     """
     teams = season.get_byes()
-    for team in teams:
-        current_standing = TeamStanding.objects.get(
-            team=team, season=season,
-            week_number=current_week)
-        current_standing.pk = None        
-        current_standing._state.adding = True
-        current_standing.week_number = current_week + 1
-        current_standing.save()
+    standings = TeamStanding.objects.filter(
+        team__in=teams, season=season, week_number=current_week)
+    
+    for standing in standings:  
+        standing.pk = None        
+        standing._state.adding = True
+        standing.week_number = current_week + 1
+        standing.save()
 
                        
 def update_standings(season, current_week, matchups):

@@ -378,6 +378,8 @@ def advance_season(request, league):
             week_limit = REGULAR_SEASON_WEEKS - (current_week - 1)
             if not weeks or weeks > week_limit:
                 weeks = week_limit
+                
+            success_message = f'Advanced regular season by {weeks} week(s).'
 
             # Get scores and results for each week's matchups, update standings
             for week_num in range(current_week, current_week + weeks):
@@ -390,10 +392,12 @@ def advance_season(request, league):
                 update_running_playoff_clinches(season)
                 # Progress season by X weeks and save instance
                 advance_season_weeks(season)
+                if week_num == REGULAR_SEASON_WEEKS:
+                    success_message += f''' The first week of the postseason 
+                        has begun.'''
                 week_num += 1
 
-            messages.add_message(request, messages.SUCCESS,
-                                f'Advanced regular season by {weeks} week(s).')
+            messages.add_message(request, messages.SUCCESS, success_message)
             
         # Advance playoffs
         elif REGULAR_SEASON_WEEKS + 1 <= current_week <= LAST_WEEK_OF_PLAYOFFS:
@@ -402,18 +406,22 @@ def advance_season(request, league):
             if not weeks or weeks > week_limit:
                 weeks = week_limit
                 
+            success_message = f'Advanced playoffs by {weeks} week(s).'
+                
             # Get scores and results for each playoff round
             for week_num in range(current_week, current_week + weeks):                           
-                advance_season_weeks(season)                
+                advance_season_weeks(season)
+                if week_num == LAST_WEEK_OF_PLAYOFFS:
+                    success_message += f""" You've entered the offseason.
+                        Advance at least one week to start a new season."""
                 
-            messages.add_message(request, messages.SUCCESS,
-                                f'Advanced playoffs by {weeks} week(s).')
+            messages.add_message(request, messages.SUCCESS, success_message)
             
         # Conclude the season and start a new one
         elif current_week >= LAST_WEEK_OF_PLAYOFFS + 1:        
             advance_to_next_season(season)
             messages.add_message(request, messages.SUCCESS,
-                                f'A new season has been started.')
+                                f'A new season has begun.')
         else:
             messages.add_message(request, messages.WARNING,
                 f"Sorry, we aren't in the right part of the season for that!")
