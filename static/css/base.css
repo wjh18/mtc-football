@@ -161,6 +161,7 @@ colgroup > .col-recent {
 }
 
 /* Standings */
+
 .clinches {    
     font-size: 14px;
     margin-left: 20px;
@@ -172,4 +173,8 @@ colgroup > .col-recent {
 
 .no-clinch {
     color: darkred;
+}
+
+.standing-team {
+    margin-right: 10px;
 }

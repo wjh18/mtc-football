@@ -37,8 +37,7 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
     if div:
         lead_ranking = Q(ranking__division_ranking=1)
         clinch_false = Q(ranking__clinch_div=False)
-        next_ranking = Q(ranking__division_ranking=2)
-        
+        next_ranking = Q(ranking__division_ranking=2)       
     elif conf:
         lead_ranking = Q(ranking__conference_ranking=1)
         clinch_false = Q(ranking__clinch_bye=False)
@@ -54,9 +53,11 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         if div:
             match_entity = Q(
                 team__division=rank_1.team.division)
-        else:
+        elif conf:
             match_entity = Q(
                 team__division__conference=rank_1.team.division.conference)
+        else:
+            pass
         
         # Div rank 2's in same div as div rank 1's
         rank_2 = standings.get(next_ranking, match_entity)
@@ -72,25 +73,64 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         if rank_2_gb > rank_2_gl:
             if div:
                 rank_1.ranking.clinch_div = True
+                rank_1.ranking.clinch_berth = True
+            elif conf:
+                rank_1.ranking.clinch_bye = True 
+                rank_1.ranking.clinch_berth = True           
             else:
-                rank_1.ranking.clinch_bye = True
+                pass
+            
             rank_1.ranking.save()
             
 
-def update_running_playoff_berths(standings):
+def update_berths_and_eliminations(standings):
     """
-    Update playoff berths mid-season based on
-    how many games back the eight ranking team is.
+    Update playoff berths and eliminations mid-season based on
+    how many games back the eighth ranking and below teams are.
     """
-    pass
+    # Top and bottom standings who haven't clinched a berth or aren't out yet
+    top_7_standings = standings.filter(
+        ranking__conference_ranking__lte=7, ranking__clinch_berth=False)
+    
+    bottom_8_standings = standings.filter(
+            ranking__conference_ranking__gte=8, ranking__clinch_none=False)
+    
+    for top_7 in top_7_standings:
+        
+        rank_8 = standings.get(
+            ranking__conference_ranking=8,
+            team__division__conference=top_7.team.division.conference)
+        
+        top_7_wins = top_7.wins + 0.5*top_7.ties
+        
+        rank_8_gp = rank_8.wins + rank_8.losses + rank_8.ties
+        rank_8_gl = 17 - rank_8_gp
+        rank_8_wins = rank_8.wins + 0.5*rank_8.ties
+        rank_8_gb = top_7_wins - rank_8_wins
 
+        # Rank 1 clinches div (rank 2 is too many games behind)        
+        if rank_8_gb > rank_8_gl:
+            top_7.ranking.clinch_berth = True
+            top_7.ranking.save()
+    
+    for bottom_8 in bottom_8_standings:
+        
+        rank_7 = standings.get(
+            ranking__conference_ranking=7,
+            team__division__conference=bottom_8.team.division.conference)
+        
+        rank_7_wins = rank_7.wins + 0.5*rank_7.ties
+        
+        bottom_8_gp = bottom_8.wins + bottom_8.losses + bottom_8.ties
+        bottom_8_gl = 17 - bottom_8_gp
+        bottom_8_wins = bottom_8.wins + 0.5*bottom_8.ties
+        bottom_8_gb = rank_7_wins - bottom_8_wins
 
-def update_running_missed_playoffs(standings):
-    """
-    Update teams who missed playoffs mid-season based on
-    how many games back the eight ranking team is.
-    """
-    pass
+        # Rank 1 clinches div (rank 2 is too many games behind)        
+        if bottom_8_gb > bottom_8_gl:
+            bottom_8.ranking.clinch_none = True
+            bottom_8.ranking.save()
+        
   
         
 def update_playoff_rankings(season, round_type, winner):
@@ -171,7 +211,7 @@ def generate_wildcard_matchups(season, conf_rankings):
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
                       season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference}-wildcard'
+                      {matchup[0].standing.team.division.conference.name}-wildcard'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -239,7 +279,7 @@ def generate_divisional_matchups(season, conf_rankings, wc_winners):
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
                       season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference}-divisional'
+                      {matchup[0].standing.team.division.conference.name}-divisional'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -303,7 +343,7 @@ def generate_conference_matchups(season, conf_rankings, div_winners):
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
                       season-{season.season_number}-\
-                      {matchup[0].standing.team.division.conference}-conference-final'
+                      {matchup[0].standing.team.division.conference.name}-conference-final'
                 )
             ) for matchup in MATCHUPS
         ])
@@ -385,14 +425,16 @@ def update_running_playoff_clinches(season):
     Update playoff clinches mid-season based on
     how many games back lower rankings teams are.
     """
-    TeamStanding = apps.get_model('leagues.TeamStanding')
-    standings = TeamStanding.objects.filter(
-        season=season, week_number=season.week_number + 1)
-    
-    update_div_and_conf_clinches(standings, div=True)
-    update_div_and_conf_clinches(standings, conf=True)
-    update_running_playoff_berths(standings)
-    update_running_missed_playoffs(standings)
+    # Only check in week 8 or later
+    # (No team can clinch or be eliminated with 8 or less games)
+    if season.week_number >= 8:
+        TeamStanding = apps.get_model('leagues.TeamStanding')
+        standings = TeamStanding.objects.filter(
+            season=season, week_number=season.week_number + 1)
+        
+        update_div_and_conf_clinches(standings, div=True)
+        update_div_and_conf_clinches(standings, conf=True)
+        update_berths_and_eliminations(standings)
 
 
 ### Functions to set up each playoff round

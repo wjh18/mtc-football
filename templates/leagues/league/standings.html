@@ -24,6 +24,7 @@
   {% if not entity %}
     <ul>
       <li>Division rankings are determined by W/L/T, PF and PA in that order.</li>
+      <li>Z = First round bye &middot; Y = Clinched division &middot; X = Clinched playoff berth &middot; O = Missed playoffs</li>
     </ul>
     {% for conference in league.conferences.all %}
     <br>
@@ -67,7 +68,7 @@
               <tr {% if standing.team.userteam %}class="table-active"{% endif %}>
                 <th scope="row">{{ standing.ranking.division_ranking }}</th>
                 <td>
-                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a> 
+                  <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a> 
                   {% if standing.ranking.clinch_bye %}
                     <span class="clinches clinch-bye">
                       Z
@@ -118,7 +119,8 @@
       <hr>
           <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
-              <caption>Top 4 (division leaders) - Top 7 (playoffs)</caption>
+              <caption>Top 4 = Division leaders &middot; Top 7 = Playoff contenders &middot;
+              Z = First round bye &middot; Y = Clinched division &middot; X = Clinched playoff berth &middot; O = Missed playoffs</caption>
               <colgroup>
                 <col span="2">
                 <col span="4" class="col-wlt">
@@ -161,7 +163,7 @@
                           {% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
                 <td>
-                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                  <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
                   {% if standing.ranking.clinch_bye %}
                     <span class="clinches">
                       Z
@@ -246,7 +248,7 @@
           <th scope="row">{{ forloop.counter }}</th>
           <td>{{ standing.team.overall_rating }}</td>
           <td>
-            <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>            
+            <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>            
             {% if standing.ranking.clinch_bye %}
               <span class="clinches clinch-bye">
                 Z
