@@ -29,22 +29,37 @@ def update_final_playoff_clinches(season):
         ranking.save()
         
 
-def update_running_div_clinches(standings):
+def update_div_and_conf_clinches(standings, div=False, conf=False):
     """
-    Update div clinches mid-season based on
+    Update div and conf clinches mid-season based on
     how many games back the second ranking team is.
     """
+    if div:
+        lead_ranking = Q(ranking__division_ranking=1)
+        clinch_false = Q(ranking__clinch_div=False)
+        next_ranking = Q(ranking__division_ranking=2)
+        
+    elif conf:
+        lead_ranking = Q(ranking__conference_ranking=1)
+        clinch_false = Q(ranking__clinch_bye=False)
+        next_ranking = Q(ranking__conference_ranking=2)
+    else:
+        pass
     
-    # Div rank 1's who haven't clinched div yet
-    div_lead_standings = standings.filter(
-        ranking__division_ranking=1, ranking__clinch_div=False)
+    # Div or conf rank 1's who haven't clinched div or conf yet
+    lead_standings = standings.filter(lead_ranking, clinch_false)
     
-    for rank_1 in div_lead_standings:
+    for rank_1 in lead_standings:
+        
+        if div:
+            match_entity = Q(
+                team__division=rank_1.team.division)
+        else:
+            match_entity = Q(
+                team__division__conference=rank_1.team.division.conference)
         
         # Div rank 2's in same div as div rank 1's
-        rank_2 = standings.get(
-            ranking__division_ranking=2,
-            team__division=rank_1.team.division)
+        rank_2 = standings.get(next_ranking, match_entity)
         
         rank_1_wins = rank_1.wins + 0.5*rank_1.ties
          
@@ -55,17 +70,12 @@ def update_running_div_clinches(standings):
 
         # Rank 1 clinches div (rank 2 is too many games behind)        
         if rank_2_gb > rank_2_gl:
-            rank_1.ranking.clinch_div = True
+            if div:
+                rank_1.ranking.clinch_div = True
+            else:
+                rank_1.ranking.clinch_bye = True
             rank_1.ranking.save()
             
-            
-def update_running_conf_clinches(standings):
-    """
-    Update conf clinches mid-season based on
-    how many games back the second ranking team is.
-    """
-    pass
-
 
 def update_running_playoff_berths(standings):
     """
@@ -379,9 +389,8 @@ def update_running_playoff_clinches(season):
     standings = TeamStanding.objects.filter(
         season=season, week_number=season.week_number + 1)
     
-    # if season.week_number > 1:
-    update_running_div_clinches(standings)
-    update_running_conf_clinches(standings)
+    update_div_and_conf_clinches(standings, div=True)
+    update_div_and_conf_clinches(standings, conf=True)
     update_running_playoff_berths(standings)
     update_running_missed_playoffs(standings)
 
