@@ -161,11 +161,15 @@ colgroup > .col-recent {
 }
 
 /* Standings */
-.clinches {
+.clinches {    
+    font-size: 14px;
+    margin-left: 20px;
+    margin-top: 2px;
+    float: right;
+    font-weight: bold;
     color: darkgreen;
-    font-size: 12px;
-    margin-left: 5px;
 }
+
 .no-clinch {
     color: darkred;
 }

@@ -68,21 +68,24 @@
                 <th scope="row">{{ standing.ranking.division_ranking }}</th>
                 <td>
                   <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a> 
-                  <span class="clinches">
-                    {% if standing.ranking.clinch_bye %}
+                  {% if standing.ranking.clinch_bye %}
+                    <span class="clinches clinch-bye">
                       Z
-                    {% elif standing.ranking.clinch_div %}
+                    </span>
+                  {% elif standing.ranking.clinch_div %}
+                    <span class="clinches clinch-div">
                       Y
-                    {% elif standing.ranking.clinch_berth %}
-                      X
-                  </span>
-                    {% elif standing.ranking.clinch_none %}
-                  <span class="no-clinch">
+                    </span>
+                  {% elif standing.ranking.clinch_berth %}
+                    <span class="clinches clinch-berth">
+                      X             
+                    </span>     
+                  {% elif standing.ranking.clinch_none %}
+                    <span class="clinches no-clinch">
                       O
-                  </span>
-                    {% else %}
-                    {% endif %}
-                  
+                    </span>
+                  {% else %}
+                  {% endif %}                 
                 </td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>
@@ -157,7 +160,27 @@
                             border-bottom:2px solid firebrick;
                           {% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
-                <td><a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+                <td>
+                  <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                  {% if standing.ranking.clinch_bye %}
+                    <span class="clinches">
+                      Z
+                    </span>
+                  {% elif standing.ranking.clinch_div %}
+                    <span class="clinches">
+                      Y
+                    </span>
+                  {% elif standing.ranking.clinch_berth %}
+                    <span class="clinches">
+                      X             
+                    </span>     
+                  {% elif standing.ranking.clinch_none %}
+                    <span class="clinches no-clinch">
+                      O
+                    </span>
+                  {% else %}
+                  {% endif %}
+                </td>
                 <td>{{ standing.wins }}</td>
                 <td>{{ standing.losses }}</td>
                 <td>{{ standing.ties }}</td>
@@ -222,7 +245,27 @@
         <tr {% if standing.team.userteam %}class="table-active"{% endif %}>
           <th scope="row">{{ forloop.counter }}</th>
           <td>{{ standing.team.overall_rating }}</td>
-          <td><a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a></td>
+          <td>
+            <a href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>            
+            {% if standing.ranking.clinch_bye %}
+              <span class="clinches clinch-bye">
+                Z
+              </span>
+            {% elif standing.ranking.clinch_div %}
+              <span class="clinches clinch-div">
+                Y
+              </span>
+            {% elif standing.ranking.clinch_berth %}
+              <span class="clinches clinch-berth">
+                X             
+              </span>     
+            {% elif standing.ranking.clinch_none %}
+              <span class="clinches no-clinch">
+                O
+              </span>
+            {% else %}
+            {% endif %}
+          </td>
           <td>{{ standing.wins }}</td>
           <td>{{ standing.losses }}</td>
           <td>{{ standing.ties }}</td>   
