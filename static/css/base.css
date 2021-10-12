@@ -87,6 +87,10 @@ colgroup > .col-recent {
     position: absolute;
 }
 
+.team-dropdown-item {
+    font-size: 12px;
+}
+
 /* Matchups */
 
 .matchup-section {

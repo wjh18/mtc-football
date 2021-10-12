@@ -448,10 +448,14 @@ class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
     template_name = 'leagues/team/team_detail.html'
 
     def get_queryset(self):
-        team_slug = self.kwargs['slug']
-        return Team.objects.filter(
-            league__slug=self.kwargs['league'], slug=team_slug)
-
+        league_slug = self.kwargs['league']
+        return Team.objects.filter(league__slug=league_slug)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        league_slug = self.kwargs['league']
+        context['team_list'] = Team.objects.filter(league__slug=league_slug)
+        return context
 
 class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     """

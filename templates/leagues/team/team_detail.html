@@ -5,12 +5,21 @@
 {% block content %}
   <div>
     <h2>
-      Home &middot; {{ team }}
+      Home &middot; {{ team.location }} {{ team.name }}
       {% if team.userteam %}
         <span class="my-team-tag">GM</span>
       {% endif %}
     </h2>
-    <a href="{% url 'leagues:team_list' league.slug %}">&larr; Return to Teams</a>
+    <div class="btn-group dropend mt-2">
+      <button class="btn btn-warning btn-sm dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
+        Select a team
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="filter-by-team">
+        {% for new_team in team_list %}
+          <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:team_detail' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
     <hr>
     <div>
       {% if team.userteam %}
