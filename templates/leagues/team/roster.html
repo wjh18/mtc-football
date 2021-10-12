@@ -9,7 +9,18 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h2>
-  <a href="{{ team.get_absolute_url }}">&larr; Team Home</a>
+  
+  <div class="btn-group dropend mt-2">
+    <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
+      Select a team
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="filter-by-team">
+      {% for new_team in team_list %}
+        <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:depth_chart' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+
   <hr>
   <div class="table-responsive">
     <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">

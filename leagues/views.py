@@ -470,6 +470,8 @@ class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         context = super().get_context_data(**kwargs)
         team = context['team']
         context['contracts'] = team.contracts.all()
+        league_slug = self.kwargs['league']
+        context['team_list'] = Team.objects.filter(league__slug=league_slug)
         return context
 
 
@@ -502,6 +504,8 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             id__in=player_ids,
             position=position
         ).order_by('-overall_rating')
+        league_slug = self.kwargs['league']
+        context['team_list'] = Team.objects.filter(league__slug=league_slug)
 
         return context
 
@@ -530,6 +534,8 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         team = context['team']
         season = context['season']        
         context['bye_week'] = team.check_bye_week(season)
+        league_slug = self.kwargs['league']
+        context['team_list'] = Team.objects.filter(league__slug=league_slug)
         
         return context
 
