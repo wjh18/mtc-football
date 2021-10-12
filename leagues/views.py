@@ -349,23 +349,25 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
 class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
     """
-    Advance the regular season, playoffs or to the next season.
+    Advance the regular season, playoffs or to the next season
+    based on the number of weeks submitted in the form.
     """
     form_class = AdvanceSeasonForm
     template_name = 'leagues/forms/advance_season_form.html'
 
     def form_valid(self, form):
+        # Get Season context provided by LeagueContextMixin
         context = self.get_context_data()
-        advance = form.cleaned_data['advance']
+        season = context['season']
         
-        if advance == 'next':
+        # Advance to end of phase or X weeks
+        advance = form.cleaned_data['advance']          
+        if advance == 'Next':
             weeks = False
         else:
-            weeks = int(advance)
-        
-        # Advance by X weeks or until end of phase
-        advance_season_by_weeks(self.request, context['season'], weeks)
-        
+            weeks = int(advance)            
+        advance_season_by_weeks(self.request, season, weeks)
+           
         return super().form_valid(form)
         
     def get_success_url(self):
@@ -377,17 +379,22 @@ class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
 
 class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
     """
-    Select the user-controlled team if the logged-in user is the league owner.
+    Create the league's user-controlled team based on the
+    league owner's team selection submitted in the form.
     """
     form_class = TeamSelectForm
     template_name = 'leagues/forms/team_select_form.html'
     
     def form_valid(self, form):
+        # Get League context provided by LeagueContextMixin
         context = self.get_context_data()
         league = context['league']
+        
+        # Create UserTeam based on selected Team in form data.
         team = form.cleaned_data['team']
         selected_team = league.teams.get(pk=team.pk)
         UserTeam.objects.create(league=league, team=selected_team)
+        
         messages.add_message(
             self.request, messages.SUCCESS,
             f'You are now the GM of the \
@@ -397,6 +404,7 @@ class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
     
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        # Add league to form kwargs to filter teams
         kwargs['league'] = self.kwargs['league']
         return kwargs
     
@@ -424,7 +432,9 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         else:
             context['user_team'] = False
         
-        context['form'] = TeamSelectForm(form_kwargs={'league': context['league']})
+        # Add TeamSelectForm as context to team_list.html
+        context['form'] = TeamSelectForm(
+            form_kwargs={'league': context['league']})
 
         return context
 
