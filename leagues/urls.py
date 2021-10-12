@@ -16,8 +16,8 @@ urlpatterns = [
     
     # Generic Team views
     path('<slug:league>/teams/', views.TeamListView.as_view(), name='team_list'),
-    path('<slug:league>/teams/update-user-team/',
-         views.update_user_team, name='update_user_team'),
+    path('<slug:league>/teams/team-select/',
+         views.TeamSelectFormView.as_view(), name='team_select'),
     path('<slug:league>/teams/<slug:slug>/',
          views.TeamDetailView.as_view(), name='team_detail'),
     

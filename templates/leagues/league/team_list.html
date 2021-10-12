@@ -11,18 +11,7 @@
       <h3 class="mt-4">Welcome to your new league, {{ user }}.</h3>
       <p class="mt-3">Start by reviewing the rosters, then pick which team you want to sign onto as GM. Once you choose a team, you're locked in until your contract expires so choose wisely!</p>
     </div>
-    <form action="{% url 'leagues:update_user_team' league.slug %}" method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        <select class="form-select mb-3" name="teams" id="team-select">
-          <option disabled selected value>-- Select your team --</option>
-          {% for team in team_list %}
-          <option value="{{ team.pk }}">{{ team.location }} {{ team.name }}</option>
-          {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-primary mb-3">Submit</button>
-      </div>
-    </form>
+    {% include 'leagues/forms/team_select_form.html' %}
   {% endif %}
   <div class="row">
     {% for team in team_list %}

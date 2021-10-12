@@ -1,8 +1,6 @@
 # Django imports
-from django.http import HttpResponseRedirect, Http404
-from django.urls import reverse, reverse_lazy
-from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.db.models import Q, F, FloatField, When, Case
@@ -13,7 +11,7 @@ from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin)
 
-from leagues.forms import AdvanceSeasonForm
+from leagues.forms import AdvanceSeasonForm, TeamSelectForm
 
 # App imports
 from .models import (
@@ -354,16 +352,16 @@ class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
     Advance the regular season, playoffs or to the next season.
     """
     form_class = AdvanceSeasonForm
-    template_name = 'leagues/advance_season_form.html'
+    template_name = 'leagues/forms/advance_season_form.html'
 
     def form_valid(self, form):
+        context = self.get_context_data()
         advance = form.cleaned_data['advance']
+        
         if advance == 'next':
             weeks = False
         else:
             weeks = int(advance)
-            
-        context = self.get_context_data()
         
         # Advance by X weeks or until end of phase
         advance_season_by_weeks(self.request, context['season'], weeks)
@@ -375,6 +373,36 @@ class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
 
 
 ### Team Views ###
+
+
+class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
+    """
+    Select the user-controlled team if the logged-in user is the league owner.
+    """
+    form_class = TeamSelectForm
+    template_name = 'leagues/forms/team_select_form.html'
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        league = context['league']
+        team = form.cleaned_data['team']
+        selected_team = league.teams.get(pk=team.pk)
+        UserTeam.objects.create(league=league, team=selected_team)
+        messages.add_message(
+            self.request, messages.SUCCESS,
+            f'You are now the GM of the \
+            {selected_team.location} {selected_team.name}.'
+        )
+        return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['league'] = self.kwargs['league']
+        return kwargs
+    
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER', '/')
+
 
 class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     """
@@ -395,6 +423,8 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             context['user_team'] = True
         else:
             context['user_team'] = False
+        
+        context['form'] = TeamSelectForm(form_kwargs={'league': context['league']})
 
         return context
 
@@ -460,36 +490,6 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         ).order_by('-overall_rating')
 
         return context
-
-
-@login_required
-@is_league_owner
-def update_user_team(request, league):
-    """
-    Select the user-controlled team if the logged-in user is the league owner.
-    """
-    if request.method == 'POST':
-        league = get_object_or_404(League, slug=league)
-
-        try:
-            selected_team = league.teams.get(pk=request.POST['teams'])
-        except (KeyError, Team.DoesNotExist):
-            # Redisplay the team selection page with an error.
-            return render(request, 'leagues/league/team_list.html', {
-                'league': league,
-                'error_message': "You didn't select a team.",
-            })
-        else:
-            UserTeam.objects.create(league=league, team=selected_team)
-            messages.add_message(
-                request, messages.SUCCESS,
-                f'You are now the GM of the \
-                {selected_team.location} {selected_team.name}.'
-            )
-
-            return HttpResponseRedirect(
-                reverse('leagues:team_detail',
-                        args=[league.slug, selected_team.slug]))
 
 
 class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
