@@ -35,7 +35,7 @@ urlpatterns = [
     
     # League advancement views
     path('<slug:league>/advance-season/',
-         views.advance_season, name='advance_season'),
+         views.AdvanceSeasonFormView.as_view(), name='advance_season'),
     
     # League standings views
     path('<slug:league>/standings/',

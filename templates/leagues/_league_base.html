@@ -21,20 +21,9 @@
           <span class="m-0">{{ season.get_phase_display }}</span>
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-5">
-          <div class="dropdown blah">          
-            <form action="{% url 'leagues:advance_season' league.slug %}" method="post" id="advance-form">
-              {% csrf_token %}
-              <select class="form-select" name="advance" id="advance-select" onchange="this.form.submit()">
-                <option disabled selected value>Advance</option>                
-                <option value="1">1 Week</option>
-                <option value="2">2 Weeks</option>
-                <option value="4">4 Weeks</option>
-                <option value="8">8 Weeks</option>
-                <option value="end">Next phase</option>
-              </select>
-            </form>            
-          </div>
-          
+          <div class="dropdown">          
+            {% include 'leagues/advance_season_form.html' %}           
+          </div>          
         </ul>
     </div>    
   </header>

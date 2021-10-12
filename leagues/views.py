@@ -7,11 +7,13 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.db.models import Q, F, FloatField, When, Case
 from django.db.models.functions import Cast
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, UserPassesTestMixin)
+
+from leagues.forms import AdvanceSeasonForm
 
 # App imports
 from .models import (
@@ -347,26 +349,29 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-@login_required
-@is_league_owner
-def advance_season(request, league):
+class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
     """
     Advance the regular season, playoffs or to the next season.
     """
-    league = get_object_or_404(League, slug=league)
-    season = get_object_or_404(Season, league=league, is_current=True)
-    
-    if request.method == 'POST':
-        # Get number of weeks from form submission
-        if request.POST['advance'].isdigit():
-            weeks = int(request.POST['advance'])
-        else:
-            weeks = False
-            
-        # Advance by X weeks or until end of phase
-        advance_season_by_weeks(request, season, weeks)
+    form_class = AdvanceSeasonForm
+    template_name = 'leagues/advance_season_form.html'
 
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    def form_valid(self, form):
+        advance = form.cleaned_data['advance']
+        if advance == 'next':
+            weeks = False
+        else:
+            weeks = int(advance)
+            
+        context = self.get_context_data()
+        
+        # Advance by X weeks or until end of phase
+        advance_season_by_weeks(self.request, context['season'], weeks)
+        
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER', '/')
 
 
 ### Team Views ###
