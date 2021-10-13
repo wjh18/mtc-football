@@ -46,7 +46,7 @@ colgroup > .col-recent {
     height: 150px;
     width: 270px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    border: 1px solid black;
+    border: 2px solid black;
 }
 
 .team-list-wrapper a {
@@ -97,7 +97,7 @@ colgroup > .col-recent {
     margin: 10px 0 10px 0;
 }
 
-.matchup-type {
+.matchup-section-header {
     font-size: 22px;
 }
 
@@ -105,18 +105,40 @@ colgroup > .col-recent {
     display: inline-block;
     margin: 0px 10px 0px 10px;
     box-sizing: border-box;
-    height: 120px;
+    height: 150px;
     width: 150px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     margin: 15px 10px 15px 10px;
-    border: 1px solid black;
+    border: 2px solid black;
+}
+
+.team-winner {
+    color: darkgreen;
+}
+
+.conf1-border {
+    border: 2px solid darkred;
+    box-shadow: 0 2px 4px rgba(140, 0, 0, 0.16), 0 3px 6px rgba(140, 0, 0, 0.23);
+}
+
+.conf2-border {
+    border: 2px solid darkblue;
+    box-shadow: 0 2px 4px rgba(0, 28, 140, 0.16), 0 3px 6px rgba(0, 28, 140, 0.23);
 }
 
 .matchup-link {
-    height: 120px;
+    height: 150px;
     width: 150px;
     display: block;
     text-decoration: none;
+}
+
+.matchup-type {
+    margin: 0;
+    text-align: center;
+    text-decoration: none;
+    color: #333333;
+    margin-top: 10px;
 }
 
 .matchup-teams {

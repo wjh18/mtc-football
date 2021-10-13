@@ -1,4 +1,5 @@
 # Django imports
+from django.db.models.fields import BooleanField
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
@@ -173,8 +174,47 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             week_number = season.week_number
         else:
             week_number = self.kwargs['week_num']
+            
+        matchups = Matchup.objects.filter(
+            season=season, week_number=week_number).annotate(
+                # matchup_type=F('points_for') - F('points_against'),
+                is_afc=Case(
+                    When(
+                        home_team__division__conference__name='AFC',
+                        away_team__division__conference__name='AFC',
+                        then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                ),
+                is_nfc=Case(
+                    When(
+                        home_team__division__conference__name='NFC',
+                        away_team__division__conference__name='NFC',
+                        then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                ),
+                is_divisional=Case(
+                    When(
+                        home_team__division=F('away_team__division'),
+                        then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                ),
+                is_conference=Case(
+                    When(
+                        home_team__division__conference=F('away_team__division__conference'),
+                        then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                )
+            ).order_by('-is_afc', '-is_nfc', '-is_divisional', '-is_conference')
         
-        return Matchup.objects.filter(season=season, week_number=week_number)
+        return matchups
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -196,23 +236,23 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         context['week_num'] = week_number
         context['num_weeks'] = weeks
         
-        context['divisional_matchups'] = Matchup.objects.filter(
-            season=season, week_number=week_number,
-            home_team__division=F('away_team__division')
-        )
+        # context['divisional_matchups'] = Matchup.objects.filter(
+        #     season=season, week_number=week_number,
+        #     home_team__division=F('away_team__division')
+        # )
         
-        context['conference_matchups'] = Matchup.objects.filter(
-            season=season, week_number=week_number,
-            home_team__division__conference=\
-            F('away_team__division__conference')).exclude(
-                home_team__division=F('away_team__division')
-            )
+        # context['conference_matchups'] = Matchup.objects.filter(
+        #     season=season, week_number=week_number,
+        #     home_team__division__conference=\
+        #     F('away_team__division__conference')).exclude(
+        #         home_team__division=F('away_team__division')
+        #     )
         
-        context['non_conf_matchups'] = Matchup.objects.filter(
-            season=season, week_number=week_number).exclude(
-                home_team__division__conference=\
-                F('away_team__division__conference')
-            )
+        # context['non_conf_matchups'] = Matchup.objects.filter(
+        #     season=season, week_number=week_number).exclude(
+        #         home_team__division__conference=\
+        #         F('away_team__division__conference')
+        #     )
 
         if week_number <= 18:        
             context['bye_teams'] = season.get_byes(week_number)
@@ -452,9 +492,11 @@ class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
         return Team.objects.filter(league__slug=league_slug)
     
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)        
+        # Context for team select dropdown
         league_slug = self.kwargs['league']
         context['team_list'] = Team.objects.filter(league__slug=league_slug)
+        
         return context
 
 class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
@@ -470,8 +512,11 @@ class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         context = super().get_context_data(**kwargs)
         team = context['team']
         context['contracts'] = team.contracts.all()
+        
+        # Context for team select dropdown
         league_slug = self.kwargs['league']
         context['team_list'] = Team.objects.filter(league__slug=league_slug)
+        
         return context
 
 
@@ -504,6 +549,8 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             id__in=player_ids,
             position=position
         ).order_by('-overall_rating')
+        
+        # Context for team select dropdown
         league_slug = self.kwargs['league']
         context['team_list'] = Team.objects.filter(league__slug=league_slug)
 
@@ -534,6 +581,8 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         team = context['team']
         season = context['season']        
         context['bye_week'] = team.check_bye_week(season)
+        
+        # Context for team select dropdown
         league_slug = self.kwargs['league']
         context['team_list'] = Team.objects.filter(league__slug=league_slug)
         
