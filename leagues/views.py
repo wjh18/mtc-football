@@ -235,24 +235,6 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             
         context['week_num'] = week_number
         context['num_weeks'] = weeks
-        
-        # context['divisional_matchups'] = Matchup.objects.filter(
-        #     season=season, week_number=week_number,
-        #     home_team__division=F('away_team__division')
-        # )
-        
-        # context['conference_matchups'] = Matchup.objects.filter(
-        #     season=season, week_number=week_number,
-        #     home_team__division__conference=\
-        #     F('away_team__division__conference')).exclude(
-        #         home_team__division=F('away_team__division')
-        #     )
-        
-        # context['non_conf_matchups'] = Matchup.objects.filter(
-        #     season=season, week_number=week_number).exclude(
-        #         home_team__division__conference=\
-        #         F('away_team__division__conference')
-        #     )
 
         if week_number <= 18:        
             context['bye_teams'] = season.get_byes(week_number)
