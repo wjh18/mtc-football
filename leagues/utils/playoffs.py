@@ -201,6 +201,7 @@ def generate_wildcard_matchups(season, conf_rankings):
                 week_number=season.week_number + 1,
                 date=season.current_date,
                 is_postseason=True,
+                is_conference=True,
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
@@ -209,6 +210,12 @@ def generate_wildcard_matchups(season, conf_rankings):
                 )
             ) for matchup in MATCHUPS
         ])
+        
+        # Update whether matchup is divisional
+        for matchup in wildcard_matchups:
+            if matchup.home_team.division == matchup.away_team.division:
+                matchup.is_divisional = True
+        Matchup.objects.bulk_update(wildcard_matchups, ['is_divisional'])
 
         # Bulk create Scoreboards for wildcard Matchups
         Scoreboard.objects.bulk_create([
@@ -269,6 +276,7 @@ def generate_divisional_matchups(season, conf_rankings, wc_winners):
                 week_number=season.week_number + 1,
                 date=season.current_date,
                 is_postseason=True,
+                is_conference=True,
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
@@ -277,6 +285,12 @@ def generate_divisional_matchups(season, conf_rankings, wc_winners):
                 )
             ) for matchup in MATCHUPS
         ])
+        
+        # Add matchup type fields and update instances
+        for matchup in divisional_matchups:
+            if matchup.home_team.division == matchup.away_team.division:
+                matchup.is_divisional = True
+        Matchup.objects.bulk_update(divisional_matchups, ['is_divisional'])
 
         # Bulk create Scoreboards for divisional Matchups
         Scoreboard.objects.bulk_create([
@@ -333,6 +347,7 @@ def generate_conference_matchups(season, conf_rankings, div_winners):
                 week_number=season.week_number + 1,
                 date=season.current_date,
                 is_postseason=True,
+                is_conference=True,
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
@@ -341,6 +356,12 @@ def generate_conference_matchups(season, conf_rankings, div_winners):
                 )
             ) for matchup in MATCHUPS
         ])
+        
+        # Add matchup type fields and update instances
+        for matchup in conference_matchups:
+            if matchup.home_team.division == matchup.away_team.division:
+                matchup.is_divisional = True
+        Matchup.objects.bulk_update(conference_matchups, ['is_divisional'])
 
         # Bulk create Scoreboards for conference Matchups
         Scoreboard.objects.bulk_create([
@@ -377,7 +398,7 @@ def generate_championship_matchup(season, conf_winners):
     Matchup = apps.get_model('leagues.Matchup')
     Scoreboard = apps.get_model('simulation.Scoreboard')
     
-    championship_matchup = Matchup.objects.create(
+    champ_matchup = Matchup.objects.create(
         home_team=conf_winners[0],
         away_team=conf_winners[1],
         season=season,
@@ -392,7 +413,7 @@ def generate_championship_matchup(season, conf_winners):
     )
     
     # Create Scoreboard for championship Matchup
-    Scoreboard.objects.create(matchup=championship_matchup)
+    Scoreboard.objects.create(matchup=champ_matchup)
 
 
 def sim_championship_matchup(season):

@@ -129,18 +129,18 @@ def create_season_details(season):
             slug=slugify(
                 f'{matchup[1].abbreviation}-{matchup[0].abbreviation} \
                 -week-{week_num}-season-{season.season_number}'
-            ),
-            is_conference=Case(
-                    When(
-                        home_team__division__conference=F('away_team__division__conference'),
-                        then=True
-                    ),
-                    default=False,
-                    output_field=BooleanField()
             )
         ) for week_num in range(1, len(matchups) + 1) \
           for matchup in matchups[week_num - 1]
     ])
+    
+    # Add matchup type fields and update instances
+    for matchup in matchup_objs:
+        if matchup.home_team.division == matchup.away_team.division:
+            matchup.is_divisional = True
+        if matchup.home_team.division.conference == matchup.away_team.division.conference:
+            matchup.is_conference = True
+    Matchup.objects.bulk_update(matchup_objs, ['is_divisional', 'is_conference'])
 
     # Bulk create Scoreboards for new Matchups
     Scoreboard.objects.bulk_create([
