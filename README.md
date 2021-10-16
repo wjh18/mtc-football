@@ -1,3 +1,3 @@
-# Pigskin Prowess
+# Move the Chains Football
 
-American Football Management Simulation Game built with Django.
+American football management simulation game built with Python and Django.

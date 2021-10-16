@@ -16,7 +16,7 @@ class HomepageTests(SimpleTestCase):
         self.assertTemplateUsed(self.response, 'home.html')
 
     def test_homepage_contains_correct_html(self):
-        self.assertContains(self.response, 'Welcome to Pigskin Prowess!')
+        self.assertContains(self.response, 'Welcome to Pigskin Move the Chains football!')
 
     def test_homepage_does_not_contain_incorrect_html(self):
         self.assertNotContains(
