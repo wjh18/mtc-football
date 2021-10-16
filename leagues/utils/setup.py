@@ -129,15 +129,15 @@ def create_season_details(season):
             slug=slugify(
                 f'{matchup[1].abbreviation}-{matchup[0].abbreviation} \
                 -week-{week_num}-season-{season.season_number}'
-            ),
-            is_conference=Case(
-                    When(
-                        home_team__division__conference=F('away_team__division__conference'),
-                        then=True
-                    ),
-                    default=False,
-                    output_field=BooleanField()
-                )
+            )
+            # is_conference=Case(
+            #         When(
+            #             home_team__division__conference=F('away_team__division__conference'),
+            #             then=True
+            #         ),
+            #         default=False,
+            #         output_field=BooleanField()
+            #     )
         ) for week_num in range(1, len(matchups) + 1) \
           for matchup in matchups[week_num - 1]
     ])
