@@ -3,10 +3,9 @@ import datetime
 from django.apps import apps
 from django.contrib import messages
 
-from .playoffs import (advance_to_wildcard_playoffs,
-    advance_to_divisional_playoffs, advance_to_conference_playoffs,
-    advance_to_championship, sim_championship_matchup,
-    update_running_playoff_clinches)
+from .playoffs import (
+    advance_playoff_round, sim_round_matchups,
+    sim_round_matchups, update_running_playoff_clinches)
 from .standings import dupe_standings_for_byes, update_standings
 from .rankings import update_rankings
 from ..models import Matchup
@@ -67,7 +66,7 @@ def advance_regular_season(season, weeks, week_num):
     if week_num == 18:
         # Enter playoffs, generate wildcard matchups
         season.phase = 5
-        advance_to_wildcard_playoffs(season)
+        advance_playoff_round(season)
         success_message += f''' The first week of the postseason 
             has begun.'''
             
@@ -79,13 +78,13 @@ def advance_playoffs(season, weeks, week_num):
     success_message = f'Advanced playoffs by {weeks} week(s).'
                         
     if week_num == 19:
-        advance_to_divisional_playoffs(season)
+        advance_playoff_round(season, 'wildcard')
     elif week_num == 20:
-        advance_to_conference_playoffs(season)
+        advance_playoff_round(season, 'divisional')
     elif week_num == 21:
-        advance_to_championship(season)
+        advance_playoff_round(season, 'conference')
     elif week_num == 22:
-        sim_championship_matchup(season)
+        advance_playoff_round(season, 'championship')
         season.phase = 6
         success_message += f""" You've entered the offseason.
             Advance at least one week to start a new season."""

@@ -124,7 +124,23 @@ def update_berths_and_eliminations(standings):
         if bottom_8_gb > bottom_8_gl:
             bottom_8.ranking.clinch_none = True
             bottom_8.ranking.save()
+            
+            
+def update_running_playoff_clinches(season):
+    """
+    Helper function to update the clinches and playoff
+    births for each clinch type in week 8 or later.
+    """
+    # Only check in week 8 or later
+    # (No team can clinch or be eliminated with 8 or less games)
+    if season.week_number >= 8:
+        TeamStanding = apps.get_model('leagues.TeamStanding')
+        standings = TeamStanding.objects.filter(
+            season=season, week_number=season.week_number + 1)
         
+        update_div_and_conf_clinches(standings, div=True)
+        update_div_and_conf_clinches(standings, conf=True)
+        update_berths_and_eliminations(standings)        
   
         
 def update_playoff_rankings(season, round_type, winner):
@@ -133,7 +149,7 @@ def update_playoff_rankings(season, round_type, winner):
     """
     TeamRanking = apps.get_model('leagues.TeamRanking')
     
-    # Duplicate week 19 TeamRanking instance and assign winner    
+    # Get week 19 TeamRanking instance and assign winner    
     ranking = TeamRanking.objects.get(
         standing__team=winner, standing__season=season,
         standing__week_number=19)
@@ -162,38 +178,89 @@ def get_playoff_teams_by_conf(season):
     conferences = season.league.conferences.all()
 
     both_conf_rankings = []
+    
     for conference in conferences:
         conf_rankings = league_rankings.filter(
             standing__team__division__conference=conference,
-            clinch_berth=True).order_by(
-                'conference_ranking')
+            clinch_berth=True
+        ).order_by('conference_ranking')
+        
         both_conf_rankings.append(conf_rankings)
 
     return both_conf_rankings
 
 
-### Wildcard round matchups and sim
-
-def generate_wildcard_matchups(season, conf_rankings):
-    """
-    Create wildcard matchups for first week of playoffs.
-    Rank 1 in each conference gets a bye. Matchups by rank:
-    (2 @ 7) (3 @ 6) (4 @ 5)
-    """
+def generate_round_matchups(season, round_type=False,
+                            conf_rankings=False, winners=False):
+    """Generate playoff matchups for the upcoming round"""
+    
     Matchup = apps.get_model('leagues.Matchup')
     Scoreboard = apps.get_model('simulation.Scoreboard')
-
+    
+    if round_type == 'conference':
+        # Generate championship matchup
+        champ_matchup = Matchup.objects.create(
+            home_team=winners[0],
+            away_team=winners[1],
+            season=season,
+            week_number=season.week_number + 1,
+            date=season.current_date,
+            is_postseason=True,
+            slug=slugify(
+                f'{winners[1].abbreviation}-\
+                    {winners[0].abbreviation}-\
+                    championship-season-{season.season_number}'
+            )
+        )
+        
+        # Create Scoreboard for championship Matchup
+        Scoreboard.objects.create(matchup=champ_matchup)     
+        # Return function to prevent other matchups from being created
+        return
+    
     for cr in conf_rankings:
-
-        # Set wildcard matchup constants based on conf ranks
-        MATCHUPS = [
-            (cr[1], cr[6]),
-            (cr[2], cr[5]),
-            (cr[3], cr[4])
-        ]
-
-        # Bulk create wildcard Matchups
-        wildcard_matchups = Matchup.objects.bulk_create([
+        
+        if not round_type:
+            next_round = 'wildcard'
+            
+            # Set wildcard matchups for first week of playoffs.
+            # Rank 1 in each conference gets a bye. Matchups by rank:
+            # (2 @ 7) (3 @ 6) (4 @ 5)            
+            MATCHUPS = [
+                (cr[1], cr[6]),
+                (cr[2], cr[5]),
+                (cr[3], cr[4])
+            ]
+            
+        elif round_type == 'wildcard':
+            # Filter conf standings by teams who won wc round and rank 1 team
+            cr = cr.filter(
+                Q(standing__team__in=winners) | Q(conference_ranking=1)
+            )
+            next_round = 'divisional'
+            
+            # Set divisional matchups for second week of playoffs.
+            # Rank 1 in each conference and wildcard winners. Matchups by rank:
+            # (1 @ lowest_rank) (2nd_highest @ 3rd_highest)            
+            MATCHUPS = [
+                (cr[0], cr[3]),
+                (cr[1], cr[2])
+            ]
+            
+        elif round_type == 'divisional':
+            # Filter conf standings by teams who won div
+            cr = cr.filter(Q(standing__team__in=winners))
+            next_round = 'conference'
+            
+            # Set conference matchups for third week of playoffs.
+            # Divisional winners by conference ranks. Matchups by rank:
+            # (highest_rank @ lowest_rank) (2nd_highest @ 3rd_highest)
+            MATCHUPS = [
+                (cr[0], cr[1])
+            ]
+        
+        # Bulk create Matchups
+        create_matchups = Matchup.objects.bulk_create([
             Matchup(
                 home_team=matchup[0].standing.team,
                 away_team=matchup[1].standing.team,
@@ -205,273 +272,69 @@ def generate_wildcard_matchups(season, conf_rankings):
                 slug=slugify(
                     f'{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.division.conference.name}-wildcard-\
+                      {matchup[0].standing.team.division.conference.name}-{next_round}-\
                       season-{season.season_number}'
                 )
             ) for matchup in MATCHUPS
         ])
         
         # Update whether matchup is divisional
-        for matchup in wildcard_matchups:
+        for matchup in create_matchups:
             if matchup.home_team.division == matchup.away_team.division:
                 matchup.is_divisional = True
-        Matchup.objects.bulk_update(wildcard_matchups, ['is_divisional'])
+        Matchup.objects.bulk_update(create_matchups, ['is_divisional'])
 
-        # Bulk create Scoreboards for wildcard Matchups
+        # Bulk create Scoreboards for Matchups
         Scoreboard.objects.bulk_create([
-            Scoreboard(matchup=matchup) for matchup in wildcard_matchups])
+            Scoreboard(matchup=matchup) for matchup in create_matchups])
 
 
-def sim_wildcard_matchups(season):
-    """Sim wildcard round matchups."""
+def sim_round_matchups(season, round_type):
+    """Sim round matchups based on round type."""
     Matchup = apps.get_model('leagues.Matchup')
     current_week = season.week_number
-    round_type = 'wildcard'
-        
-    # Get winner and update their ranking
-    matchups = Matchup.objects.filter(
-        season=season, week_number=current_week)
-
-    winners = []
-    for matchup in matchups:
-        matchup.scoreboard.get_score()
-        winner = matchup.scoreboard.get_winner()
-        winners.append(winner)
-        
-        update_playoff_rankings(season, round_type, winner)  
-
-    return winners
-
-
-### Divisional round matchups and sim
-
-def generate_divisional_matchups(season, conf_rankings, wc_winners):
-    """
-    Create divisional matchups for second week of playoffs.
-    Rank 1 in each conference and wildcard winners. Matchups by rank:
-    (1 @ lowest_rank) (2nd_highest @ 3rd_highest)
-    """
-    Matchup = apps.get_model('leagues.Matchup')
-    Scoreboard = apps.get_model('simulation.Scoreboard')
-
-    for cr in conf_rankings:
-        
-        # Filter conf standings by teams who won wc round and rank 1 team
-        cr = cr.filter(
-            Q(standing__team__in=wc_winners) | Q(conference_ranking=1)
-        )
-        
-        # Set divisional matchup constants based on conf ranks
-        MATCHUPS = [
-            (cr[0], cr[3]),
-            (cr[1], cr[2])
-        ]
-
-        # Bulk create divisional Matchups
-        divisional_matchups = Matchup.objects.bulk_create([
-            Matchup(
-                home_team=matchup[0].standing.team,
-                away_team=matchup[1].standing.team,
-                season=season,
-                week_number=season.week_number + 1,
-                date=season.current_date,
-                is_postseason=True,
-                is_conference=True,
-                slug=slugify(
-                    f'{matchup[1].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.division.conference.name}-divisional-\
-                      season-{season.season_number}'
-                )
-            ) for matchup in MATCHUPS
-        ])
-        
-        # Add matchup type fields and update instances
-        for matchup in divisional_matchups:
-            if matchup.home_team.division == matchup.away_team.division:
-                matchup.is_divisional = True
-        Matchup.objects.bulk_update(divisional_matchups, ['is_divisional'])
-
-        # Bulk create Scoreboards for divisional Matchups
-        Scoreboard.objects.bulk_create([
-            Scoreboard(matchup=matchup) for matchup in divisional_matchups])
-
-
-def sim_divisional_matchups(season):
-    """Sim divisional round matchups."""
-    Matchup = apps.get_model('leagues.Matchup')
-    current_week = season.week_number
-    round_type = 'divisional'
-
-    matchups = Matchup.objects.filter(
-        season=season, week_number=current_week)
-
-    winners = []
-    for matchup in matchups:
-        matchup.scoreboard.get_score()
-        winner = matchup.scoreboard.get_winner()
-        winners.append(winner)
-        
-        update_playoff_rankings(season, round_type, winner)         
-
-    return winners
-
-
-### Conference final matchups and sim
-
-def generate_conference_matchups(season, conf_rankings, div_winners):
-    """
-    Create conference matchups for third week of playoffs.
-    Divisional winners by conference ranks. Matchups by rank:
-    (highest_rank @ lowest_rank) (2nd_highest @ 3rd_highest)
-    """
-    Matchup = apps.get_model('leagues.Matchup')
-    Scoreboard = apps.get_model('simulation.Scoreboard')
-
-    for cr in conf_rankings:
-        
-        # Filter conf standings by teams who won div
-        cr = cr.filter(Q(standing__team__in=div_winners))
-        
-        # Set conference matchup constants based on conf ranks
-        MATCHUPS = [
-            (cr[0], cr[1])
-        ]
-
-        # Bulk create conference Matchups
-        conference_matchups = Matchup.objects.bulk_create([
-            Matchup(
-                home_team=matchup[0].standing.team,
-                away_team=matchup[1].standing.team,
-                season=season,
-                week_number=season.week_number + 1,
-                date=season.current_date,
-                is_postseason=True,
-                is_conference=True,
-                slug=slugify(
-                    f'{matchup[1].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.division.conference.name}-championship-\
-                      season-{season.season_number}'
-                )
-            ) for matchup in MATCHUPS
-        ])
-        
-        # Add matchup type fields and update instances
-        for matchup in conference_matchups:
-            if matchup.home_team.division == matchup.away_team.division:
-                matchup.is_divisional = True
-        Matchup.objects.bulk_update(conference_matchups, ['is_divisional'])
-
-        # Bulk create Scoreboards for conference Matchups
-        Scoreboard.objects.bulk_create([
-            Scoreboard(matchup=matchup) for matchup in conference_matchups])
-
-
-def sim_conference_matchups(season):
-    """Sim conference round matchups."""
-    Matchup = apps.get_model('leagues.Matchup')
-    current_week = season.week_number
-    round_type = 'conference'
-
-    matchups = Matchup.objects.filter(
-        season=season, week_number=current_week)
-
-    winners = []
-    for matchup in matchups:
-        matchup.scoreboard.get_score()
-        winner = matchup.scoreboard.get_winner()
-        winners.append(winner)
-        
-        update_playoff_rankings(season, round_type, winner)
-
-    return winners
-
-
-### Championship matchups and sim
-
-def generate_championship_matchup(season, conf_winners):
-    """
-    Create championship matchup for final (4) week of playoffs.
-    (highest_rank @ lowest_rank)
-    """
-    Matchup = apps.get_model('leagues.Matchup')
-    Scoreboard = apps.get_model('simulation.Scoreboard')
     
-    champ_matchup = Matchup.objects.create(
-        home_team=conf_winners[0],
-        away_team=conf_winners[1],
-        season=season,
-        week_number=season.week_number + 1,
-        date=season.current_date,
-        is_postseason=True,
-        slug=slugify(
-            f'{conf_winners[1].abbreviation}-\
-                {conf_winners[0].abbreviation}-\
-                championship-season-{season.season_number}'
-        )
-    )
-    
-    # Create Scoreboard for championship Matchup
-    Scoreboard.objects.create(matchup=champ_matchup)
-
-
-def sim_championship_matchup(season):
-    """Sim championship matchup."""
-    Matchup = apps.get_model('leagues.Matchup')
-    current_week = season.week_number
-    round_type = 'championship'
-
-    matchup = Matchup.objects.get(
+    if round_type == 'championship':
+        matchup = Matchup.objects.get(
         season=season, week_number=current_week)
   
-    matchup.scoreboard.get_score()
-    winner = matchup.scoreboard.get_winner()
-    
-    update_playoff_rankings(season, round_type, winner)
-
-    return winner
-
-
-### Running clinches helper function
-
-def update_running_playoff_clinches(season):
-    """
-    Update playoff clinches mid-season based on
-    how many games back lower rankings teams are.
-    """
-    # Only check in week 8 or later
-    # (No team can clinch or be eliminated with 8 or less games)
-    if season.week_number >= 8:
-        TeamStanding = apps.get_model('leagues.TeamStanding')
-        standings = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number + 1)
+        matchup.scoreboard.get_score()
+        winner = matchup.scoreboard.get_winner()
         
-        update_div_and_conf_clinches(standings, div=True)
-        update_div_and_conf_clinches(standings, conf=True)
-        update_berths_and_eliminations(standings)
+        update_playoff_rankings(season, round_type, winner)
+        
+        return winner
+    
+    else:    
+        # Get winner and update their ranking
+        matchups = Matchup.objects.filter(
+            season=season, week_number=current_week)
 
-
-### Functions to set up each playoff round
-
-def advance_to_wildcard_playoffs(season):
-    update_final_playoff_clinches(season)
-    conf_standings = get_playoff_teams_by_conf(season)
-    generate_wildcard_matchups(season, conf_standings)
-
-
-def advance_to_divisional_playoffs(season):
-    conf_standings = get_playoff_teams_by_conf(season)
-    wc_winners = sim_wildcard_matchups(season)
-    generate_divisional_matchups(season, conf_standings, wc_winners)
+        winners = []
+        for matchup in matchups:
+            matchup.scoreboard.get_score()
+            winner = matchup.scoreboard.get_winner()
+            winners.append(winner)
+            
+            update_playoff_rankings(season, round_type, winner)
+            
+        return winners
     
 
-def advance_to_conference_playoffs(season):
+def advance_playoff_round(season, round_type=False):
+    """Advance the playoff round based on round type"""
     conf_standings = get_playoff_teams_by_conf(season)
-    div_winners = sim_divisional_matchups(season)
-    generate_conference_matchups(season, conf_standings, div_winners)
     
-
-def advance_to_championship(season):
-    conf_winners = sim_conference_matchups(season)
-    generate_championship_matchup(season, conf_winners)
+    if not round_type:
+       update_final_playoff_clinches(season)
+    else:
+        winners = sim_round_matchups(season, round_type)
+    
+    if not round_type:
+        generate_round_matchups(season, conf_rankings=conf_standings)
+    elif round_type == 'wildcard':
+        generate_round_matchups(season, round_type, conf_standings, winners)
+    elif round_type == 'divisional':
+        generate_round_matchups(season, round_type, conf_standings, winners)
+    elif round_type == 'conference':
+        generate_round_matchups(season, round_type, winners=winners)
