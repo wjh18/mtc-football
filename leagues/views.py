@@ -168,7 +168,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         weeks = range(1, 23)
         
         # Only accept valid week parameters in URL
-        if season.week_number == 23:
+        if season.week_number == 23 and not week_kw:
             week_number = season.week_number - 1
         elif week_kw and (week_kw not in weeks or week_kw == 0):           
             raise Http404("Invalid week number supplied")
@@ -211,7 +211,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         weeks = range(1, 23)
 
         # Only accept valid week parameters in URL
-        if season.week_number == 23:
+        if season.week_number == 23 and not week_kw:
             week_number = season.week_number - 1
         elif week_kw and (week_kw not in weeks or week_kw == 0):           
             raise Http404("Invalid week number supplied")

@@ -110,6 +110,11 @@ colgroup > .col-recent {
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     margin: 15px 10px 15px 10px;
     border: 2px solid black;
+    transition: transform 0.5s;
+}
+
+.matchup-wrapper:hover {
+    transform: scale(1.05);
 }
 
 .team-winner {
@@ -180,10 +185,24 @@ colgroup > .col-recent {
     text-align: center;
     margin-top: 26px;
     margin-bottom: 0px;
+    color: black;
 }
 
 .bye-matchup-record {
     font-size: 16px;
+}
+
+.bye-wrapper {
+    height: 125px;
+    transition: transform 0.5s;
+}
+
+.bye-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.bye-matchup-link {
+    height: 125px;
 }
 
 /* Standings */
