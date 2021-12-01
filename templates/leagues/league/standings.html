@@ -8,7 +8,7 @@
   <hr>
 
   <nav aria-label="...">
-    <ul class="pagination pagination">
+    <ul class="pagination pagination d-flex flex-wrap">
         <li class="page-item{% if not entity %} active" aria-current="page{% endif %}">
           <a class="page-link" aria-current="page" href="{% url 'leagues:league_standings' league.slug %}">Division</a>
         </li>

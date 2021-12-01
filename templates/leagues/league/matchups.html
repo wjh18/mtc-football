@@ -21,7 +21,7 @@
 
   <div class="row">
     <nav aria-label="...">
-      <ul class="pagination pagination-sm">
+      <ul class="pagination pagination-sm d-flex flex-wrap">
         {% for w in num_weeks %}
           <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}">
             <a class="page-link" href="{% url 'leagues:weekly_matchups_by_week' league.slug w %}">W{{ w }}</a>
