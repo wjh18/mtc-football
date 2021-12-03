@@ -62,6 +62,14 @@ Create a superuser:
 
 Now you should be able to login with your superuser via the GUI or Django Admin. You can also use the signup flow to create a user but you won't be able to log into the Django Admin with it.
 
+Tear down the container after the initial build:
+
+`docker-compose down`
+
+Stand up the container after the initial build:
+
+`docker-compose up -d`
+
 That's it! Now you can create a league, select a team, simulate a few seasons or explore the UI. Whatever your heart desires.
 
 *Note: django-debug-toolbar is installed by default which slows down page load significantly. To improve performance, uncheck all the boxes in the sidebar GUI.*
