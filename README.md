@@ -14,7 +14,7 @@ The reasoning behind this was to make the game functional as quickly as possible
 
 Not currently. There are plans to release a publicly hosted beta version of the game eventually. However, the management portion of the game still needs some work before that can happen. A basic simulation engine would be a nice touch as well so the game results aren't so random.
 
-You are welcome to run a version locally to test it out in the meantime. With that said, please don't host your own public version of the code anywhere. Feel free to review the LICENSE.md for more guidelines surrounding this limitation.
+You are welcome to run a version locally to test it out in the meantime. With that said, please don't host your own public version of the code anywhere. Feel free to review the [LICENSE.md](https://github.com/wjh18/mtc-football/blob/master/LICENSE.md) for more guidelines surrounding this limitation.
 
 See the installation instructions below for details on how to setup a local version of the game for testing purposes.
 
