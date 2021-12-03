@@ -15,7 +15,7 @@ You may not, under any circumstances, use the software in the following ways:
 You are permitted to use the software in the following ways:
 - View the source code
 - Edit or modify the source code
-- Contribute to the original source code repo following acceptance of the project's Contributor License Agreement (see CONTRIBUTING.md for details)
+- Contribute to the original source code repo following acceptance of the project's Contributor License Agreement (see [CONTRIBUTING.md](https://github.com/wjh18/mtc-football/blob/master/CONTRIBUTING.md) for details)
 - Run a private copy of the source code locally, as long as only you have access to it
 
 # No Liability
