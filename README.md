@@ -2,6 +2,8 @@
 
 Move the Chains is a web-based (American) football simulation game built with Python, Django, Bootstrap and Vanilla JS.
 
+![A screenshot of the divisional standings page](screenshots/divisional-standings.png)
+
 Although it's semi-playable in its current state, a lot of work still needs to be done before a production version can be released.
 
 Currently, you can simulate full seasons but the game results are based on a random coin flip. Game statistics and management functions like trading or free agent signing have also yet to be added.
