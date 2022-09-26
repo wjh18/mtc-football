@@ -1,9 +1,19 @@
 from django.contrib import admin
+
 from .models import (
-    League, Conference, Division,
-    UserTeam, Team, Player, Contract,
-    Season, Matchup, PlayerMatchStat,
-    TeamStanding, TeamRanking,)
+    Conference,
+    Contract,
+    Division,
+    League,
+    Matchup,
+    Player,
+    PlayerMatchStat,
+    Season,
+    Team,
+    TeamRanking,
+    TeamStanding,
+    UserTeam,
+)
 
 
 class ConferenceInline(admin.TabularInline):
@@ -11,11 +21,14 @@ class ConferenceInline(admin.TabularInline):
 
 
 class LeagueAdmin(admin.ModelAdmin):
-    inlines = [
-        ConferenceInline
-    ]
-    list_display = ("name", "user", "gm_name", "creation_date",)
-    readonly_fields = ('id',)
+    inlines = [ConferenceInline]
+    list_display = (
+        "name",
+        "user",
+        "gm_name",
+        "creation_date",
+    )
+    readonly_fields = ("id",)
 
 
 class DivisionInline(admin.TabularInline):
@@ -26,39 +39,38 @@ class ConferenceAdmin(admin.ModelAdmin):
     inlines = [
         DivisionInline,
     ]
-    list_display = ('__str__', 'league')
-    readonly_fields = ('id',)
+    list_display = ("__str__", "league")
+    readonly_fields = ("id",)
 
 
 class DivisionAdmin(admin.ModelAdmin):
     list_display = ("__str__", "conference")
-    readonly_fields = ('id',)
+    readonly_fields = ("id",)
 
 
 class PlayerInline(admin.TabularInline):
     """Show contracts on both Team and Player Admin"""
+
     model = Player.team.through
-    fields = ('player', 'is_active',)
-    readonly_fields = ('player',)
+    fields = (
+        "player",
+        "is_active",
+    )
+    readonly_fields = ("player",)
     extra = 0
 
 
 class TeamAdmin(admin.ModelAdmin):
-    inlines = [
-        PlayerInline
-    ]
-    list_display = ('__str__', 'abbreviation', 'league', 'division')
-    list_filter = ('league__name',)
+    inlines = [PlayerInline]
+    list_display = ("__str__", "abbreviation", "league", "division")
+    list_filter = ("league__name",)
 
 
 class PlayerAdmin(admin.ModelAdmin):
-    inlines = [
-        PlayerInline
-    ]
-    list_display = ('__str__', 'position', 'prototype',
-                    'overall_rating', 'league')
-    list_filter = ('team__league__name',)
-    search_fields = ('first_name',)
+    inlines = [PlayerInline]
+    list_display = ("__str__", "position", "prototype", "overall_rating", "league")
+    list_filter = ("team__league__name",)
+    search_fields = ("first_name",)
 
 
 # Register models and model admins

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SignupPageView
 
+from .views import SignupPageView
 
 urlpatterns = [
     # Override allauth.urls signup to account for CustomUser

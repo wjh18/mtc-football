@@ -7,6 +7,4 @@ def advance_season_form(request):
     Makes AdvanceSeasonForm available in leagues/_league_base.html
     as {{ advance_season_form }}.
     """
-    return {
-        'advance_season_form': AdvanceSeasonForm()
-    }
+    return {"advance_season_form": AdvanceSeasonForm()}

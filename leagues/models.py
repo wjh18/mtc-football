@@ -1,22 +1,19 @@
 import datetime
 
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
-from django.urls import reverse
-from django.contrib.auth import get_user_model
 
-from .utils.setup import (
-    create_league_structure, create_season_details)
 from .utils.players import create_team_players
+from .utils.setup import create_league_structure, create_season_details
 from .utils.text import random_string_generator as random_string
 
 
 class League(models.Model):
     user = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.CASCADE,
-        related_name='leagues'
+        get_user_model(), on_delete=models.CASCADE, related_name="leagues"
     )
     name = models.CharField(max_length=50)
     gm_name = models.CharField(max_length=50)
@@ -24,10 +21,10 @@ class League(models.Model):
     slug = models.SlugField(blank=True, null=True, unique=True)
 
     class Meta:
-        ordering = ['-creation_date']
+        ordering = ["-creation_date"]
 
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name}"
 
     def save(self, *args, **kwargs):
         # Generate a unique slug
@@ -48,39 +45,39 @@ class League(models.Model):
 class Conference(models.Model):
     name = models.CharField(max_length=50)
     league = models.ForeignKey(
-        League, on_delete=models.CASCADE,
-        related_name='conferences'
+        League, on_delete=models.CASCADE, related_name="conferences"
     )
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
     def __str__(self):
-        return f'{self.name} - {self.league}'
+        return f"{self.name} - {self.league}"
 
 
 class Division(models.Model):
     name = models.CharField(max_length=200)
     conference = models.ForeignKey(
-        Conference, on_delete=models.CASCADE,
-        related_name='divisions'
+        Conference, on_delete=models.CASCADE, related_name="divisions"
     )
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
     def __str__(self):
-        return f'{self.name} - {self.conference.league}'
+        return f"{self.name} - {self.conference.league}"
 
 
 class Team(models.Model):
     league = models.ForeignKey(
-        League, on_delete=models.CASCADE,
-        related_name='teams',
+        League,
+        on_delete=models.CASCADE,
+        related_name="teams",
     )
     division = models.ForeignKey(
-        Division, on_delete=models.CASCADE,
-        related_name='teams',
+        Division,
+        on_delete=models.CASCADE,
+        related_name="teams",
     )
     location = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
@@ -89,10 +86,10 @@ class Team(models.Model):
     slug = models.SlugField(blank=True, null=True)
 
     class Meta:
-        ordering = ['location']
+        ordering = ["location"]
 
     def __str__(self):
-        return f'{self.location} {self.name} ({self.abbreviation})'
+        return f"{self.location} {self.name} ({self.abbreviation})"
 
     def save(self, *args, **kwargs):
         # Generate a unique slug
@@ -111,68 +108,61 @@ class Team(models.Model):
         Called when player ratings are changed to update team rating.
         """
         player_ratings = [
-            contract.player.overall_rating \
-            for contract in self.contracts.all()
+            contract.player.overall_rating for contract in self.contracts.all()
         ]
         team_overall = int(sum(player_ratings) / 53)
         self.overall_rating = team_overall
         self.save()
-        
+
     def check_bye_week(self, season):
         """Find a team's bye week"""
         home_matchup_weeks = self.home_matchups.filter(
-            season=season, is_postseason=False).values_list(
-                'week_number', flat=True)
+            season=season, is_postseason=False
+        ).values_list("week_number", flat=True)
         away_matchup_weeks = self.away_matchups.filter(
-            season=season, is_postseason=False).values_list(
-                'week_number', flat=True)
-        
+            season=season, is_postseason=False
+        ).values_list("week_number", flat=True)
+
         matchup_weeks = home_matchup_weeks.union(away_matchup_weeks)
         weeks_set = {w for w in range(1, 19)}
         bye_week = list(weeks_set - set(matchup_weeks))[0]
-        
+
         return bye_week
-    
+
     def get_current_record(self):
-        """Get a team's current W/L/T record"""        
+        """Get a team's current W/L/T record"""
         season = Season.objects.get(league=self.league, is_current=True)
-        
+
         # Show final regular season standings during playoffs
         if season.week_number >= 19:
             week_number = 19
         else:
             week_number = season.week_number
-        
+
         standing = TeamStanding.objects.get(
-            team=self, season=season, week_number=week_number)
-        return f'({standing.wins}-{standing.losses}-{standing.ties})'
+            team=self, season=season, week_number=week_number
+        )
+        return f"({standing.wins}-{standing.losses}-{standing.ties})"
 
     def get_absolute_url(self):
-        return reverse("leagues:team_detail",
-                       args=[self.league.slug, self.slug])
+        return reverse("leagues:team_detail", args=[self.league.slug, self.slug])
 
 
 class UserTeam(models.Model):
     league = models.OneToOneField(
-        League, on_delete=models.CASCADE,
+        League,
+        on_delete=models.CASCADE,
     )
-    team = models.OneToOneField(
-        Team, on_delete=models.CASCADE
-    )
+    team = models.OneToOneField(Team, on_delete=models.CASCADE)
     is_active_team = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'User team - {self.team.abbreviation} - {self.league}'
+        return f"User team - {self.team.abbreviation} - {self.league}"
 
 
 class Person(models.Model):
-    league = models.ForeignKey(
-        League, on_delete=models.CASCADE,
-        related_name='players'
-    )
-    team = models.ManyToManyField(
-        Team, through='Contract'
-    )
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="players")
+    team = models.ManyToManyField(Team, through="Contract")
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.PositiveSmallIntegerField()
@@ -205,7 +195,7 @@ class Player(Person):
     slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f"{self.first_name} {self.last_name}"
 
     # Find a way to pass team slug despite ManyToMany
     # def get_absolute_url(self):
@@ -217,32 +207,31 @@ class Player(Person):
 
 class Contract(models.Model):
     player = models.ForeignKey(
-        Player, on_delete=models.CASCADE,
-        related_name='contracts',
+        Player,
+        on_delete=models.CASCADE,
+        related_name="contracts",
     )
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='contracts'
-    )
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="contracts")
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'''{self.player} contract - 
-                {self.team.abbreviation} - {self.team.league}'''
+        return f"""{self.player} contract -
+                 {self.team.abbreviation} - {self.team.league}"""
 
 
 class Season(models.Model):
     PHASES = (
-        (1, 'Re-signing'),
-        (2, 'Free Agent Signing'),
-        (3, 'Draft'),
-        (4, 'Regular Season'),
-        (5, 'Playoffs'),
-        (6, 'Offseason'),
+        (1, "Re-signing"),
+        (2, "Free Agent Signing"),
+        (3, "Draft"),
+        (4, "Regular Season"),
+        (5, "Playoffs"),
+        (6, "Offseason"),
     )
     league = models.ForeignKey(
-        League, on_delete=models.CASCADE,
-        related_name='seasons',
+        League,
+        on_delete=models.CASCADE,
+        related_name="seasons",
     )
     start_date = models.DateField(default=datetime.date(2021, 8, 29))
     current_date = models.DateField(default=datetime.date(2021, 8, 29))
@@ -252,7 +241,7 @@ class Season(models.Model):
     is_current = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'Season {self.season_number} - {self.league}'
+        return f"Season {self.season_number} - {self.league}"
 
     def save(self, *args, **kwargs):
         # False if saving an existing instance
@@ -269,31 +258,34 @@ class Season(models.Model):
             week_number = self.week_number
         else:
             week_number = week_num
-            
+
         matchups = self.matchups.filter(week_number=week_number)
         teams_in_league = {team for team in self.league.teams.all()}
         teams_playing_this_week = set()
-        
+
         for matchup in matchups:
             teams_playing_this_week.add(matchup.home_team)
             teams_playing_this_week.add(matchup.away_team)
-            
+
         teams_with_bye = teams_in_league - teams_playing_this_week
         return teams_with_bye
 
 
 class Matchup(models.Model):
     home_team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='home_matchups',
+        Team,
+        on_delete=models.CASCADE,
+        related_name="home_matchups",
     )
     away_team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='away_matchups',
+        Team,
+        on_delete=models.CASCADE,
+        related_name="away_matchups",
     )
     season = models.ForeignKey(
-        Season, on_delete=models.CASCADE,
-        related_name='matchups',
+        Season,
+        on_delete=models.CASCADE,
+        related_name="matchups",
     )
     date = models.DateField(default=datetime.date(2021, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
@@ -303,22 +295,25 @@ class Matchup(models.Model):
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f'''{self.away_team.abbreviation} @ {self.home_team.abbreviation}
-                - Week {self.week_number} - {self.season}'''
+        return f"""{self.away_team.abbreviation} @ {self.home_team.abbreviation}
+                - Week {self.week_number} - {self.season}"""
 
     def get_absolute_url(self):
-        return reverse("leagues:matchup_detail",
-                       args=[self.season.league.slug, self.slug])
+        return reverse(
+            "leagues:matchup_detail", args=[self.season.league.slug, self.slug]
+        )
 
 
 class PlayerMatchStat(models.Model):
     player = models.ForeignKey(
-        Player, on_delete=models.CASCADE,
-        related_name='player_stats',
+        Player,
+        on_delete=models.CASCADE,
+        related_name="player_stats",
     )
     matchup = models.ForeignKey(
-        Matchup, on_delete=models.CASCADE,
-        related_name='player_stats',
+        Matchup,
+        on_delete=models.CASCADE,
+        related_name="player_stats",
     )
     # Passing offense
     passing_comps = models.SmallIntegerField(default=0)
@@ -378,17 +373,19 @@ class PlayerMatchStat(models.Model):
     penalty_yds = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.player} stats - {self.matchup}'
+        return f"{self.player} stats - {self.matchup}"
 
 
 class TeamStanding(models.Model):
     team = models.ForeignKey(
-        Team, on_delete=models.CASCADE,
-        related_name='team_standings',
+        Team,
+        on_delete=models.CASCADE,
+        related_name="team_standings",
     )
     season = models.ForeignKey(
-        Season, on_delete=models.CASCADE,
-        related_name='team_standings',
+        Season,
+        on_delete=models.CASCADE,
+        related_name="team_standings",
     )
     week_number = models.PositiveSmallIntegerField(default=1)
     # Basic standings
@@ -421,13 +418,14 @@ class TeamStanding(models.Model):
     last_5_ties = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return f'''{self.team.abbreviation} standings -
-                Week {self.week_number} - {self.season}'''
+        return f"""{self.team.abbreviation} standings -
+                Week {self.week_number} - {self.season}"""
 
 
 class TeamRanking(models.Model):
     standing = models.OneToOneField(
-        TeamStanding, related_name='ranking',
+        TeamStanding,
+        related_name="ranking",
         on_delete=models.CASCADE,
     )
     # Regular season
@@ -446,6 +444,6 @@ class TeamRanking(models.Model):
     won_champ = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'''{self.standing.team.abbreviation} rankings -
+        return f"""{self.standing.team.abbreviation} rankings -
                 Week {self.standing.week_number} -
-                {self.standing.season}'''
+                {self.standing.season}"""

@@ -3,7 +3,6 @@ from pathlib import Path
 
 from django.contrib.messages import constants as messages
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -154,5 +153,6 @@ MESSAGE_TAGS = {
 
 # django-debug-toolbar
 import socket
+
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
