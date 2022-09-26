@@ -11,8 +11,8 @@ from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from leagues.forms import AdvanceSeasonForm, TeamSelectForm
-from leagues.utils.season import advance_season_by_weeks
+from apps.leagues.forms import AdvanceSeasonForm, TeamSelectForm
+from apps.leagues.utils.season import advance_season_by_weeks
 
 # App imports
 from .models import League, Matchup, Player, Season, Team, TeamStanding, UserTeam

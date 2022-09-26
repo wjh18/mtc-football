@@ -25,7 +25,7 @@ skip_gitignore = true
 extend_skip_glob = ["**/migrations/*", "manage.py"]
 
 [tool.bandit]
-targets = ["config", "pages", "accounts", "leagues"]
+targets = ["config", "apps"]
 exclude = ["tests.py"]
 exclude_dirs = [".venv", "tests"]
 
@@ -33,9 +33,7 @@ exclude_dirs = [".venv", "tests"]
 minversion = "6.0"
 DJANGO_SETTINGS_MODULE = "config.settings"
 testpaths = [
-  "pages",
-  "accounts",
-  "leagues"
+  "apps"
 ]
 python_files = [
   "tests.py",

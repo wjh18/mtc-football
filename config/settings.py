@@ -33,10 +33,10 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
     # Local
-    'accounts',
-    'pages',
-    'leagues',
-    'simulation',
+    'apps.accounts.apps.AccountsConfig',
+    'apps.pages.apps.PagesConfig',
+    'apps.leagues.apps.LeaguesConfig',
+    'apps.simulation.apps.SimulationConfig',
 ]
 
 MIDDLEWARE = [
@@ -64,7 +64,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # Advance season form used in leagues/_league_base.html
-                'leagues.context_processors.advance_season_form',
+                'apps.leagues.context_processors.advance_season_form',
             ],
         },
     },
