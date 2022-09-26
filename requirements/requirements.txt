@@ -114,6 +114,8 @@ pycparser==2.21
     # via cffi
 pyflakes==2.5.0
     # via flake8
+pygraphviz==1.10
+    # via -r requirements/requirements.in
 pyjwt[crypto]==2.5.0
     # via django-allauth
 pyparsing==3.0.9

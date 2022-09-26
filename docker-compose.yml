@@ -20,6 +20,8 @@ services:
       - POSTGRES_USER=mtc_football
       - POSTGRES_PASSWORD=mtc_football
       - POSTGRES_DB=mtc_football_dev
-      
+    ports:
+      - "5432:5432"
+
 volumes:
   postgres_data:

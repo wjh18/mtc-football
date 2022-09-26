@@ -11,6 +11,7 @@ crispy-bootstrap5
 
 # Misc
 algorithm-x
+pygraphviz
 
 # Testing, etc.
 pip-tools
