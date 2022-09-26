@@ -9,7 +9,7 @@ class ContextProcessorTests(TestCase):
         Test whether global site context is available and equals current site
         """
         c = Client()
-        response = c.get(reverse("pages:home"))
+        response = c.get(reverse("web:home"))
         current_site = Site.objects.get_current()
         try:
             site_context = response.context["site"]

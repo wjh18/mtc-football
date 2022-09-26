@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 
     # Local
     'apps.accounts.apps.AccountsConfig',
-    'apps.pages.apps.PagesConfig',
+    'apps.web.apps.WebConfig',
     'apps.leagues.apps.LeaguesConfig',
     'apps.simulation.apps.SimulationConfig',
 ]
@@ -129,8 +129,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # django-allauth config
-LOGIN_REDIRECT_URL = 'pages:home'
-ACCOUNT_LOGOUT_REDIRECT = 'pages:home'
+LOGIN_REDIRECT_URL = 'web:home'
+ACCOUNT_LOGOUT_REDIRECT = 'web:home'
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

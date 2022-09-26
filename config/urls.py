@@ -3,7 +3,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
-from apps.pages.sitemaps import StaticViewSitemap
+from apps.web.sitemaps import StaticViewSitemap
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -17,7 +17,7 @@ urlpatterns = [
     # User management
     path('accounts/', include('allauth.urls')),
     # Local apps
-    path('', include('apps.pages.urls', namespace='pages')),
+    path('', include('apps.web.urls', namespace='web')),
     path('leagues/', include('apps.leagues.urls', namespace='leagues')),
     path('simulation/', include('apps.simulation.urls')),
     # 3rd-party apps

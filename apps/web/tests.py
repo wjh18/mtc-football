@@ -23,7 +23,7 @@ class RobotsTest(TestCase):
 
 class HomepageTests(SimpleTestCase):
     def setUp(self):
-        url = reverse("pages:home")
+        url = reverse("web:home")
         self.response = self.client.get(url)
 
     def test_homepage_status_code(self):
@@ -45,7 +45,7 @@ class HomepageTests(SimpleTestCase):
 
 class AboutPageTests(SimpleTestCase):
     def setUp(self):
-        url = reverse("pages:about")
+        url = reverse("web:about")
         self.response = self.client.get(url)
 
     def test_aboutpage_status_code(self):
@@ -67,7 +67,7 @@ class AboutPageTests(SimpleTestCase):
 
 class ContactPageTests(SimpleTestCase):
     def setUp(self):
-        url = reverse("pages:contact")
+        url = reverse("web:contact")
         self.response = self.client.get(url)
 
     def test_contactpage_status_code(self):
