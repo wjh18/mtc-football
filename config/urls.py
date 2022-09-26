@@ -13,10 +13,5 @@ urlpatterns = [
     path('', include('apps.pages.urls', namespace='pages')),
     path('leagues/', include('apps.leagues.urls', namespace='leagues')),
     path('simulation/', include('apps.simulation.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
