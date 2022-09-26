@@ -63,7 +63,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Advance season form used in leagues/_league_base.html
+                # Global site context
+                'apps.utils.context_processors.site',
+                # Advance season form used in leagues/_league_base.html                
                 'apps.leagues.context_processors.advance_season_form',
             ],
         },
