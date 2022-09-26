@@ -12,7 +12,7 @@ In its current state, the game is really just a simple football matchup engine w
 
 The reasoning behind this was to make the game functional as quickly as possible. Once the league operations and management portions of the game are built out to a substantial level, then the simulation engine can be improved upon incrementally without sacrificing playability.
 
-# Is there a hosted version of the game?
+## Is there a hosted version of the game?
 
 Not currently. There are plans to release a publicly hosted beta version of the game eventually. However, the management portion of the game still needs some work before that can happen. A basic simulation engine would be a nice touch as well so the game results aren't so random.
 
@@ -20,62 +20,80 @@ You are welcome to run a version locally to test it out in the meantime. With th
 
 See the installation instructions below for details on how to setup a local version of the game for testing purposes.
 
-## Installation
+## Installation Options
 
-The project uses Docker / docker-compose for local development and Pipenv to manage Python dependencies. You will need to install Docker locally for the most streamlined setup experience. In the future, more flexible ways to spin up a development environment will be added for those who prefer alternative tools like pip and requirements.txt.
+The easiest way to set up the project is with Docker. To do so, you'll need to have Docker installed on your machine. You can download Docker Desktop from the official site.
 
-Fork the repository and clone your fork (if contributing) or clone the original repository (if testing only):
+Alternatively, you can use pip-tools and venv to manage your Python dependencies manually. There is a `requirements.in` file in the `requirements/` directory that you can run `pip-compile requirements/requirements.in` on to update dependencies if needed. Otherwise, simply install them with `pip install -r requirements.txt` after you've activated your virtual environment. You'll also need to install PostgreSQL and create a database. None of this is necessary if using Docker.
 
-`git clone https://github.com/wjh18/mtc-football.git`
+## Install with Docker
 
-`cd mtc-football`
+Fork the repository and clone your fork (if contributing), otherwise just clone it:
+
+```shell
+git clone https://github.com/wjh18/mtc-football.git
+cd mtc-football
+```
 
 Create a local env file:
 
-`touch .env.dev`
+```shell
+touch .env.dev
+```
 
 Add the following to `.env.dev`:
+
+```text
+DEBUG=1
+SECRET_KEY=foo
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=mtc_football_dev
+SQL_USER=mtc_football
+SQL_PASSWORD=mtc_football
+SQL_HOST=db
+SQL_PORT=5432
 ```
-DJANGO_SECRET_KEY={SECRET_KEY}
-DJANGO_DEBUG=True
+
+Update the permissions of the entrypoint file:
+
+```shell
+chmod +x entrypoint.sh
 ```
 
 Build the image and stand up the container in detached mode (this may take a few minutes):
 
-`docker-compose up -d --build`
-
-To generate a random secret key, use the following:
-
-`docker-compose exec web python manage.py shell`
-```python
-from django.core.management.utils import get_random_secret_key  
-get_random_secret_key()
+```shell
+docker-compose build
+docker-compose up -d
 ```
 
-Copy the secret key into your `.env.dev` file without the single quotes.
+Check to make sure the containers are running and the images / Postgres volume were created. There should be two images, `mtc-football-web` and `postgres`.
 
-Migrate the database:
+Once you've confirmed this, flush and migrate the database:
 
-`docker-compose exec web python manage.py migrate`
+```shell
+docker-compose exec web python manage.py flush --no-input
+docker-compose exec web python manage.py migrate
+```
 
-Create a superuser:
+Lastly, create a superuser:
 
-`docker-compose exec web python manage.py createsuperuser`
+```shell
+docker-compose exec web python manage.py createsuperuser
+```
 
-Now you should be able to login with your superuser via the GUI or Django Admin. You can also use the signup flow to create a user but you won't be able to log into the Django Admin with it.
+Now you should be able to login with your superuser via the GUI or Django Admin at localhost:8000. You can also use the signup flow to create a user but you won't be able to log into the Django Admin with it.
 
-Tear down the container after the initial build:
+How to tear down the container after the initial build and stand it back up:
 
-`docker-compose down`
-
-Stand up the container after the initial build:
-
-`docker-compose up -d`
+```shell
+docker-compose down
+docker-compose up -d
+```
 
 That's it! Now you can create a league, select a team, simulate a few seasons or explore the UI. Whatever your heart desires.
 
-*Note: django-debug-toolbar is installed by default which slows down page load significantly. To improve performance, uncheck all the boxes in the sidebar GUI.*
-
-# How to Contribute
+## How to Contribute
 
 Please see [CONTRIBUTING.md](https://github.com/wjh18/mtc-football/blob/master/CONTRIBUTING.md) for details on how to contribute to the codebase.
