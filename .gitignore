@@ -1,7 +1,25 @@
+# Python
 *.pyc
 __pycache__/
 .venv/
+
+# System
 .DS_Store
 *.code-workspace
+
+# Project
 .env.dev
 docker-compose-prod.yml
+db.sqlite3
+media
+staticfiles
+
+# Testing
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.pytest_cache
+
+# Frontend
+node_modules/
