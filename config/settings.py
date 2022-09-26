@@ -66,6 +66,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Global site context
                 'apps.utils.context_processors.site',
+                # Google Tag Manager ID
+                'apps.web.context_processors.google_tag_manager_id',
                 # Advance season form used in leagues/_league_base.html                
                 'apps.leagues.context_processors.advance_season_form',
             ],
@@ -179,3 +181,5 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': 'apps.utils.config.show_toolbar'
 }
 SHOW_TOOLBAR = True # Disable toolbar globally
+
+GTM_ID = os.environ.get('GTM_ID', '') # Google Tag Manager ID

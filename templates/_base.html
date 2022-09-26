@@ -8,8 +8,14 @@
   <!-- CSS -->
   <link rel="stylesheet" href="{% static 'css/site-base.css' %}">
   <link rel="stylesheet" href="{% static 'css/site-bootstrap.css' %}">
+  {% if GTM_ID and not debug %}
+    {% include 'meta/gtm.html' %}
+  {% endif %}
 </head>
 <body>
+  {% if GTM_ID and not debug %}
+    {% include 'meta/gtm_ns.html' %}
+  {% endif %}
   {% block header %}
   <header class="p-3 bg-dark text-white">
     <div class="container">
