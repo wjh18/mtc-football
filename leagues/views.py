@@ -150,11 +150,10 @@ class LeagueDeleteView(LeagueOwnerMixin, LeagueContextMixin, DeleteView):
     template_name = "leagues/league/league_delete.html"
     success_message = "Your league has been deleted sucessfully."
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         """Overriden to add success message"""
-        perform_delete = super().delete(request, *args, **kwargs)
         messages.success(self.request, self.success_message)
-        return perform_delete
+        return super().form_valid(form)
 
 
 class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
