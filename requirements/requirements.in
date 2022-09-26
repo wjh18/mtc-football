@@ -1,10 +1,8 @@
 Django
 psycopg2-binary
-environs
-django-crispy-forms
 django-allauth
+django-debug-toolbar
 django-extensions
-pygraphviz
+django-crispy-forms
 crispy-bootstrap5
 algorithm-x
-django-debug-toolbar
