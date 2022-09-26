@@ -1,0 +1,1 @@
+export const Component = "Components are working."

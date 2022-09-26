@@ -1,0 +1,1 @@
+export const Page = "Pages are working."

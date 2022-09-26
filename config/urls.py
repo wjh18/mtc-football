@@ -12,7 +12,7 @@ urlpatterns = [
     # Local apps
     path('', include('pages.urls', namespace='pages')),
     path('leagues/', include('leagues.urls', namespace='leagues')),
-    path('simulation/', include('simulation.urls', namespace='simulation')),
+    path('simulation/', include('simulation.urls')),
 ]
 
 if settings.DEBUG:

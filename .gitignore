@@ -23,3 +23,6 @@ coverage.xml
 
 # Frontend
 node_modules/
+static/css/
+static/js/
+static/icons/

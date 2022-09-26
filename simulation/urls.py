@@ -1,9 +1,5 @@
-# from django.urls import path
+app_name = 'simulation'
 
-# from . import views
+urlpatterns = [
 
-# app_name = 'simulation'
-
-# urlpatterns = [
-
-# ]
+]

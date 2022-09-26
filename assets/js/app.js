@@ -1,13 +1,18 @@
-// Test JavaScript
-console.log('JavaScript here!');
+import { Component } from './components/component';
+import { Layout } from './layouts/layout';
+import { Page } from './pages/page';
 
-// window.setTimeout(function() {
-//   $(".alert").fadeTo(500, 0).slideUp(500, function(){
-//       $(this).remove(); 
-//   });
-// }, 2000);
+export { Component } from './components/component';
+export { Layout } from './layouts/layout';
+export { Page } from './pages/page';
+
+console.log("JavaScript is working!");
+console.log(Component);
+console.log(Layout);
+console.log(Page);
 
 
+// Old JS, needs updating
 function changeStreakValueDisplay() {
   var streak_elms = document.querySelectorAll('.streak-value');
   for (var i = 0; i < streak_elms.length; i++) {
