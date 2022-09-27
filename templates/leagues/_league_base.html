@@ -1,125 +1,89 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{% block title %}Move the Chains football{% endblock title %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- CSS -->
-  <link rel="stylesheet" href="{% static 'css/site-base.css' %}">
-  <link rel="stylesheet" href="{% static 'css/site-bootstrap.css' %}">
-</head>
-<body>
-  {% block header %}
-  <header class="p-3 bg-dark text-white">
-      <div class="d-flex flex-wrap align-items-center">
-        <a href="{% url 'leagues:league_detail' league.slug %}" class="me-5 mb-3 mb-sm-0 text-white text-decoration-none">
-          <h1 class="logo mb-0">{{ league }}</h1>   
-          <span class="m-0">Season {{ season.season_number }}</span> &middot;           
-          <span class="m-0">Week {{ season.week_number }}</span> &middot; 
-          <span class="m-0">{{ season.get_phase_display }}</span>
-        </a>
-        <ul class="nav mb-0 me-3">
-          <div class="dropdown">          
-            {% include 'leagues/forms/advance_season_form.html' %}           
-          </div>          
+{% extends '_base.html' %}
+
+{% block header %}
+<header class="p-3 bg-dark text-white">
+  <div class="d-flex flex-wrap align-items-center">
+    <a href="{% url 'leagues:league_detail' league.slug %}" class="me-5 mb-3 mb-sm-0 text-white text-decoration-none">
+      <h1 class="logo mb-0">{{ league }}</h1>   
+      <span class="m-0">Season {{ season.season_number }}</span> &middot;           
+      <span class="m-0">Week {{ season.week_number }}</span> &middot; 
+      <span class="m-0">{{ season.get_phase_display }}</span>
+    </a>
+    <ul class="nav mb-0 me-3">
+      <div class="dropdown">          
+        {% include 'leagues/forms/advance_season_form.html' %}           
+      </div>          
+    </ul>
+</div>    
+</header>
+{% endblock header %}
+
+{% block sidebar %}
+<div class="col-2 flex-shrink-0 mt-4 bg-white">
+  <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+    <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
+  </a>
+  <ul class="list-unstyled ps-0">
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="true">
+        League
+      </button>
+      <div class="collapse show" id="league-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Details</a></li>
+          <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark rounded">Teams</a></li>
+          <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark rounded">Standings</a></li>
+          <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark rounded">Matchups</a></li>
+          <li><a href="{% url 'leagues:playoffs' league.slug %}" class="link-dark rounded">Playoffs</a></li>
+          <li><a href="#" class="link-dark rounded">Free Agents</a></li>
+          <li><a href="#" class="link-dark rounded">Prospects</a></li>
+          <li><a href="#" class="link-dark rounded">Stats & History</a></li>
         </ul>
-    </div>    
-  </header>
-  {% endblock header %}
-  <main>
-    <div class="container-fluid">
-      {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div{% if message.tags %} class="alert alert-dismissible fade show {{ message.tags }}" role="alert"{% endif %}>
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>
-      {% endif %}
-      <div class="row">
-        {% if user.is_authenticated %}
-          {% block sidebar %}
-            <div class="col-2 flex-shrink-0 mt-4 bg-white">
-              <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
-              </a>
-              <ul class="list-unstyled ps-0">
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#league-collapse" aria-expanded="true">
-                    League
-                  </button>
-                  <div class="collapse show" id="league-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="{{ league.get_absolute_url }}" class="link-dark rounded">Details</a></li>
-                      <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark rounded">Teams</a></li>
-                      <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark rounded">Standings</a></li>
-                      <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark rounded">Matchups</a></li>
-                      <li><a href="{% url 'leagues:playoffs' league.slug %}" class="link-dark rounded">Playoffs</a></li>
-                      <li><a href="#" class="link-dark rounded">Free Agents</a></li>
-                      <li><a href="#" class="link-dark rounded">Prospects</a></li>
-                      <li><a href="#" class="link-dark rounded">Stats & History</a></li>
-                    </ul>
-                  </div>
-                </li>
-                {% if league.userteam %}
-                  <li class="border-top my-3"></li>
-                  <li class="mb-1">
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="true">
-                      Team ({{ league.userteam.team.abbreviation }})
-                    </button>
-                    <div class="collapse show" id="team-collapse">
-                      <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="{{ league.userteam.team.get_absolute_url }}" class="link-dark rounded">Details</a></li>
-                        <li><a href="{% url 'leagues:team_roster' league.slug league.userteam.team.slug %}" class="link-dark rounded">Roster</a></li>
-                        <li><a href="{% url 'leagues:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark rounded">Depth Chart</a></li>
-                        <li><a href="{% url 'leagues:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark rounded">Schedule</a></li>
-                        <li><a href="#" class="link-dark rounded">Trade Block</a></li>                      
-                        <li><a href="#" class="link-dark rounded">Finances</a></li>
-                      </ul>
-                    </div>
-                  </li>
-                {% endif %}
-                <li class="border-top my-3"></li>
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
-                    Start
-                  </button>
-                  <div class="collapse show" id="start-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">                      
-                      <li><a href="{% url 'leagues:league_list' %}" class="link-dark rounded">My Leagues</a></li>
-                      <li><a href="{% url 'leagues:league_create' %}" class="link-dark rounded">New League</a></li>                      
-                    </ul>
-                  </div>
-                </li>                
-                <li class="border-top my-3"></li>
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
-                    Account
-                  </button>
-                  <div class="collapse show" id="account-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="{% url 'web:home' %}" class="link-dark rounded">Exit Game</a></li>
-                      <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
-                      <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>                      
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          {% endblock sidebar %}
-        {% endif %}
-        <div class="col-10 mt-4">
-          {% block content %}
-          {% endblock content %}
-        </div>
       </div>
-    </div>
-  </main>
-  <!-- JavaScript -->
-  <script src="{% static 'js/app-bundle.js' %}"></script>
-  <script src="{% static 'js/site-bootstrap-bundle.js' %}"></script>
-</body>
-</html>
+    </li>
+    {% if league.userteam %}
+      <li class="border-top my-3"></li>
+      <li class="mb-1">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="true">
+          Team ({{ league.userteam.team.abbreviation }})
+        </button>
+        <div class="collapse show" id="team-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li><a href="{{ league.userteam.team.get_absolute_url }}" class="link-dark rounded">Details</a></li>
+            <li><a href="{% url 'leagues:team_roster' league.slug league.userteam.team.slug %}" class="link-dark rounded">Roster</a></li>
+            <li><a href="{% url 'leagues:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark rounded">Depth Chart</a></li>
+            <li><a href="{% url 'leagues:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark rounded">Schedule</a></li>
+            <li><a href="#" class="link-dark rounded">Trade Block</a></li>                      
+            <li><a href="#" class="link-dark rounded">Finances</a></li>
+          </ul>
+        </div>
+      </li>
+    {% endif %}
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+        Start
+      </button>
+      <div class="collapse show" id="start-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">                      
+          <li><a href="{% url 'leagues:league_list' %}" class="link-dark rounded">My Leagues</a></li>
+          <li><a href="{% url 'leagues:league_create' %}" class="link-dark rounded">New League</a></li>                      
+        </ul>
+      </div>
+    </li>                
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
+        Account
+      </button>
+      <div class="collapse show" id="account-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="{% url 'web:home' %}" class="link-dark rounded">Exit Game</a></li>
+          <li><a href="{% url 'account_change_password' %}" class="link-dark rounded">Change Password</a></li>
+          <li><a href="{% url 'account_logout' %}" class="link-dark rounded">Sign out</a></li>                      
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+{% endblock sidebar %}

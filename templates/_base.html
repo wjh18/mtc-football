@@ -1,13 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %}Move the Chains{% endblock title %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- CSS -->
-  <link rel="stylesheet" href="{% static 'css/site-base.css' %}">
-  <link rel="stylesheet" href="{% static 'css/site-bootstrap.css' %}">
+  {% include 'meta/meta.html' %}
+  <title>{% block title %}{{ site.name }}{% endblock title %}</title>
+  <meta name="author" content="{% block author %}{{ site.name }}{% endblock author %}">
+  <meta name="description" content="{% block description %}{{ site.name }}{% endblock description %}">
+  {% include 'meta/open_graph.html' %}
+  {% include 'meta/twitter_cards.html' %}
+  {% include 'meta/structured_data.html' %}
+  {% include 'meta/styles.html' %}
+  {% include 'meta/favicons.html' %}
   {% if GTM_ID and not debug %}
     {% include 'meta/gtm.html' %}
   {% endif %}
@@ -21,7 +24,7 @@
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <h1 class="logo">Move the Chains</h1>
+          <h1 class="logo">{{ site.name }}</h1>
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
@@ -99,8 +102,6 @@
       </div>
     </div>
   </main>
-  <!-- JavaScript -->
-  <script src="{% static 'js/app-bundle.js' %}"></script>
-  <script src="{% static 'js/site-bootstrap-bundle.js' %}"></script>
+  {% include 'meta/scripts.html' %}
 </body>
 </html>
