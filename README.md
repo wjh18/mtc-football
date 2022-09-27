@@ -35,27 +35,37 @@ git clone https://github.com/wjh18/mtc-football.git
 cd mtc-football
 ```
 
-Create a local env file:
+Run the following management command to initialize your project locally.
+
+```shell
+python manage.py init_local mtc_football
+```
+
+Where `mtc_football` is the db name and details. If you use anything other than `mtc_football`, make sure to update the environment variables in `docker-compose.yml` with the appropriate values as well.
+
+This command will generate a secret key and create a `.env.dev` file at the root of your project. If the generated secret key has any `$` in it, escape them with an additional `$` (`$$`) or remove them.
+
+You could also manually generate a secret key with `django.core.management.utils.generate_secret_key()`, create the file, and input your db creds with the following. The command is for convenience's sake.
 
 ```shell
 touch .env.dev
 ```
 
-Add the following to `.env.dev`:
+The recommended contents of `.env.dev`:
 
 ```text
-DEBUG=1
-SECRET_KEY=foo
+DJANGO_DEBUG=1
+DJANGO_SECRET_KEY=foo
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-SQL_ENGINE=django.db.backends.postgresql
-SQL_DATABASE=mtc_football_dev
-SQL_USER=mtc_football
-SQL_PASSWORD=mtc_football
-SQL_HOST=db
-SQL_PORT=5432
+DJANGO_SQL_ENGINE=django.db.backends.postgresql
+DJANGO_SQL_DATABASE=mtc_football_dev
+DJANGO_SQL_USER=mtc_football
+DJANGO_SQL_PASSWORD=mtc_football
+DJANGO_SQL_HOST=db
+DJANGO_SQL_PORT=5432
 ```
 
-Update the permissions of the entrypoint file:
+If necessary, update the permissions of the entrypoint file (this should be stored by git so it may not be necessary):
 
 ```shell
 chmod +x entrypoint.sh
@@ -90,6 +100,12 @@ How to tear down the container after the initial build and stand it back up:
 ```shell
 docker-compose down
 docker-compose up -d
+```
+
+How to rebuild the container and stand it back up in detached mode in one command (required if changing env variables or adding a new package):
+
+```shell
+docker-compose up -d --build
 ```
 
 That's it! Now you can create a league, select a team, simulate a few seasons or explore the UI. Whatever your heart desires.
