@@ -3,7 +3,7 @@
 {% block title %}Standings | Week {{ season.week_number }} - {{ season }}{% endblock title %}
 
 {% block content %}
-  <h2>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h2>
+  <h1>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h1>
   <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
 
@@ -28,7 +28,7 @@
     </ul>
     {% for conference in league.conferences.all %}
     <br>
-      <h3>{{ conference.name }}</h3>
+      <h2>{{ conference.name }}</h2>
       <hr>
       {% for division in conference.divisions.all %}        
           <div class="table-responsive mb-2">
@@ -115,7 +115,7 @@
   {% if entity == "conference" %}
     {% for conference in league.conferences.all %}
       <br>
-      <h3>{{ conference.name }} - Playoff Picture</h3>
+      <h2>{{ conference.name }} - Playoff Picture</h2>
       <hr>
           <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
@@ -208,7 +208,7 @@
 
   {% if entity == "power" %}
     <br>
-    <h3>{{ league.name }} Power Rankings</h3>
+    <h2>{{ league.name }} Power Rankings</h2>
     <hr>
     <div class="table-responsive">
       <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">

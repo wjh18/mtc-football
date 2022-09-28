@@ -3,7 +3,7 @@
 {% block title %}My Leagues | {{ user }}{% endblock title %}
 
 {% block content %}
-  <h2>My Leagues &middot; {{ user }}</h2>
+  <h1>My Leagues &middot; {{ user }}</h1>
   <p><a href="{% url 'web:home' %}">&larr; Home</a></p>
   <hr>
   <a href="{% url 'leagues:league_create' %}">

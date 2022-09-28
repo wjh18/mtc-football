@@ -4,7 +4,7 @@
 <header class="p-3 bg-dark text-white">
   <div class="d-flex flex-wrap align-items-center">
     <a href="{% url 'leagues:league_detail' league.slug %}" class="me-5 mb-3 mb-sm-0 text-white text-decoration-none">
-      <h1 class="logo mb-0">{{ league }}</h1>   
+      <span class="logo mb-0">{{ league }}</span>   
       <span class="m-0">Season {{ season.season_number }}</span> &middot;           
       <span class="m-0">Week {{ season.week_number }}</span> &middot; 
       <span class="m-0">{{ season.get_phase_display }}</span>

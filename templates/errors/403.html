@@ -1,8 +1,10 @@
 {% extends "_base.html" %}
 
-{% block title %}Permission Denied | {{ site.name }}{% endblock title %}
+{% block title %}Permission Denied | {{ block.super }}{% endblock title %}
 
 {% load static %}
 {% block content %}
-<h1>Permission Denied (403)</h1>
+<div class="container">
+  <h1>Permission Denied (403)</h1>
+</div>
 {% endblock%}

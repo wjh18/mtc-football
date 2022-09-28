@@ -4,37 +4,37 @@
 
 {% block content %}
   <div class="row">
-    <h2>Home &middot; {{ league }}</h2>
+    <h1>Home &middot; {{ league }}</h1>
     <p><a href="{% url 'leagues:league_list' %}">&larr; Return to Leagues</a></p>
     <hr>
-    <div class="col-6">
-      <h3>League Info</h3>
+    <div>
+      <h2>League Info</h2>
       <ul>
         <li>GM: {{ league.gm_name }}</li>
         <li>Created: {{ league.creation_date }}</li>
       </ul>
     </div>
     <div class="pt-2 pb-3">
-        <a href="{% url 'leagues:team_list' league.slug %}" class="btn btn-primary" role="button">
-          Teams
-        </a>
-        <a href="{% url 'leagues:league_standings' league.slug %}" class="btn btn-primary" role="button">
-          Standings
-        </a>
-        <a href="{% url 'leagues:weekly_matchups' league.slug %}" class="btn btn-primary" role="button">
-          Matchups
-        </a>
-        <a href="{% url 'leagues:playoffs' league.slug %}" class="btn btn-primary" role="button">
-          Playoffs
-        </a>
-        <br>
-        <br>
-        <a href="{% url 'leagues:league_edit' league.slug %}" class="btn btn-dark" role="button">
-          Edit League
-        </a>
-        <a href="{% url 'leagues:league_delete' league.slug %}" class="btn btn-danger" role="button">
-          Delete League
-        </a>
-      </div>
+      <a href="{% url 'leagues:team_list' league.slug %}" class="btn btn-primary" role="button">
+        Teams
+      </a>
+      <a href="{% url 'leagues:league_standings' league.slug %}" class="btn btn-primary" role="button">
+        Standings
+      </a>
+      <a href="{% url 'leagues:weekly_matchups' league.slug %}" class="btn btn-primary" role="button">
+        Matchups
+      </a>
+      <a href="{% url 'leagues:playoffs' league.slug %}" class="btn btn-primary" role="button">
+        Playoffs
+      </a>
+      <br>
+      <br>
+      <a href="{% url 'leagues:league_edit' league.slug %}" class="btn btn-dark" role="button">
+        Edit League
+      </a>
+      <a href="{% url 'leagues:league_delete' league.slug %}" class="btn btn-danger" role="button">
+        Delete League
+      </a>
+    </div>
   </div>
 {% endblock content %}

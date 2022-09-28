@@ -4,23 +4,23 @@
 
 {% block content %}
   {% if week_num <= 18 %}
-    <h2>Regular Season
+    <h1>Regular Season
   {% elif week_num == 19 %}
-    <h2>Wildcard Round
+    <h1>Wildcard Round
   {% elif week_num == 20 %}
-    <h2>Divisional Round
+    <h1>Divisional Round
   {% elif week_num == 21 %}
-    <h2>Conference Finals
+    <h1>Conference Finals
   {% elif week_num == 22 %}
-    <h2>Championship
+    <h1>Championship
   {% else %}
-    <h2> Offseason
-  {% endif %}&middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h2>
+    <h1> Offseason
+  {% endif %}&middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h1>
   <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
   <hr>
 
   <div class="row">
-    <nav aria-label="...">
+    <nav>
       <ul class="pagination pagination-sm d-flex flex-wrap">
         {% for w in num_weeks %}
           <li class="page-item{% if week_num == w %} active" aria-current="page{% endif %}">
@@ -76,7 +76,7 @@
       
       {% if bye_teams %}
         <div class="matchup-section">
-          <h3 class="matchup-section-header">Bye Weeks</h3>
+          <h2 class="matchup-section-header">Bye Weeks</h2>
           {% for bye_team in bye_teams %}
             <div class="matchup-wrapper bye-wrapper {% if bye_team.division.conference.name == "AFC" %}conf1-border{% else %}conf2-border{% endif %}">
               <a class="matchup-link bye-matchup-link" href="{% url 'leagues:team_schedule' league.slug bye_team.slug %}">

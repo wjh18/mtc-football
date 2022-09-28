@@ -1,19 +1,18 @@
 {% extends '_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Login | {{ site.name }}{% endblock title %}
+{% block title %}Login | {{ block.super }}{% endblock title %}
 
 {% block content %}
   <div class="d-flex flex-row justify-content-center">
-    <div style="width: 400px;">
-      <h2>Log In</h2>
-      <form method="post">
+    <div class="col-8 col-lg-4">
+      <h1>Log In</h1>
+      <form method="post" class="mt-3">
         {% csrf_token %}
         {{ form|crispy }}
         <button class="btn btn-primary" type="submit">Log In</button>
-      </form>
-      <br>
-      <a href="{% url 'account_reset_password' %}">Forgot Password?</a>
+        <a href="{% url 'account_reset_password' %}" class="ms-3">Forgot Password?</a>
+      </form>      
     </div>
   </div>
 {% endblock content %}

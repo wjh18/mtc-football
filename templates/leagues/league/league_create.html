@@ -1,13 +1,13 @@
 {% extends '_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create League | {{ site.name }}{% endblock title %}
+{% block title %}Create League | {{ block.super }}{% endblock title %}
 
 {% block content %}
-  <h2>Create League</h2>
+  <h1>Create League</h1>
   <a href="{% url 'leagues:league_list' %}">&larr; Back to Leagues</a>
   <hr>
-  <div style="width: 450px;">
+  <div class="col col-md-8 col-lg-6 col-xl-4">
     <form method="post">
       {% csrf_token %}
       {{ form|crispy }}

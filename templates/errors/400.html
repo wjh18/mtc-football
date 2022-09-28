@@ -1,8 +1,10 @@
 {% extends "_base.html" %}
 
-{% block title %}Bad Request | {{ site.name }}{% endblock title %}
+{% block title %}Bad Request | {{ block.super }}{% endblock title %}
 
 {% load static %}
 {% block content %}
-<h1>Bad Request (400)</h1>
+<div class="container">
+  <h1>Bad Request (400)</h1>
+</div>
 {% endblock%}

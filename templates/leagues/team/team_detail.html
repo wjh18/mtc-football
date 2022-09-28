@@ -4,12 +4,12 @@
 
 {% block content %}
   <div>
-    <h2>
+    <h1>
       Home &middot; {{ team.location }} {{ team.name }}
       {% if team.userteam %}
         <span class="my-team-tag">GM</span>
       {% endif %}
-    </h2>
+    </h1>
 
     <div class="btn-group dropend mt-2">
       <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">

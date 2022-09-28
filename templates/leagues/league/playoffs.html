@@ -4,19 +4,19 @@
 
 {% block content %}
 
-  <h2>
+  <h1>
     Playoff Picture &middot; Season {{ season.season_number }}
     {% if team.userteam %}
       <span class="my-team-tag">GM</span>
     {% endif %}
-  </h2>
+  </h1>
   <a href="{{ league.get_absolute_url }}">&larr; League Home</a>
   <hr>
 
   <div class="row">
 
     <div class="matchup-section">
-      <h3 class="matchup-section-header">Wildcard Weekend</h3>
+      <h2 class="matchup-section-header">Wildcard Weekend</h2>
       {% if wildcard_matchups %}
         {% for matchup in wildcard_matchups %}
           <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
@@ -62,7 +62,7 @@
     </div>
 
     <div class="matchup-section">
-      <h3 class="matchup-section-header">Divisional Round</h3>
+      <h2 class="matchup-section-header">Divisional Round</h2>
       {% if divisional_matchups %}
         {% for matchup in divisional_matchups %}
           <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
@@ -108,7 +108,7 @@
     </div>
 
     <div class="matchup-section">
-      <h3 class="matchup-section-header">Conference Finals</h3>
+      <h2 class="matchup-section-header">Conference Finals</h2>
       {% if conference_matchups %}
         {% for matchup in conference_matchups %}
           <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
@@ -154,7 +154,7 @@
     </div>
 
     <div class="matchup-section">
-      <h3 class="matchup-section-header">Championship</h3>
+      <h2 class="matchup-section-header">Championship</h2>
       {% if championship_matchups %}
         {% for matchup in championship_matchups %}
           <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">

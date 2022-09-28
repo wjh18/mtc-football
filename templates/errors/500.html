@@ -1,8 +1,10 @@
 {% extends "_base.html" %}
 
-{% block title %}Server Error | {{ site.name }}{% endblock title %}
+{% block title %}Server Error | {{ block.super }}{% endblock title %}
 
 {% load static %}
 {% block content %}
-<h1>Server Error (500)</h1>
+<div class="container">
+  <h1>Server Error (500)</h1>
+</div>
 {% endblock%}
