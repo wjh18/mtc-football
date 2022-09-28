@@ -87,6 +87,14 @@ docker-compose exec web python manage.py flush --no-input
 docker-compose exec web python manage.py migrate
 ```
 
+You can build the frontend in development mode with `npm` (see `package.json` for details):
+
+```shell
+npm install # Install
+npm run dev # Build
+npm run dev-watch # Build and watch
+```
+
 Lastly, create a superuser:
 
 ```shell
