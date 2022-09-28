@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'apps.web.apps.WebConfig',
     'apps.leagues.apps.LeaguesConfig',
     'apps.simulation.apps.SimulationConfig',
-    'apps.utils',
+    'apps.core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +66,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # Global site context
-                'apps.utils.context_processors.site',
+                'apps.core.context_processors.site',
                 # Google Tag Manager ID
                 'apps.web.context_processors.google_tag_manager_id',
                 # Advance season form used in leagues/_league_base.html                
@@ -185,7 +185,7 @@ DEBUG_TOOLBAR_CONFIG = {
         'debug_toolbar.panels.profiling.ProfilingPanel',
     },
     'SHOW_COLLAPSED': True,
-    'SHOW_TOOLBAR_CALLBACK': 'apps.utils.config.show_toolbar'
+    'SHOW_TOOLBAR_CALLBACK': 'apps.core.config.show_toolbar'
 }
 SHOW_TOOLBAR = True # Disable toolbar globally
 
