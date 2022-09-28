@@ -15,7 +15,7 @@
   {% endif %}
   <div class="row">
     {% for team in team_list %}
-    <div class="col-md-4 col-xl-3 m-3 team-list-wrapper"{% if team.userteam %}style="background-color:#ffc107;"{% endif %}>
+    <div class="col-md-4 col-xl-3 m-3 team-list-wrapper{% if team.userteam %} bg-warning{% endif %}">
       <h3 class="team-list-name">
         <a href="{{ team.get_absolute_url }}">{{ team.location }} {{ team.name }}</a>
       </h3>

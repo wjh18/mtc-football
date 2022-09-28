@@ -152,15 +152,7 @@
               <tbody>
             {% for standing in conference_standings %}
               {% if standing.team.division in conference.divisions.all %}
-              <tr class="{% if standing.team.userteam %}
-                            table-active
-                          {% endif %}"
-                  style="{% if standing.ranking.conference_ranking == 4 %}
-                            border-bottom:2px dashed darkgreen;
-                          {% endif %}
-                          {% if standing.ranking.conference_ranking == 7 %}
-                            border-bottom:2px solid firebrick;
-                          {% endif %}">     
+              <tr class="{% if standing.team.userteam %}table-active{% else %}table-light{% endif %}{% if standing.ranking.conference_ranking == 4 %} table-row-divider-green{% endif %}{% if standing.ranking.conference_ranking == 7 %} table-row-divider-red{% endif %}">     
                 <th scope="row">{{ standing.ranking.conference_ranking }}</th>
                 <td>
                   <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>

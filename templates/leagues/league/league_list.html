@@ -30,7 +30,7 @@
             <td>{{ league.creation_date }}</td>
             <td>{{ league.gm_name }}</td>
             <td><a href="{% url 'leagues:league_edit' league.slug %}">Edit Info</a></td>
-            <td><a href="{% url 'leagues:league_delete' league.slug %}" style="color:red;">Delete League</a>            
+            <td><a href="{% url 'leagues:league_delete' league.slug %}" class="text-danger">Delete League</a>            
             </td>
           </tr>
         {% endfor %}

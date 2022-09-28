@@ -28,6 +28,15 @@
   box-shadow: none;
 }
 
+.table-row-divider {
+  &-green {
+    border-bottom: 2px dashed darkgreen !important;
+  }
+  &-red {
+    border-bottom: 2px solid firebrick !important;
+  }
+}
+
 colgroup > .col-wlt {
   background-color: rgb(247, 247, 247);
 }

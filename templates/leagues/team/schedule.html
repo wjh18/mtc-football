@@ -25,31 +25,31 @@
   {% for matchup in matchups %}
     <p>
       <span>Week {{ matchup.week_number }} - </span>
-      <span style="{% if matchup.scoreboard.get_winner == matchup.away_team %}
-                     color: darkgreen;
+      <span class="{% if matchup.scoreboard.get_winner == matchup.away_team %}
+                    text-success
                    {% else %}
-                     color: darkred;
+                    text-danger
                    {% endif %}
                    {% if team == matchup.away_team %}
-                     font-weight: bold;
+                    fw-bold
                    {% endif %}">
         {{ matchup.away_team.abbreviation }}
       </span>
       {% if matchup.week_number < season.week_number %}
-        - <span style="font-weight:bold;">{{ matchup.scoreboard.away_score }}</span>
+        - <span class="fw-bold">{{ matchup.scoreboard.away_score }}</span>
       {% endif %} @
-      <span style="{% if matchup.scoreboard.get_winner == matchup.home_team %}
-                     color: darkgreen;
+      <span class="{% if matchup.scoreboard.get_winner == matchup.home_team %}
+                     text-success
                    {% else %}
-                     color: darkred;
+                     text-danger
                    {% endif %}
                    {% if team == matchup.home_team %}
-                     font-weight: bold;
+                    fw-bold
                    {% endif %}">
         {{ matchup.home_team.abbreviation }}
       </span>
       {% if matchup.week_number < season.week_number %}
-        - <span style="font-weight:bold;">{{ matchup.scoreboard.home_score }}</span>
+        - <span class="fw-bold">{{ matchup.scoreboard.home_score }}</span>
       {% endif %} -
       <a href="{{ matchup.get_absolute_url }}">Details</a>
     </p>
