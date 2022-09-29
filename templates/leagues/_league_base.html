@@ -1,20 +1,44 @@
 {% extends '_base.html' %}
 
 {% block header %}
-<header class="p-3 bg-dark text-white">
-  <div class="d-flex flex-wrap align-items-center">
-    <a href="{% url 'leagues:league_detail' league.slug %}" class="me-5 mb-3 mb-sm-0 text-white text-decoration-none">
-      <span class="logo mb-0">{{ league }}</span>   
-      <span class="m-0">Season {{ season.season_number }}</span> &middot;           
-      <span class="m-0">Week {{ season.week_number }}</span> &middot; 
-      <span class="m-0">{{ season.get_phase_display }}</span>
-    </a>
-    <ul class="nav mb-0 me-3">
-      <div class="dropdown">          
-        {% include 'leagues/forms/advance_season_form.html' %}           
-      </div>          
-    </ul>
-</div>    
+<header>
+  <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+    <div class="container-lg">
+      <div class="d-flex align-items-center flex-wrap gap-3 py-3 py-sm-0">
+        <div class="me-3">
+          <a class="navbar-brand logo" href="{{ league.get_absolute_url}}">{{ league }}</a>
+          <div class="text-secondary">
+            Season {{ season.season_number }} &middot; Week {{ season.week_number }} &middot; {{ season.get_phase_display }}
+          </div>
+        </div>
+        {% include 'leagues/forms/advance_season_form.html' %}
+      </div>
+      {% comment %} <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button> {% endcomment %}
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+          {% comment %} <li class="nav-item">
+            <a class="nav-link {% if request.path == '/accounts/logout/' %}active{% endif %}" href="{% url 'account_logout' %}">Sign out</a>
+          </li> {% endcomment %}
+        </ul>
+        <div class="py-3 py-lg-0">
+          {% if user.is_authenticated %}
+            <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-light me-2" role="button">
+              My Leagues
+            </a>
+            <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
+              New League
+            </a>
+            <a class="link text-muted text-decoration-none ms-3" href="{% url 'account_logout' %}">Sign out</a>
+          {% else %}
+            <a href="{% url 'account_login' %}" class="btn btn-outline-light me-2" role="button">Login</a>
+            <a href="{% url 'account_signup' %}" class="btn btn-warning" role="button">Sign-up</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
 </header>
 {% endblock header %}
 
