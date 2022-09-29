@@ -8,6 +8,7 @@ __pycache__/
 *.code-workspace
 
 # Project
+.env
 .env.dev
 docker-compose-prod.yml
 db.sqlite3

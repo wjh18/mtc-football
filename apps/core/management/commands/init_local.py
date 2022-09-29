@@ -13,20 +13,32 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("db_name", type=str)
+        parser.add_argument(
+            "-l", "--local", action="store_true", help="Using a local env, not Docker"
+        )
 
     def handle(self, *args, **options):
-        secret_key = get_random_secret_key()
         db_name = options["db_name"]
-        file_path = f"{settings.BASE_DIR}/.env.dev"
+        local = options["local"]
+
+        secret_key = get_random_secret_key()
+        file_path = f"{settings.BASE_DIR}/.env"
+
+        if local:
+            # Local db host
+            db_host = "127.0.0.1"
+        else:
+            # Docker db host
+            db_host = "db"
 
         try:
             with open(file_path, "w", encoding="utf-8") as f:
-                f.write(self._get_file_contents(secret_key, db_name))
+                f.write(self._get_file_contents(secret_key, db_name, db_host))
             self.stdout.write(self.style.SUCCESS("Successfully initialized project"))
         except FileNotFoundError:
             raise CommandError("Unable to locate base directory")
 
-    def _get_file_contents(self, secret_key, db_name):
+    def _get_file_contents(self, secret_key, db_name, db_host):
         return (
             "DJANGO_DEBUG=1\n"
             f"DJANGO_SECRET_KEY={secret_key}\n"
@@ -35,6 +47,6 @@ class Command(BaseCommand):
             f"DJANGO_SQL_DATABASE={db_name}_dev\n"
             f"DJANGO_SQL_USER={db_name}\n"
             f"DJANGO_SQL_PASSWORD={db_name}\n"
-            "DJANGO_SQL_HOST=db\n"
+            f"DJANGO_SQL_HOST={db_host}\n"
             "DJANGO_SQL_PORT=5432\n"
         )

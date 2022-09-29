@@ -130,6 +130,8 @@ pytest-cov==3.0.0
     # via -r requirements/requirements.in
 pytest-django==4.5.2
     # via -r requirements/requirements.in
+python-dotenv==0.21.0
+    # via -r requirements/requirements.in
 python3-openid==3.2.0
     # via django-allauth
 pyyaml==6.0

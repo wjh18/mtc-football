@@ -17,8 +17,7 @@ class SiteSettings(models.Model):
     meta_description = models.CharField(
         max_length=255,
         help_text="Default description used in SEO metadata",
-        default="Move the Chains is a web-based (American) football simulation game \
-        built with Python, Django, Bootstrap and Vanilla JS.",
+        default="Move the Chains is a web-based (American) football simulation game",
     )
     twitter_handle = models.CharField(
         max_length=255,
