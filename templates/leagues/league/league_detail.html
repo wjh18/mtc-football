@@ -5,7 +5,12 @@
 {% block content %}
   <div class="row">
     <h1>Home &middot; {{ league }}</h1>
-    <p><a href="{% url 'leagues:league_list' %}">&larr; Return to Leagues</a></p>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ league.name }}</li>
+      </ol>
+    </nav>
     <hr>
     <div>
       <h2>League Info</h2>

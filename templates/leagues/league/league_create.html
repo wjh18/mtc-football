@@ -5,7 +5,12 @@
 
 {% block content %}
   <h1>Create League</h1>
-  <a href="{% url 'leagues:league_list' %}">&larr; Back to Leagues</a>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Create</li>
+    </ol>
+  </nav>
   <hr>
   <div class="col col-md-8 col-lg-6 col-xl-4">
     <form method="post">

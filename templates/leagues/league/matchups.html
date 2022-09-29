@@ -16,7 +16,13 @@
   {% else %}
     <h1> Offseason
   {% endif %}&middot; Week {{ week_num }} &middot; Season {{ season.season_number }}</h1>
-  <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Matchups</li>
+    </ol>
+  </nav>
   <hr>
 
   <div class="row">

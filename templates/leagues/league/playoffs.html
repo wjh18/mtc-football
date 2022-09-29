@@ -10,7 +10,13 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h1>
-  <a href="{{ league.get_absolute_url }}">&larr; League Home</a>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Playoffs</li>
+    </ol>
+  </nav>
   <hr>
 
   <div class="row">

@@ -14,7 +14,14 @@
   {% elif matchup.week_number == 22 %}
     <h1>Championship {{ season.season_number }}
   {% endif %}&middot; Week {{ matchup.week_number }} &middot; Season {{ season.season_number }}</h1>
-  <a href="{% url 'leagues:weekly_matchups' league.slug %}">&larr; Matchups</a>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'leagues:weekly_matchups' league.slug %}">Matchups</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ matchup.away_team.abbreviation }} @ {{ matchup.home_team.abbreviation }}</li>
+    </ol>
+  </nav>
   <hr>
   
   <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">

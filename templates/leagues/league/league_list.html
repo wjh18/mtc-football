@@ -4,7 +4,12 @@
 
 {% block content %}
   <h1>My Leagues &middot; {{ user }}</h1>
-  <p><a href="{% url 'web:home' %}">&larr; Home</a></p>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'web:home' %}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Leagues</li>
+    </ol>
+  </nav>
   <hr>
   <a href="{% url 'leagues:league_create' %}">
     <button class="btn btn-dark mt-2 mb-3" type="submit">New League</button>

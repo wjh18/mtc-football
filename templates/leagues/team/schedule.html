@@ -9,6 +9,15 @@
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'leagues:team_list' league.slug %}">Teams</a></li>
+      <li class="breadcrumb-item"><a href="{{ team.get_absolute_url }}">{{ team.abbreviation }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Schedule</li>
+    </ol>
+  </nav>
 
   <div class="btn-group dropend mt-2">
     <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
