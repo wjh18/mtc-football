@@ -59,10 +59,16 @@
           {% endfor %}
       </div>
     {% endif %}
-    <div class="row">
+    <div>
       {% if user.is_authenticated %}
+      <button class="btn btn-outline-dark position-fixed bottom-0 end-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Show Menu</button>
+      <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title text-secondary" id="offcanvasWithBothOptionsLabel">{% if league %}{{ league }}{% else %}Main Menu{% endif %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
         {% block sidebar %}
-        <div class="col-2 flex-shrink-0 mt-4 bg-white">
           <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
             <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
           </a>
@@ -91,13 +97,13 @@
               </div>
             </li>
           </ul>
-        </div>
         {% endblock sidebar %}
-      {% endif %}
-      <div class="{% if user.is_authenticated %}col-10{% else %}container{% endif %} mt-5">
-        {% block content %}
-        {% endblock content %}
       </div>
+    </div>
+    {% endif %}
+    <div class="container-xl mt-5">
+      {% block content %}
+      {% endblock content %}
     </div>
   </main>
   {% include 'meta/scripts.html' %}
