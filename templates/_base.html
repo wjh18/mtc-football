@@ -4,7 +4,7 @@
 <head>
   {% include 'meta/meta.html' %}
   <title>{% block title %}{{ site.name }}{% endblock title %}</title>
-  <meta name="author" content="{% block author %}{{ site.name }}{% endblock author %}">
+  <meta name="author" content="{% block author %}{{ site.settings.author }}{% endblock author %}">
   <meta name="description" content="{% block description %}{{ site.settings.meta_description }}{% endblock description %}">
   {% include 'meta/open_graph.html' %}
   {% include 'meta/twitter_cards.html' %}

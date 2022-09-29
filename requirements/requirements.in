@@ -1,6 +1,7 @@
 # Core
 Django
 psycopg2-binary
+Pillow
 
 # Django apps
 django-allauth

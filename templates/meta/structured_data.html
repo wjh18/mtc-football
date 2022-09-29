@@ -5,12 +5,13 @@
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "{{ site.domain }}#/schema/website/1",
-      "url": "{{ site.domain }}",
-      "name": "{{ site.title }}",
+      "@id": "{{ site.settings.server_root }}#/schema/website/1",
+      "url": "{{ site.settings.server_root }}",
+      "name": "{{ site.name }}",
       "description": "{{ site.settings.meta_description }}",
       "publisher": {
-        "@id": "{{ site.domain }}#/schema/person/1"
+        "@id": "{{ site.settings.server_root }}#/schema/person/1"
+      }
     }
   ]
 }

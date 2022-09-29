@@ -1,11 +1,11 @@
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{{ site.settings.og_type }}">
 <meta property="og:title" content="{{ site.name }}">
 <meta property="og:description" content="{{ site.settings.meta_description }}">
-<meta property="og:url" content="{{ site.domain }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta property="og:site_name" content="{{ site.name }}">
-{% comment %} <meta property="og:image" content=""> {% endcomment %}
+<meta property="og:image" content="{{ site.settings.default_image }}">
 {% comment %} <meta property="og:image:alt" content=""> {% endcomment %}
 {% comment %} <meta property="og:audio" content=""> {% endcomment %}
 {% comment %} <meta property="og:video" content=""> {% endcomment %}
