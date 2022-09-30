@@ -34,19 +34,26 @@
     </div>
   </div>
   <hr>
-  <div>
-    {% if team.userteam %}
-      <p>You're the GM of this team.</p>
-    {% endif %}
-    <p>Overall: {{ team.overall_rating }}</p>
-    <a href="{% url 'leagues:team_roster' league.slug team.slug %}" class="btn btn-primary" role="button">
-      Roster
-    </a>
-    <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-primary" role="button">
-      Depth Chart
-    </a>
-    <a href="{% url 'leagues:team_schedule' league.slug team.slug %}" class="btn btn-primary" role="button">
-      Schedule
-    </a>
+  <div class="my-3">
+    <h2>Details</h2>
+    <p class="text-muted">
+      <strong>{{ team.overall_rating }} Overall</strong><br>
+      {% if team.userteam %}You're the GM of this team.{% endif %}
+    </p>
+  </div>
+  <div class="my-3">
+    <h2>Manage</h2>
+    <p>{% if team.userteam %}Manage the day-to-day of the {{ team }}.{% endif %}</p>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{% url 'leagues:team_roster' league.slug team.slug %}" class="btn btn-primary" role="button">
+        Roster
+      </a>
+      <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-outline-dark" role="button">
+        Depth Chart
+      </a>
+      <a href="{% url 'leagues:team_schedule' league.slug team.slug %}" class="btn btn-outline-dark" role="button">
+        Schedule
+      </a>
+    </div>
   </div>
 {% endblock content %}
