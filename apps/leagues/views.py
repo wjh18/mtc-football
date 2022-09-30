@@ -507,11 +507,6 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if UserTeam.objects.filter(league=context["league"]).exists():
-            context["user_team"] = True
-        else:
-            context["user_team"] = False
-
         # Add TeamSelectForm as context to team_list.html
         context["form"] = TeamSelectForm(form_kwargs={"league": context["league"]})
 
