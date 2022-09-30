@@ -3,33 +3,37 @@
 {% block title %}Schedule | {{ team.abbreviation }} - Season {{ season.season_number }}{% endblock title %}
 
 {% block content %}
-  <h1>
-    Schedule &middot; {{ team.location }} {{ team.name }}
-    {% if team.userteam %}
-      <span class="my-team-tag">GM</span>
-    {% endif %}
-  </h1>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
-      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'leagues:team_list' league.slug %}">Teams</a></li>
-      <li class="breadcrumb-item"><a href="{{ team.get_absolute_url }}">{{ team.abbreviation }}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Schedule</li>
-    </ol>
-  </nav>
-
-  <div class="btn-group dropend mt-2">
-    <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
-      Select a team
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="filter-by-team">
-      {% for new_team in team_list %}
-        <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:team_schedule' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
-      {% endfor %}
-    </ul>
+  <div class="d-flex flex-wrap justify-content-between">
+    <div>
+      <h1>
+        Schedule &middot; {{ team.location }} {{ team.name }}
+        {% if team.userteam %}
+          <span class="my-team-tag">GM</span>
+        {% endif %}
+      </h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+          <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'leagues:team_list' league.slug %}">Teams</a></li>
+          <li class="breadcrumb-item"><a href="{{ team.get_absolute_url }}">{{ team.abbreviation }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Schedule</li>
+        </ol>
+      </nav>
+    </div>
+    <div>
+      <div class="btn-group dropend mt-2">
+        <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
+          Team switcher
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="filter-by-team">
+          {% for new_team in team_list %}
+            <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:team_schedule' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
   </div>
-  
   <hr>
   {% for matchup in matchups %}
     <p>

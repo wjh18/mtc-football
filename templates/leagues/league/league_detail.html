@@ -28,8 +28,8 @@
       </div>
     </div>
     <div class="my-3">
-      <h2>Manage</h2>
-      <p>Explore the league.</p>
+      <h2>League</h2>
+      <p>Explore the happenings across {{ league }}.</p>
       <div class="d-flex flex-wrap gap-2">
         <a href="{% url 'leagues:team_list' league.slug %}" class="btn btn-dark" role="button">
           Teams
@@ -52,7 +52,7 @@
         <p>Head over to the <a href="{% url 'leagues:team_list' league.slug %}">list of teams</a> to select which team you want to control.</p>
       {% else %}
         <h2>My Team</h2>
-        <p>You're the owner of the <a href="{{ myteam.team.get_absolute_url }}">{{ myteam.team }}</a>.</p>
+        <p>You're the GM of the <a href="{{ myteam.team.get_absolute_url }}">{{ myteam.team }}</a>.</p>
         <div class="d-flex flex-wrap gap-2">
           <a href="{{ myteam.team.get_absolute_url }}" class="btn btn-dark" role="button">
             Team Home
