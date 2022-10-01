@@ -3,27 +3,39 @@
 {% block title %}Teams | {{ league }}{% endblock title %}
 
 {% block content %}
-  <h2>Teams &middot; {{ league }}</h2>
-  <a href="{% url 'leagues:league_detail' league.slug %}">&larr; League Home</a>
+  <h1>Teams &middot; {{ league }}</h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Teams</li>
+    </ol>
+  </nav>
   <hr>
-  {% if user.is_authenticated and not user_team %}
-    <div class="team-list-welcome">
-      <h3 class="mt-4">Welcome to your new league, {{ user }}.</h3>
+  {% if not league.userteam %}
+    <div class="col col-md-8 col-lg-6 mt-4">
+      <h2>Welcome to your new league, {{ user }}.</h2>
       <p class="mt-3">Start by reviewing the rosters, then pick which team you want to sign onto as GM. Once you choose a team, you're locked in until your contract expires so choose wisely!</p>
+      {% include 'leagues/forms/team_select_form.html' %}
     </div>
-    {% include 'leagues/forms/team_select_form.html' %}
   {% endif %}
-  <div class="row">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-2">
     {% for team in team_list %}
-    <div class="col-4 m-3 team-list-wrapper"{% if team.userteam %}style="background-color:#ffc107;"{% endif %}>
-      <h3 class="team-list-name">
-        <a href="{{ team.get_absolute_url }}">{{ team.location }} {{ team.name }}</a>
-      </h3>
-      <p class="team-rating">{{ team.overall_rating }} Overall</p>
-      <a href="{% url 'leagues:depth_chart' league.slug team.slug %}">
-        <p class="team-depth-link">Depth Chart</p>
-      </a>
-    </div>
+      <div class="col">
+        <div class="card {% if team.userteam %} bg-warning bg-opacity-25{% endif %}">
+          <div class="card-body d-flex flex-column align-items-center">
+            <h3 class="card-title fs-4 text-center">
+              <a href="{{ team.get_absolute_url }}" class="text-decoration-none link-dark">{{ team.location }} {{ team.name }}</a>              
+            </h3>
+            <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-sm btn-outline-primary mt-2">
+              Depth Chart
+            </a>
+          </div>
+          <div class="card-footer text-muted text-center">
+            {{ team.overall_rating }} overall
+          </div>
+        </div>
+      </div>
     {% endfor %}
   </div>
 {% endblock content %}

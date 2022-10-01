@@ -3,24 +3,29 @@
 {% block title %}My Leagues | {{ user }}{% endblock title %}
 
 {% block content %}
-  <h2>My Leagues &middot; {{ user }}</h2>
-  <p><a href="{% url 'pages:home' %}">&larr; Home</a></p>
-  <hr>
-  <a href="{% url 'leagues:league_create' %}">
-    <button class="btn btn-dark mt-2 mb-3" type="submit">New League</button>
-  </a>
-  {% if not leagues %}
+<h1>My Leagues &middot; {{ user }}</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'web:home' %}">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Leagues</li>
+  </ol>
+</nav>
+<hr>
+<a href="{% url 'leagues:league_create' %}">
+  <button class="btn btn-success my-3" type="submit">New League</button>
+</a>
+{% if not leagues %}
   <p>No leagues to display. Please create one above.</p>
-  {% else %}
-  <div class="table-responsive mt-2">
+{% else %}
+  <div class="table-responsive">
     <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
       <thead>
         <tr>
-          <th scope="col">League Name</th>          
+          <th scope="col">League</th>          
           <th scope="col">Created</th>
           <th scope="col">GM</th>
-          <th scope="col"></th>
-          <th scope="col"></th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -30,12 +35,11 @@
             <td>{{ league.creation_date }}</td>
             <td>{{ league.gm_name }}</td>
             <td><a href="{% url 'leagues:league_edit' league.slug %}">Edit Info</a></td>
-            <td><a href="{% url 'leagues:league_delete' league.slug %}" style="color:red;">Delete League</a>            
-            </td>
+            <td><a href="{% url 'leagues:league_delete' league.slug %}" class="text-danger">Delete</a></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-  {% endif %}
+{% endif %}
 {% endblock content %}

@@ -3,17 +3,27 @@
 {% block title %}{{ team.abbreviation }} | {{ league }}{% endblock title %}
 
 {% block content %}
+<div class="d-flex flex-wrap justify-content-between">
   <div>
-    <h2>
+    <h1>
       Home &middot; {{ team.location }} {{ team.name }}
       {% if team.userteam %}
         <span class="my-team-tag">GM</span>
       {% endif %}
-    </h2>
-
+    </h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+        <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'leagues:team_list' league.slug %}">Teams</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ team.abbreviation }}</li>
+      </ol>
+    </nav>
+  </div>
+  <div>
     <div class="btn-group dropend mt-2">
-      <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
-        Select a team
+      <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
+        Team switcher
       </button>
       <ul class="dropdown-menu" aria-labelledby="filter-by-team">
         {% for new_team in team_list %}
@@ -21,22 +31,29 @@
         {% endfor %}
       </ul>
     </div>
-    
-    <hr>
-    <div>
-      {% if team.userteam %}
-        <p>You're the GM of this team.</p>
-      {% endif %}
-      <p>Overall: {{ team.overall_rating }}</p>
-      <a href="{% url 'leagues:team_roster' league.slug team.slug %}" class="btn btn-primary" role="button">
-        Roster
-      </a>
-      <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-primary" role="button">
-        Depth Chart
-      </a>
-      <a href="{% url 'leagues:team_schedule' league.slug team.slug %}" class="btn btn-primary" role="button">
-        Schedule
-      </a>
-    </div>
   </div>
+</div>
+<hr>
+<div class="my-3">
+  <h2>Details</h2>
+  <p class="text-muted">
+    <strong>{{ team.overall_rating }} Overall</strong><br>
+    {% if team.userteam %}You're the GM of this team.{% endif %}
+  </p>
+</div>
+<div class="my-3">
+  <h2>Manage</h2>
+  <p>{% if team.userteam %}Manage the day-to-day of the {{ team }}.{% endif %}</p>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{% url 'leagues:team_roster' league.slug team.slug %}" class="btn btn-primary" role="button">
+      Roster
+    </a>
+    <a href="{% url 'leagues:depth_chart' league.slug team.slug %}" class="btn btn-outline-dark" role="button">
+      Depth Chart
+    </a>
+    <a href="{% url 'leagues:team_schedule' league.slug team.slug %}" class="btn btn-outline-dark" role="button">
+      Schedule
+    </a>
+  </div>
+</div>
 {% endblock content %}

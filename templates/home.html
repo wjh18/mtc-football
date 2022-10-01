@@ -1,37 +1,33 @@
 {% extends '_base.html' %}
 
-{% block title %}Home | Move the Chains{% endblock title %}
+{% block title %}Home | {{ block.super }}{% endblock title %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-    <div class="d-flex flex-row">
-      <div style="width: 450px;">
-        <h2>Welcome to Move the Chains football!</h2>
+  <div class="d-flex flex-row justify-content-center">
+    <div class="col col-md-8 col-xl-5">
+      {% if user.is_authenticated %}
+        <h1>Welcome to Move the Chains football, {{user}}!</h1>
         <p>Get started by viewing your active leagues or create a new one to start from scratch.</p>
-        <div>
-        <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-dark me-2" role="button">
-          My Leagues
-        </a>
-        <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
-          New League
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-dark me-2" role="button">
+            My Leagues
+          </a>
+          <a href="{% url 'leagues:league_create' %}" class="btn btn-success" role="button">
+            New League
+          </a>
         </div>
-      </div>
-    </div>
-  {% else %}
-    <div class="d-flex flex-row justify-content-center">
-      <div style="width: 450px;">
-        <div>
-          <h2>Welcome to Move the Chains football!</h2>
-          <p>The premier web-based American football simulation game. Log in or sign up to start playing.</p>
+      {% else %}
+        <h1>Welcome to Move the Chains football!</h1>
+        <p>The premier web-based American football simulation game. Log in or sign up to start playing.</p>
+        <div class="d-flex flex-wrap gap-2">
           <a href="{% url 'account_login' %}" class="btn btn-outline-dark me-2" role="button">
             Login
           </a>
-          <a href="{% url 'account_signup' %}" class="btn btn btn-warning" role="button">
+          <a href="{% url 'account_signup' %}" class="btn btn btn-success" role="button">
             Signup
           </a>
         </div>
-      </div>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 {% endblock content %}

@@ -1,5 +1,29 @@
-docker-compose-prod.yml
+# Python
+*.pyc
 __pycache__/
-db.sqlite3
+.venv/
+
+# System
 .DS_Store
+*.code-workspace
+
+# Project
+.env
 .env.dev
+docker-compose-prod.yml
+db.sqlite3
+media
+staticfiles
+
+# Testing
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.pytest_cache
+
+# Frontend
+node_modules/
+static/css/
+static/js/
+static/icons/

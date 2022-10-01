@@ -3,200 +3,200 @@
 {% block title %}Playoffs | {{ season }}{% endblock title %}
 
 {% block content %}
-
-  <h2>
-    Playoff Picture &middot; Season {{ season.season_number }}
-    {% if team.userteam %}
-      <span class="my-team-tag">GM</span>
+<h1>
+  Playoff Picture &middot; Season {{ season.season_number }}
+  {% if team.userteam %}
+    <span class="my-team-tag">GM</span>
+  {% endif %}
+</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+    <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Playoffs</li>
+  </ol>
+</nav>
+<hr>
+<div class="row">
+  <div class="matchup-section">
+    <h2 class="matchup-section-header">Wildcard Weekend</h2>
+    {% if wildcard_matchups %}
+      {% for matchup in wildcard_matchups %}
+        <div class="matchup-wrapper {% if matchup.is_american %}conf1-border{% elif matchup.is_national %}conf2-border{% endif %}">
+          <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
+            <p class="matchup-type">
+              {% if matchup.is_divisional %}
+                Divisional
+              {% elif matchup.is_conference %}
+                Conference
+              {% else %}
+                Non-Conference
+              {% endif %}
+            </p>
+            <p class="matchup-teams">
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.away_team.abbreviation }}
+              </span>
+              @
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.home_team.abbreviation }}
+              </span>
+            </p>  
+            <p class="matchup-records">
+              <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+              <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+            </p>               
+            {% if matchup.week_number < season.week_number %}
+              <p class="matchup-score">
+                {{ matchup.scoreboard.away_score }}
+                - {{ matchup.scoreboard.home_score }}
+              </p>
+            {% else %}
+              <p class="matchup-date">
+                {{ matchup.date }}
+              </p>                
+            {% endif %}              
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No matchups yet for this week.</p>
     {% endif %}
-  </h2>
-  <a href="{{ league.get_absolute_url }}">&larr; League Home</a>
-  <hr>
-
-  <div class="row">
-
-    <div class="matchup-section">
-      <h3 class="matchup-section-header">Wildcard Weekend</h3>
-      {% if wildcard_matchups %}
-        {% for matchup in wildcard_matchups %}
-          <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
-            <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
-              <p class="matchup-type">
-                {% if matchup.is_divisional %}
-                  Divisional
-                {% elif matchup.is_conference %}
-                  Conference
-                {% else %}
-                  Non-Conference
-                {% endif %}
-              </p>
-              <p class="matchup-teams">
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.away_team.abbreviation }}
-                </span>
-                @
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.home_team.abbreviation }}
-                </span>
-              </p>  
-              <p class="matchup-records">
-                <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
-                <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
-              </p>               
-              {% if matchup.week_number < season.week_number %}
-                <p class="matchup-score">
-                  {{ matchup.scoreboard.away_score }}
-                  - {{ matchup.scoreboard.home_score }}
-                </p>
-              {% else %}
-                <p class="matchup-date">
-                  {{ matchup.date }}
-                </p>                
-              {% endif %}              
-            </a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No matchups yet for this week.</p>
-      {% endif %}
-    </div>
-
-    <div class="matchup-section">
-      <h3 class="matchup-section-header">Divisional Round</h3>
-      {% if divisional_matchups %}
-        {% for matchup in divisional_matchups %}
-          <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
-            <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
-              <p class="matchup-type">
-                {% if matchup.is_divisional %}
-                  Divisional
-                {% elif matchup.is_conference %}
-                  Conference
-                {% else %}
-                  Non-Conference
-                {% endif %}
-              </p>
-              <p class="matchup-teams">
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.away_team.abbreviation }}
-                </span>
-                @
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.home_team.abbreviation }}
-                </span>
-              </p>  
-              <p class="matchup-records">
-                <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
-                <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
-              </p>               
-              {% if matchup.week_number < season.week_number %}
-                <p class="matchup-score">
-                  {{ matchup.scoreboard.away_score }}
-                  - {{ matchup.scoreboard.home_score }}
-                </p>
-              {% else %}
-                <p class="matchup-date">
-                  {{ matchup.date }}
-                </p>                
-              {% endif %}              
-            </a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No matchups yet for this week.</p>
-      {% endif %}
-    </div>
-
-    <div class="matchup-section">
-      <h3 class="matchup-section-header">Conference Finals</h3>
-      {% if conference_matchups %}
-        {% for matchup in conference_matchups %}
-          <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
-            <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
-              <p class="matchup-type">
-                {% if matchup.is_divisional %}
-                  Divisional
-                {% elif matchup.is_conference %}
-                  Conference
-                {% else %}
-                  Non-Conference
-                {% endif %}
-              </p>
-              <p class="matchup-teams">
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.away_team.abbreviation }}
-                </span>
-                @
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.home_team.abbreviation }}
-                </span>
-              </p>  
-              <p class="matchup-records">
-                <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
-                <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
-              </p>               
-              {% if matchup.week_number < season.week_number %}
-                <p class="matchup-score">
-                  {{ matchup.scoreboard.away_score }}
-                  - {{ matchup.scoreboard.home_score }}
-                </p>
-              {% else %}
-                <p class="matchup-date">
-                  {{ matchup.date }}
-                </p>                
-              {% endif %}              
-            </a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No matchups yet for this week.</p>
-      {% endif %}
-    </div>
-
-    <div class="matchup-section">
-      <h3 class="matchup-section-header">Championship</h3>
-      {% if championship_matchups %}
-        {% for matchup in championship_matchups %}
-          <div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
-            <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
-              <p class="matchup-type">
-                {% if matchup.is_divisional %}
-                  Divisional
-                {% elif matchup.is_conference %}
-                  Conference
-                {% else %}
-                  Non-Conference
-                {% endif %}
-              </p>
-              <p class="matchup-teams">
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.away_team.abbreviation }}
-                </span>
-                @
-                <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner{% else %}team-not-played{% endif %}">
-                  {{ matchup.home_team.abbreviation }}
-                </span>
-              </p>  
-              <p class="matchup-records">
-                <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
-                <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
-              </p>               
-              {% if matchup.week_number < season.week_number %}
-                <p class="matchup-score">
-                  {{ matchup.scoreboard.away_score }}
-                  - {{ matchup.scoreboard.home_score }}
-                </p>
-              {% else %}
-                <p class="matchup-date">
-                  {{ matchup.date }}
-                </p>                
-              {% endif %}              
-            </a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No matchups yet for this week.</p>
-      {% endif %}
-    </div>
   </div>
+  <div class="matchup-section">
+    <h2 class="matchup-section-header">Divisional Round</h2>
+    {% if divisional_matchups %}
+      {% for matchup in divisional_matchups %}
+        <div class="matchup-wrapper {% if matchup.is_american %}conf1-border{% elif matchup.is_national %}conf2-border{% endif %}">
+          <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
+            <p class="matchup-type">
+              {% if matchup.is_divisional %}
+                Divisional
+              {% elif matchup.is_conference %}
+                Conference
+              {% else %}
+                Non-Conference
+              {% endif %}
+            </p>
+            <p class="matchup-teams">
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.away_team.abbreviation }}
+              </span>
+              @
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.home_team.abbreviation }}
+              </span>
+            </p>  
+            <p class="matchup-records">
+              <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+              <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+            </p>               
+            {% if matchup.week_number < season.week_number %}
+              <p class="matchup-score">
+                {{ matchup.scoreboard.away_score }}
+                - {{ matchup.scoreboard.home_score }}
+              </p>
+            {% else %}
+              <p class="matchup-date">
+                {{ matchup.date }}
+              </p>                
+            {% endif %}              
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No matchups yet for this week.</p>
+    {% endif %}
+  </div>
+  <div class="matchup-section">
+    <h2 class="matchup-section-header">Conference Finals</h2>
+    {% if conference_matchups %}
+      {% for matchup in conference_matchups %}
+        <div class="matchup-wrapper {% if matchup.is_american %}conf1-border{% elif matchup.is_national %}conf2-border{% endif %}">
+          <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
+            <p class="matchup-type">
+              {% if matchup.is_divisional %}
+                Divisional
+              {% elif matchup.is_conference %}
+                Conference
+              {% else %}
+                Non-Conference
+              {% endif %}
+            </p>
+            <p class="matchup-teams">
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.away_team.abbreviation }}
+              </span>
+              @
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.home_team.abbreviation }}
+              </span>
+            </p>  
+            <p class="matchup-records">
+              <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+              <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+            </p>               
+            {% if matchup.week_number < season.week_number %}
+              <p class="matchup-score">
+                {{ matchup.scoreboard.away_score }}
+                - {{ matchup.scoreboard.home_score }}
+              </p>
+            {% else %}
+              <p class="matchup-date">
+                {{ matchup.date }}
+              </p>                
+            {% endif %}              
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No matchups yet for this week.</p>
+    {% endif %}
+  </div>
+  <div class="matchup-section">
+    <h2 class="matchup-section-header">Championship</h2>
+    {% if championship_matchups %}
+      {% for matchup in championship_matchups %}
+        <div class="matchup-wrapper {% if matchup.is_american %}conf1-border{% elif matchup.is_national %}conf2-border{% endif %}">
+          <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
+            <p class="matchup-type">
+              {% if matchup.is_divisional %}
+                Divisional
+              {% elif matchup.is_conference %}
+                Conference
+              {% else %}
+                Non-Conference
+              {% endif %}
+            </p>
+            <p class="matchup-teams">
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.away_team.abbreviation }}
+              </span>
+              @
+              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+                {{ matchup.home_team.abbreviation }}
+              </span>
+            </p>  
+            <p class="matchup-records">
+              <span class="matchup-record">{{ matchup.away_team.get_current_record }}</span>
+              <span class="matchup-record">{{ matchup.home_team.get_current_record }}</span>
+            </p>               
+            {% if matchup.week_number < season.week_number %}
+              <p class="matchup-score">
+                {{ matchup.scoreboard.away_score }}
+                - {{ matchup.scoreboard.home_score }}
+              </p>
+            {% else %}
+              <p class="matchup-date">
+                {{ matchup.date }}
+              </p>                
+            {% endif %}              
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No matchups yet for this week.</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock content %}

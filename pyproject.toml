@@ -1,0 +1,42 @@
+[tool.black]
+line-length = 88
+target-version = ['py310']
+extend-exclude = '''
+(
+  ^/manage.py
+  | ^/config/.*
+  | .*/migrations/.*  
+  | .*/urls.py
+)
+'''
+# Required for pre-commit
+force-exclude = '''
+(
+  ^/manage.py
+  | ^/config/.*
+  | .*/migrations/.*  
+  | .*/urls.py
+)
+'''
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+extend_skip_glob = ["**/migrations/*", "manage.py"]
+
+[tool.bandit]
+targets = ["config", "apps"]
+exclude = ["tests.py"]
+exclude_dirs = [".venv", "tests"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+DJANGO_SETTINGS_MODULE = "config.settings"
+testpaths = [
+  "apps"
+]
+python_files = [
+  "tests.py",
+  "test_*.py",
+  "*_tests.py"
+]

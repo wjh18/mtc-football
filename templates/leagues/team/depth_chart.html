@@ -3,65 +3,76 @@
 {% block title %}Depth Chart | {{ team.abbreviation }} - {{ league }}{% endblock title %}
 
 {% block content %}
-  <h2>
-    Depth Chart &middot; {{ team }}
-    {% if team.userteam %}
-      <span class="my-team-tag">GM</span>
-    {% endif %}
-  </h2>
-  
-  <div class="btn-group dropend mt-2">
-    <button class="btn btn-warning dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
-      Select a team
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="filter-by-team">
-      {% for new_team in team_list %}
-        <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:depth_chart' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
-      {% endfor %}
-    </ul>
+<div class="d-flex flex-wrap justify-content-between">
+  <div>
+    <h1>
+      Depth Chart &middot; {{ team }}
+      {% if team.userteam %}
+        <span class="my-team-tag">GM</span>
+      {% endif %}
+    </h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+        <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'leagues:team_list' league.slug %}">Teams</a></li>
+        <li class="breadcrumb-item"><a href="{{ team.get_absolute_url }}">{{ team.abbreviation }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Depth Chart</li>
+      </ol>
+    </nav>
   </div>
-
-  <hr>
-  <nav aria-label="...">
-    <ul class="pagination pagination-sm d-flex flex-wrap">
-      {% for position in positions %}
-        <li class="page-item{% if active_position == position %} active" aria-current="page{% endif %}">
-          <a class="page-link" aria-current="page" href="{% url 'leagues:depth_chart_pos' league.slug team.slug position|urlencode %}">{{ position }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  </nav>
-
-  <div class="table-responsive">
-    <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
-      <caption>{{ team.name }} {{ active_position }} depth chart.</caption>
-      <thead>
-        <tr>
-          <th scope="col">NAME</th>
-          <th scope="col">AGE</th>
-          <th scope="col">EXP</th>
-          <th scope="col">POS</th>
-          <th scope="col">PROTOTYPE</th>
-          <th scope="col">OVR</th>
-          <th scope="col">POT</th>
-          <th scope="col">CON</th>
-          <th scope="col">IQ</th>
-          <th scope="col">SPD</th>
-          <th scope="col">STR</th>
-          <th scope="col">AGI</th>
-          <th scope="col">AWR</th>
-          <th scope="col">STA</th>
-          <th scope="col">INJ</th>
-          <th scope="col">ROFF</th>
-          <th scope="col">POFF</th>
-          <th scope="col">RDEF</th>
-          <th scope="col">PDEF</th>
-          <th scope="col">SPOFF</th>
-          <th scope="col">SPDEF</th>
-        </tr>
-      </thead>
-      <tbody>
-
+  <div>
+    <div class="btn-group dropend mt-2">
+      <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" id="filter-by-team" data-bs-toggle="dropdown" aria-expanded="false">
+        Team switcher
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="filter-by-team">
+        {% for new_team in team_list %}
+          <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'leagues:depth_chart' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<hr>
+<nav>
+  <ul class="pagination pagination-sm d-flex flex-wrap">
+    {% for position in positions %}
+      <li class="page-item{% if active_position == position %} active" aria-current="page{% endif %}">
+        <a class="page-link" aria-current="page" href="{% url 'leagues:depth_chart_pos' league.slug team.slug position|urlencode %}">{{ position }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+<div class="table-responsive">
+  <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
+    <caption>{{ team.name }} {{ active_position }} depth chart.</caption>
+    <thead>
+      <tr>
+        <th scope="col">NAME</th>
+        <th scope="col">AGE</th>
+        <th scope="col">EXP</th>
+        <th scope="col">POS</th>
+        <th scope="col">PROTOTYPE</th>
+        <th scope="col">OVR</th>
+        <th scope="col">POT</th>
+        <th scope="col">CON</th>
+        <th scope="col">IQ</th>
+        <th scope="col">SPD</th>
+        <th scope="col">STR</th>
+        <th scope="col">AGI</th>
+        <th scope="col">AWR</th>
+        <th scope="col">STA</th>
+        <th scope="col">INJ</th>
+        <th scope="col">ROFF</th>
+        <th scope="col">POFF</th>
+        <th scope="col">RDEF</th>
+        <th scope="col">PDEF</th>
+        <th scope="col">SPOFF</th>
+        <th scope="col">SPDEF</th>
+      </tr>
+    </thead>
+    <tbody>
     {% for player in players %}
       <tr>
         <th scope="row"><a href="{% url 'leagues:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
@@ -87,7 +98,7 @@
         <td>{{ player.special_def }}</td>
       </tr>
     {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    </tbody>
+  </table>
+</div>
 {% endblock content %}

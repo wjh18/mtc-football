@@ -1,4 +1,4 @@
-&copy; 2021, W.J. Holmes. All rights reserved.
+&copy; 2022, Will J. Holmes. All rights reserved.
 
 This project is source-available, but it does not meet the requirements for open-source software as defined by the Open Source Initiative (OSI). While the source code is publicly available, certain licensing conditions apply that prevent the code from being distributed and hosted for public or commercial use.
 

@@ -1,19 +1,22 @@
 {% extends '_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Logout | Move the Chains{% endblock %}
+{% block title %}Logout | {{ block.super }}{% endblock %}
 
 {% block content %}
-  <div class="d-flex flex-row">
-    <div>
-      <h1>Log Out</h1>
-      <p>Are you sure you want to log out?</p>
-      <form method="post" action="{% url 'account_logout' %}">
-        {% csrf_token %}
-        {{ form|crispy }}
+<div class="d-flex flex-row">
+  <div>
+    <h1>Log out</h1>
+    <p>Are you sure you want to log out?</p>
+    <form method="post" action="{% url 'account_logout' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline-dark">Go Back</a>
         <button class="btn btn-danger" type="submit">Log Out</button>
-      </form>
       </div>
+    </form>
     </div>
   </div>
+</div>
 {% endblock content %}

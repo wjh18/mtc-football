@@ -1,0 +1,1 @@
+export const Layout = "Layouts are working."
