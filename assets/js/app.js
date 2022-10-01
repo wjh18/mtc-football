@@ -1,15 +1,9 @@
-import { Component } from './components/component';
-import { Layout } from './layouts/layout';
-import { Page } from './pages/page';
+import { Messages } from './components/messages';
 
-export { Component } from './components/component';
-export { Layout } from './layouts/layout';
-export { Page } from './pages/page';
+export { Messages } from './components/messages';
 
-console.log("JavaScript is working!");
-console.log(Component);
-console.log(Layout);
-console.log(Page);
+
+Messages.autoFadeAlerts()
 
 
 // Old JS, needs updating
