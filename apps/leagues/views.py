@@ -185,26 +185,28 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         matchups = (
             Matchup.objects.filter(season=season, week_number=week_number)
             .annotate(
-                is_afc=Case(
+                is_american=Case(
                     When(
-                        home_team__division__conference__name="AFC",
-                        away_team__division__conference__name="AFC",
+                        home_team__division__conference__name="American",
+                        away_team__division__conference__name="American",
                         then=True,
                     ),
                     default=False,
                     output_field=BooleanField(),
                 ),
-                is_nfc=Case(
+                is_national=Case(
                     When(
-                        home_team__division__conference__name="NFC",
-                        away_team__division__conference__name="NFC",
+                        home_team__division__conference__name="National",
+                        away_team__division__conference__name="National",
                         then=True,
                     ),
                     default=False,
                     output_field=BooleanField(),
                 ),
             )
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
 
         return matchups
@@ -251,26 +253,28 @@ class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
         return (
             Matchup.objects.filter(season__league=league)
             .annotate(
-                is_afc=Case(
+                is_american=Case(
                     When(
-                        home_team__division__conference__name="AFC",
-                        away_team__division__conference__name="AFC",
+                        home_team__division__conference__name="American",
+                        away_team__division__conference__name="American",
                         then=True,
                     ),
                     default=False,
                     output_field=BooleanField(),
                 ),
-                is_nfc=Case(
+                is_national=Case(
                     When(
-                        home_team__division__conference__name="NFC",
-                        away_team__division__conference__name="NFC",
+                        home_team__division__conference__name="National",
+                        away_team__division__conference__name="National",
                         then=True,
                     ),
                     default=False,
                     output_field=BooleanField(),
                 ),
             )
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
 
 
@@ -380,19 +384,19 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         matchups = Matchup.objects.filter(season=context["season"], is_postseason=True)
 
-        afc_case = Case(
+        american_case = Case(
             When(
-                home_team__division__conference__name="AFC",
-                away_team__division__conference__name="AFC",
+                home_team__division__conference__name="American",
+                away_team__division__conference__name="American",
                 then=True,
             ),
             default=False,
             output_field=BooleanField(),
         )
-        nfc_case = Case(
+        national_case = Case(
             When(
-                home_team__division__conference__name="NFC",
-                away_team__division__conference__name="NFC",
+                home_team__division__conference__name="National",
+                away_team__division__conference__name="National",
                 then=True,
             ),
             default=False,
@@ -401,23 +405,31 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context["wildcard_matchups"] = (
             matchups.filter(week_number=19)
-            .annotate(is_afc=afc_case, is_nfc=nfc_case)
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .annotate(is_american=american_case, is_national=national_case)
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
         context["divisional_matchups"] = (
             matchups.filter(week_number=20)
-            .annotate(is_afc=afc_case, is_nfc=nfc_case)
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .annotate(is_american=american_case, is_national=national_case)
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
         context["conference_matchups"] = (
             matchups.filter(week_number=21)
-            .annotate(is_afc=afc_case, is_nfc=nfc_case)
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .annotate(is_american=american_case, is_national=national_case)
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
         context["championship_matchups"] = (
             matchups.filter(week_number=22)
-            .annotate(is_afc=afc_case, is_nfc=nfc_case)
-            .order_by("-is_afc", "-is_nfc", "-is_divisional", "-is_conference")
+            .annotate(is_american=american_case, is_national=national_case)
+            .order_by(
+                "-is_american", "-is_national", "-is_divisional", "-is_conference"
+            )
         )
 
         return context

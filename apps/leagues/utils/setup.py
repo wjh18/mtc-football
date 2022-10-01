@@ -30,7 +30,7 @@ def read_team_info_from_csv():
 
 def get_conference_data():
     """Get league conference names"""
-    conferences = [{"name": "AFC"}, {"name": "NFC"}]
+    conferences = [{"name": "American"}, {"name": "National"}]
 
     return conferences
 
@@ -38,14 +38,14 @@ def get_conference_data():
 def get_division_data():
     """Get league division names"""
     divisions = [
-        {"name": "AFC East"},
-        {"name": "AFC North"},
-        {"name": "AFC South"},
-        {"name": "AFC West"},
-        {"name": "NFC East"},
-        {"name": "NFC North"},
-        {"name": "NFC South"},
-        {"name": "NFC West"},
+        {"name": "American East"},
+        {"name": "American North"},
+        {"name": "American South"},
+        {"name": "American West"},
+        {"name": "National East"},
+        {"name": "National North"},
+        {"name": "National South"},
+        {"name": "National West"},
     ]
 
     return divisions
@@ -72,10 +72,10 @@ def create_league_structure(league):
     conf1, conf2 = conference_objs[0], conference_objs[1]
 
     for division in divisions:
-        division_name = division["name"]
-        if division_name[:3] == conf1.name:
+        division_conf = division["name"].split(" ")[0]
+        if division_conf == conf1.name:
             Division.objects.create(conference=conf1, **division)
-        elif division_name[:3] == conf2.name:
+        elif division_conf == conf2.name:
             Division.objects.create(conference=conf2, **division)
 
     # Read team information from CSV

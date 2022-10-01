@@ -1,33 +1,33 @@
 ID,Name,Abbreviation,Conference,Division
-1,Arizona,Heatstroke,ARI,NFC,West
-2,Atlanta,Ensemble,ATL,NFC,South
-3,Baltimore,Battleships,BAL,AFC,North
-4,Buffalo,Rapids,BUF,AFC,East
-5,Carolina,Flytraps,CAR,NFC,South
-6,Chicago,Architects,CHI,NFC,North
-7,Cincinnati,Chili Dogs,CIN,AFC,North
-8,Cleveland,Rockstars,CLE,AFC,North
-9,Dallas,Quickdraw,DAL,NFC,East
-10,Denver,Shredders,DEN,AFC,West
-11,Detroit,Engines,DET,NFC,North
-12,Green Bay,Galaxy,GB,NFC,North
-13,Houston,Steeds,HOU,AFC,South
-14,Indianapolis,Blacksmiths,IND,AFC,South
-15,Jacksonville,Jazz,JAX,AFC,South
-16,Kansas City,Mobsters,KC,AFC,West
-17,Miami,Yachts,MIA,AFC,East
-18,Minnesota,Blizzard,MIN,NFC,North
-19,New England,Settlers,NE,AFC,East
-20,New Orleans,Sorcerers,NO,NFC,South
-21,New York,Gladiators,NYG,NFC,East
-22,New York,Jewels,NYJ,AFC,East
-23,Las Vegas,Bluffers,LV,AFC,West
-24,Philadelphia,Cheesesteaks,PHI,NFC,East
-25,Pittsburgh,Hammers,PIT,AFC,North
-26,Los Angeles,Champions,LAC,AFC,West
-27,Los Angeles,Rampage,LAR,NFC,West
-28,San Francisco,Magnates,SF,NFC,West
-29,Seattle,Hailstorm,SEA,NFC,West
-30,Tampa Bay,Tourists,TB,NFC,South
-31,Tennessee,Preachers,TEN,AFC,South
-32,Washington,Bureaucrats,WAS,NFC,East
+1,Arizona,Heatstroke,ARI,National,West
+2,Atlanta,Ensemble,ATL,National,South
+3,Baltimore,Battleships,BAL,American,North
+4,Buffalo,Rapids,BUF,American,East
+5,Carolina,Flytraps,CAR,National,South
+6,Chicago,Architects,CHI,National,North
+7,Cincinnati,Chili Dogs,CIN,American,North
+8,Cleveland,Rockstars,CLE,American,North
+9,Dallas,Quickdraw,DAL,National,East
+10,Denver,Shredders,DEN,American,West
+11,Detroit,Engines,DET,National,North
+12,Green Bay,Galaxy,GB,National,North
+13,Houston,Steeds,HOU,American,South
+14,Indianapolis,Blacksmiths,IND,American,South
+15,Jacksonville,Jazz,JAX,American,South
+16,Kansas City,Mobsters,KC,American,West
+17,Miami,Yachts,MIA,American,East
+18,Minnesota,Blizzard,MIN,National,North
+19,New England,Settlers,NE,American,East
+20,New Orleans,Sorcerers,NO,National,South
+21,New York,Gladiators,NYG,National,East
+22,New York,Jewels,NYJ,American,East
+23,Las Vegas,Bluffers,LV,American,West
+24,Philadelphia,Cheesesteaks,PHI,National,East
+25,Pittsburgh,Hammers,PIT,American,North
+26,Los Angeles,Champions,LAC,American,West
+27,Los Angeles,Rampage,LAR,National,West
+28,San Francisco,Magnates,SF,National,West
+29,Seattle,Hailstorm,SEA,National,West
+30,Tampa Bay,Tourists,TB,National,South
+31,Tennessee,Preachers,TEN,American,South
+32,Washington,Bureaucrats,WAS,National,East

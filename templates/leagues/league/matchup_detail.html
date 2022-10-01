@@ -23,7 +23,7 @@
   </ol>
 </nav>
 <hr>
-<div class="matchup-wrapper {% if matchup.is_afc %}conf1-border{% elif matchup.is_nfc %}conf2-border{% endif %}">
+<div class="matchup-wrapper {% if matchup.is_american %}conf1-border{% elif matchup.is_national %}conf2-border{% endif %}">
   <a class="matchup-link" href="{{ matchup.get_absolute_url }}">
     <p class="matchup-type">
       {% if matchup.is_divisional %}
