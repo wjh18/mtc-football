@@ -1,21 +1,10 @@
 /* Main (old css, needs updating) */
 
-.logo {
-  font-size: 30px;
-  margin-right: 20px;
-}
-
-#advance-form {
-  
-}
-
 #advance-select {
-  background-color: #3bd05d;
-  border-radius: 0;
+  background-color: var(--bs-success);
+  color: var(--bs-gray-200);
   border: none;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.16), 0 5px 10px rgba(0,0,0,0.23); 
-  height: 45px;
-  font-size: 18px; 
+  min-height: 38px;
 }
 
 .messages {
@@ -23,12 +12,13 @@
 }
 
 .table-active {
-  background-color:#ffc107;
+  // Override bootstrap table row background color
   --bs-table-accent-bg: none;
   box-shadow: none;
 }
 
 .table-row-divider {
+  // Override bootstrap table row border bottom color
   &-green {
     border-bottom: 2px dashed darkgreen !important;
   }
@@ -51,46 +41,11 @@ colgroup > .col-recent {
 
 /* Teams */
 
-.team-list-wrapper {
-  height: 150px;
-  width: 270px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border: 2px solid black;
-}
-
-.team-list-wrapper a {
-  text-decoration: none;
-}
-
-.team-list-name {
-  margin-top: 20px;
-  font-size: 20px;
-  text-decoration: none;
-  color: black;
-  text-align: center;
-}
-
-.team-rating {
-  text-align: center;
-}
-
-.team-depth-link {
-  text-align: center;
-}
-
-.team-list-welcome {
-  width: 500px;
-}
-
-#team-select {
-  width: 300px;
-}
-
 .my-team-tag {
   font-size: 14px;
   padding: 6px;
   border-radius: 4px;
-  background-color: orange;
+  background-color: var(--bs-warning);
   color: black;
   margin-left: 15px;
   position: absolute;

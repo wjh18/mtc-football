@@ -6,8 +6,8 @@
     <div class="container-lg">
       <div class="d-flex align-items-center flex-wrap gap-3 py-3 py-sm-0">
         <div class="me-3">
-          <a class="navbar-brand logo" href="{{ league.get_absolute_url}}">{{ league }}</a>
-          <div class="text-secondary">
+          <a class="navbar-brand fs-4" href="{{ league.get_absolute_url}}">{{ league }}</a>
+          <div class="text-light text-opacity-50">
             Season {{ season.season_number }} &middot; Week {{ season.week_number }} &middot; {{ season.get_phase_display }}
           </div>
         </div>
@@ -27,7 +27,7 @@
             <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-light me-2" role="button">
               My Leagues
             </a>
-            <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
+            <a href="{% url 'leagues:league_create' %}" class="btn btn-success" role="button">
               New League
             </a>
             <a class="link text-muted text-decoration-none ms-3" href="{% url 'account_logout' %}">Sign out</a>

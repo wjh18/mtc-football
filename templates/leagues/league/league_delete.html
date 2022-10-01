@@ -4,21 +4,20 @@
 {% block title %}Delete League | {{ league }}{% endblock title %}
 
 {% block content %}
-  <h1>Delete &middot; {{ league }}</h1>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
-      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Delete</li>
-    </ol>
-  </nav>
-  <hr>
-  <p>Are you sure you want to delete <i>{{ league }}</i>?<br>
-  <strong>This action is irreversible</strong> and all league data will be lost.</p>
-  <form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button class="btn btn-danger" type="submit">Delete League</button>
-    <br><br>
-  </form>
+<h1>Delete &middot; {{ league }}</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+    <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Delete</li>
+  </ol>
+</nav>
+<hr>
+<p>Are you sure you want to delete <i>{{ league }}</i>?<br>
+<strong>This action is irreversible</strong> and all league data will be lost.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button class="btn btn-danger" type="submit">Delete League</button>
+</form>
 {% endblock content %}

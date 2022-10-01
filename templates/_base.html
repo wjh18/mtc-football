@@ -23,7 +23,7 @@
   <header>
     <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
       <div class="container-lg">
-        <a class="navbar-brand logo" href="{% url 'web:home' %}">{{ site.name }}</a>
+        <a class="navbar-brand fs-4" href="{% url 'web:home' %}">{{ site.name }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -38,21 +38,23 @@
             <li class="nav-item">
               <a class="nav-link {% if request.path == '/contact/' %}active{% endif %}" href="{% url 'web:contact' %}">Contact</a>
             </li>
+            {% if user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link {% if request.path == '/accounts/logout/' %}active{% endif %}" href="{% url 'account_logout' %}">Sign out</a>
             </li>
+            {% endif %}
           </ul>
           <div class="py-3 py-lg-0">
             {% if user.is_authenticated %}
               <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-light me-2" role="button">
                 My Leagues
               </a>
-              <a href="{% url 'leagues:league_create' %}" class="btn btn-warning" role="button">
+              <a href="{% url 'leagues:league_create' %}" class="btn btn-success" role="button">
                 New League
               </a>
             {% else %}
               <a href="{% url 'account_login' %}" class="btn btn-outline-light me-2" role="button">Login</a>
-              <a href="{% url 'account_signup' %}" class="btn btn-warning" role="button">Sign-up</a>
+              <a href="{% url 'account_signup' %}" class="btn btn-success" role="button">Sign-up</a>
             {% endif %}
           </div>
         </div>
@@ -64,16 +66,16 @@
     {% if messages %}
       <div class="messages">
           {% for message in messages %}
-          <div{% if message.tags %} class="alert alert-dismissible fade show {{ message.tags }}" role="alert"{% endif %}>
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
+            <div{% if message.tags %} class="alert alert-dismissible fade show {{ message.tags }}" role="alert"{% endif %}>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
           {% endfor %}
       </div>
     {% endif %}
     <div>
-      {% if user.is_authenticated %}
-      <button class="btn btn-outline-dark position-fixed bottom-0 end-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Show Menu</button>
+    {% if user.is_authenticated %}
+      <button class="btn btn-warning position-fixed bottom-0 end-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Sidebar</button>
       <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title text-secondary" id="offcanvasWithBothOptionsLabel">{% if league %}{{ league }}{% else %}Main Menu{% endif %}</h5>
@@ -81,38 +83,38 @@
         </div>
         <div class="offcanvas-body">
         {% block sidebar %}
-          <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-            <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
-          </a>
-          <ul class="list-unstyled ps-0">
-            <li class="mb-1">
-              <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
-                Start
-              </button>
-              <div class="collapse show" id="start-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><a href="{% url 'leagues:league_list' %}" class="link-dark d-inline-flex text-decoration-none rounded">My Leagues</a></li>
-                  <li><a href="{% url 'leagues:league_create' %}" class="link-dark d-inline-flex text-decoration-none rounded">New League</a></li>
-                </ul>
-              </div>
-            </li>
-            <li class="border-top my-3"></li>
-            <li class="mb-1">
-              <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
-                Account
-              </button>
-              <div class="collapse show" id="account-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">            
-                  <li><a href="{% url 'account_change_password' %}" class="link-dark d-inline-flex text-decoration-none rounded">Change Password</a></li>
-                  <li><a href="{% url 'account_logout' %}" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
+        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+          <span class="fs-5 fw-semibold">Hello, {{ user }}</span>
+        </a>
+        <ul class="list-unstyled ps-0">
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+              Start
+            </button>
+            <div class="collapse show" id="start-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="{% url 'leagues:league_list' %}" class="link-dark d-inline-flex text-decoration-none rounded">My Leagues</a></li>
+                <li><a href="{% url 'leagues:league_create' %}" class="link-dark d-inline-flex text-decoration-none rounded">New League</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="border-top my-3"></li>
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
+              Account
+            </button>
+            <div class="collapse show" id="account-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="{% url 'account_change_password' %}" class="link-dark d-inline-flex text-decoration-none rounded">Change Password</a></li>
+                <li><a href="{% url 'account_logout' %}" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
         {% endblock sidebar %}
       </div>
-    </div>
     {% endif %}
+    </div>
     <div class="container-xl py-5">
       {% block content %}
       {% endblock content %}
