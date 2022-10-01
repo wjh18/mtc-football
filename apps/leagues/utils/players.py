@@ -21,7 +21,7 @@ def read_player_names_from_csv():
         player_names = [
             [row[1], row[2]]
             for row in name_reader
-            if ("last_name" or ".") not in row[2]
+            if ("last_name" and ".") not in row[2]
         ]
 
         # Shuffle first and last names
