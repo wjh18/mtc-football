@@ -1,11 +1,11 @@
 # Django imports
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Case, F, FloatField, Q, When
 from django.db.models.fields import BooleanField
 from django.db.models.functions import Cast
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import ContextMixin
@@ -443,6 +443,22 @@ class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
 
     form_class = AdvanceSeasonForm
     template_name = "leagues/forms/advance_season_form.html"
+
+    def post(self, request, *args, **kwargs):
+        """
+        Override FormView post() method to ensure the user has
+        selected a team before advancing the season.
+        """
+        context = self.get_context_data()
+        league = context["league"]
+
+        try:
+            league.userteam
+        except ObjectDoesNotExist:
+            messages.error(request, "Please select a team before advancing.")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         # Get Season context provided by LeagueContextMixin
