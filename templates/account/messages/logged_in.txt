@@ -1,4 +1,0 @@
-{% load i18n %}
-{% autoescape off %}
-{% blocktrans %}You've been logged in.{% endblocktrans %}
-{% endautoescape %}
