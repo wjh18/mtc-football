@@ -1,0 +1,113 @@
+{% extends 'leagues/_league_base.html' %}
+
+{% block title %}{{ player }} | {{ team.abbreviation }} - {{ league }}{% endblock title %}
+
+{% block content %}
+<div>
+  <h1>
+    {{ player }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; ({{ team.abbreviation }})
+    {% if team.userteam %}
+      <span class="my-team-tag">GM</span>
+    {% endif %}
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+      <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teams:team_list' league.slug %}">Teams</a></li>
+      <li class="breadcrumb-item"><a href="{{ team.get_absolute_url }}">{{ team.abbreviation }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teams:team_roster' league.slug team.slug %}">Roster</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ player }}</li>
+    </ol>
+  </nav>
+  <hr>
+  <div>
+    {% if team.userteam %}
+      <h2>Manage</h2>
+      <p>This player is signed to your team.</p>
+      <a href="" class="btn btn-primary" role="button">
+        Contract
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        Trade
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        Release
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        Train
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        Stats
+      </a>
+    {% else %}
+      <h2>Actions</h2>
+      <p>You don't own this player.</p>
+      <a href="" class="btn btn-primary" role="button">
+        Offer Trade
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        View Contract
+      </a>
+      <a href="" class="btn btn-primary" role="button">
+        Stats
+      </a>
+    {% endif %}
+    <h2 class="mt-5">Attributes</h2>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
+        <thead>
+          <tr>
+            <th scope="col">NAME</th>
+            <th scope="col">AGE</th>
+            <th scope="col">EXP</th>
+            <th scope="col">POS</th>
+            <th scope="col">PRO</th>
+            <th scope="col">OVR</th>
+            <th scope="col">POT</th>
+            <th scope="col">CON</th>
+            <th scope="col">IQ</th>
+            <th scope="col">SPD</th>
+            <th scope="col">STR</th>
+            <th scope="col">AGI</th>
+            <th scope="col">AWR</th>
+            <th scope="col">STA</th>
+            <th scope="col">INJ</th>
+            <th scope="col">ROFF</th>
+            <th scope="col">POFF</th>
+            <th scope="col">RDEF</th>
+            <th scope="col">PDEF</th>
+            <th scope="col">SPOFF</th>
+            <th scope="col">SPDEF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><a href="{% url 'personnel:player_detail' league.slug team.slug player.slug %}">{{ player }}</a></th>
+            <td>{{ player.age }}</td>
+            <td>{{ player.experience }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.prototype }}</td>
+            <td>{{ player.overall_rating }}</td>
+            <td>{{ player.potential }}</td>
+            <td>{{ player.confidence }}</td>
+            <td>{{ player.iq }}</td>
+            <td>{{ player.speed }}</td>
+            <td>{{ player.strength }}</td>
+            <td>{{ player.agility }}</td>
+            <td>{{ player.awareness }}</td>
+            <td>{{ player.stamina }}</td>
+            <td>{{ player.injury }}</td>
+            <td>{{ player.run_off }}</td>
+            <td>{{ player.pass_off }}</td>
+            <td>{{ player.run_def }}</td>
+            <td>{{ player.pass_def }}</td>
+            <td>{{ player.special_off }}</td>
+            <td>{{ player.special_def }}</td>
+          </tr>    
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock content %}

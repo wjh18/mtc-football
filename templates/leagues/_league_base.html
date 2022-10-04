@@ -11,7 +11,7 @@
             Season {{ season.season_number }} &middot; Week {{ season.week_number }} &middot; {{ season.get_phase_display }}
           </div>
         </div>
-        {% include 'leagues/forms/advance_season_form.html' %}
+        {% include 'seasons/forms/advance_season_form.html' %}
       </div>
       {% comment %} <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -54,10 +54,10 @@
     <div class="collapse show" id="league-collapse">
       <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
         <li><a href="{{ league.get_absolute_url }}" class="link-dark d-inline-flex text-decoration-none rounded">Details</a></li>
-        <li><a href="{% url 'leagues:team_list' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Teams</a></li>
-        <li><a href="{% url 'leagues:league_standings' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Standings</a></li>
-        <li><a href="{% url 'leagues:weekly_matchups' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Matchups</a></li>
-        <li><a href="{% url 'leagues:playoffs' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Playoffs</a></li>
+        <li><a href="{% url 'teams:team_list' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Teams</a></li>
+        <li><a href="{% url 'seasons:league_standings' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Standings</a></li>
+        <li><a href="{% url 'matchups:weekly_matchups' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Matchups</a></li>
+        <li><a href="{% url 'matchups:playoffs' league.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Playoffs</a></li>
         <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Free Agents</a></li>
         <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Prospects</a></li>
         <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Stats & History</a></li>
@@ -73,9 +73,9 @@
       <div class="collapse show" id="team-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="{{ league.userteam.team.get_absolute_url }}" class="link-dark d-inline-flex text-decoration-none rounded">Details</a></li>
-          <li><a href="{% url 'leagues:team_roster' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Roster</a></li>
-          <li><a href="{% url 'leagues:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Depth Chart</a></li>
-          <li><a href="{% url 'leagues:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
+          <li><a href="{% url 'teams:team_roster' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Roster</a></li>
+          <li><a href="{% url 'teams:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Depth Chart</a></li>
+          <li><a href="{% url 'teams:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Trade Block</a></li>                      
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Finances</a></li>
         </ul>

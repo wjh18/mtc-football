@@ -30,7 +30,7 @@ class HomepageTests(SimpleTestCase):
         self.assertEqual(self.response.status_code, 200)
 
     def test_homepage_template(self):
-        self.assertTemplateUsed(self.response, "home.html")
+        self.assertTemplateUsed(self.response, "web/home.html")
 
     def test_homepage_contains_correct_html(self):
         self.assertContains(self.response, "Welcome to Move the Chains football!")
@@ -52,7 +52,7 @@ class AboutPageTests(SimpleTestCase):
         self.assertEqual(self.response.status_code, 200)
 
     def test_aboutpage_template(self):
-        self.assertTemplateUsed(self.response, "about.html")
+        self.assertTemplateUsed(self.response, "web/about.html")
 
     def test_aboutpage_contains_correct_html(self):
         self.assertContains(self.response, "About Page")
@@ -74,7 +74,7 @@ class ContactPageTests(SimpleTestCase):
         self.assertEqual(self.response.status_code, 200)
 
     def test_contactpage_template(self):
-        self.assertTemplateUsed(self.response, "contact.html")
+        self.assertTemplateUsed(self.response, "web/contact.html")
 
     def test_contactpage_contains_correct_html(self):
         self.assertContains(self.response, "Contact Page")
