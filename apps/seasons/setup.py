@@ -42,10 +42,7 @@ def create_season_details(season):
     for matchup in matchup_objs:
         if matchup.home_team.division == matchup.away_team.division:
             matchup.is_divisional = True
-        if (
-            matchup.home_team.division.conference
-            == matchup.away_team.division.conference
-        ):
+        if matchup.home_team.conference == matchup.away_team.conference:
             matchup.is_conference = True
     Matchup.objects.bulk_update(matchup_objs, ["is_divisional", "is_conference"])
 

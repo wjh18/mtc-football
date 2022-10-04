@@ -48,7 +48,7 @@ def generate_conference_rankings(season):
 
         top_4_conference = TeamStanding.objects.filter(
             season=season,
-            team__division__conference=conference,
+            team__conference=conference,
             ranking__division_ranking=1,
             week_number=season.week_number + 1,
         ).annotate(
@@ -67,7 +67,7 @@ def generate_conference_rankings(season):
         bottom_12_conference = (
             TeamStanding.objects.filter(
                 season=season,
-                team__division__conference=conference,
+                team__conference=conference,
                 week_number=season.week_number + 1,
             )
             .exclude(ranking__division_ranking=1)

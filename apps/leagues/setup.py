@@ -69,6 +69,7 @@ def create_league_structure(league):
             name=team_info[team][1],
             abbreviation=abbreviations[team],
             division=team_division,
+            conference=team_conference,
             league=league,
         )
 

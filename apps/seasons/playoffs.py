@@ -52,7 +52,7 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         if div:
             match_entity = Q(team__division=rank_1.team.division)
         elif conf:
-            match_entity = Q(team__division__conference=rank_1.team.division.conference)
+            match_entity = Q(team__conference=rank_1.team.conference)
 
         # Div rank 2's in same div as div rank 1's
         rank_2 = standings.get(next_ranking, match_entity)
@@ -94,7 +94,7 @@ def update_berths_and_eliminations(standings):
 
         rank_8 = standings.get(
             ranking__conference_ranking=8,
-            team__division__conference=top_7.team.division.conference,
+            team__conference=top_7.team.conference,
         )
 
         top_7_wins = top_7.wins + 0.5 * top_7.ties
@@ -113,7 +113,7 @@ def update_berths_and_eliminations(standings):
 
         rank_7 = standings.get(
             ranking__conference_ranking=7,
-            team__division__conference=bottom_8.team.division.conference,
+            team__conference=bottom_8.team.conference,
         )
 
         rank_7_wins = rank_7.wins + 0.5 * rank_7.ties
@@ -182,7 +182,7 @@ def get_playoff_teams_by_conf(season):
 
     for conference in conferences:
         conf_rankings = league_rankings.filter(
-            standing__team__division__conference=conference, clinch_berth=True
+            standing__team__conference=conference, clinch_berth=True
         ).order_by("conference_ranking")
 
         both_conf_rankings.append(conf_rankings)
@@ -263,7 +263,7 @@ def generate_round_matchups(
                     slug=slugify(
                         f"{matchup[1].standing.team.abbreviation}-\
                       {matchup[0].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.division.conference.name}-{next_round}-\
+                      {matchup[0].standing.team.conference.name}-{next_round}-\
                       season-{season.season_number}"
                     ),
                 )

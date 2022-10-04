@@ -44,8 +44,8 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             .annotate(
                 is_american=Case(
                     When(
-                        home_team__division__conference__name="American",
-                        away_team__division__conference__name="American",
+                        home_team__conference__name="American",
+                        away_team__conference__name="American",
                         then=True,
                     ),
                     default=False,
@@ -53,8 +53,8 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
                 ),
                 is_national=Case(
                     When(
-                        home_team__division__conference__name="National",
-                        away_team__division__conference__name="National",
+                        home_team__conference__name="National",
+                        away_team__conference__name="National",
                         then=True,
                     ),
                     default=False,
@@ -117,8 +117,8 @@ class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
             .annotate(
                 is_american=Case(
                     When(
-                        home_team__division__conference__name="American",
-                        away_team__division__conference__name="American",
+                        home_team__conference__name="American",
+                        away_team__conference__name="American",
                         then=True,
                     ),
                     default=False,
@@ -126,8 +126,8 @@ class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
                 ),
                 is_national=Case(
                     When(
-                        home_team__division__conference__name="National",
-                        away_team__division__conference__name="National",
+                        home_team__conference__name="National",
+                        away_team__conference__name="National",
                         then=True,
                     ),
                     default=False,
@@ -156,8 +156,8 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         american_case = Case(
             When(
-                home_team__division__conference__name="American",
-                away_team__division__conference__name="American",
+                home_team__conference__name="American",
+                away_team__conference__name="American",
                 then=True,
             ),
             default=False,
@@ -165,8 +165,8 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         )
         national_case = Case(
             When(
-                home_team__division__conference__name="National",
-                away_team__division__conference__name="National",
+                home_team__conference__name="National",
+                away_team__conference__name="National",
                 then=True,
             ),
             default=False,

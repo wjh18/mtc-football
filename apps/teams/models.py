@@ -11,6 +11,11 @@ class Team(models.Model):
         on_delete=models.CASCADE,
         related_name="teams",
     )
+    conference = models.ForeignKey(
+        "leagues.Conference",
+        on_delete=models.CASCADE,
+        related_name="teams",
+    )
     division = models.ForeignKey(
         "leagues.Division",
         on_delete=models.CASCADE,

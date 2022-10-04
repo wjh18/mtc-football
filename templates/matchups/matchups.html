@@ -84,7 +84,7 @@
       <div class="matchup-section">
         <h2 class="matchup-section-header">Bye Weeks</h2>
         {% for bye_team in bye_teams %}
-          <div class="matchup-wrapper bye-wrapper {% if bye_team.division.conference.name == "American" %}conf1-border{% else %}conf2-border{% endif %}">
+          <div class="matchup-wrapper bye-wrapper {% if bye_team.conference.name == "American" %}conf1-border{% else %}conf2-border{% endif %}">
             <a class="matchup-link bye-matchup-link" href="{% url 'teams:team_schedule' league.slug bye_team.slug %}">
               <p class="bye-team"><span>{{ bye_team.abbreviation }}</span></p>
               <p class="matchup-records">
