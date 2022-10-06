@@ -31,6 +31,9 @@ class LeagueDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
     context_object_name = "league"
     template_name = "leagues/league_detail.html"
 
+    def get_object(self, queryset=None):
+        return League.objects.get(slug=self.kwargs.get("league"))
+
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
     """
@@ -62,6 +65,9 @@ class LeagueUpdateView(LeagueOwnerMixin, LeagueContextMixin, UpdateView):
     template_name = "leagues/league_update.html"
     success_message = "Your league has been updated successfully."
 
+    def get_object(self, queryset=None):
+        return League.objects.get(slug=self.kwargs.get("league"))
+
     def form_valid(self, form):
         """Overriden to add success message"""
         form.instance.user = self.request.user
@@ -78,6 +84,9 @@ class LeagueDeleteView(LeagueOwnerMixin, LeagueContextMixin, DeleteView):
     success_url = reverse_lazy("leagues:league_list")
     template_name = "leagues/league_delete.html"
     success_message = "Your league has been deleted sucessfully."
+
+    def get_object(self, queryset=None):
+        return League.objects.get(slug=self.kwargs.get("league"))
 
     def form_valid(self, form):
         """Overriden to add success message"""
