@@ -22,6 +22,8 @@ class RobotsTest(TestCase):
 
 
 class HomepageTests(SimpleTestCase):
+    databases = "__all__"
+
     def setUp(self):
         url = reverse("web:home")
         self.response = self.client.get(url)
@@ -44,6 +46,8 @@ class HomepageTests(SimpleTestCase):
 
 
 class AboutPageTests(SimpleTestCase):
+    databases = "__all__"
+
     def setUp(self):
         url = reverse("web:about")
         self.response = self.client.get(url)
@@ -66,6 +70,8 @@ class AboutPageTests(SimpleTestCase):
 
 
 class ContactPageTests(SimpleTestCase):
+    databases = "__all__"
+
     def setUp(self):
         url = reverse("web:contact")
         self.response = self.client.get(url)
