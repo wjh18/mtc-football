@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.text import slugify
 
 from apps.core.utils import random_string_generator as random_string
@@ -15,7 +14,7 @@ class League(models.Model):
     )
     name = models.CharField(max_length=50)
     gm_name = models.CharField(max_length=50)
-    creation_date = models.DateTimeField(default=timezone.now)
+    creation_date = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(blank=True, null=True, unique=True)
 
     class Meta:
