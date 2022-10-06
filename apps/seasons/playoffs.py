@@ -240,17 +240,17 @@ def generate_round_matchups(
         create_matchups = Matchup.objects.bulk_create(
             [
                 Matchup(
-                    home_team=matchup[0].standing.team,
-                    away_team=matchup[1].standing.team,
+                    home_team=matchup[0].team,
+                    away_team=matchup[1].team,
                     season=season,
                     week_number=season.week_number + 1,
                     date=season.current_date,
                     is_postseason=True,
                     is_conference=True,
                     slug=slugify(
-                        f"{matchup[1].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.abbreviation}-\
-                      {matchup[0].standing.team.conference.name}-{next_round}-\
+                        f"{matchup[1].team.abbreviation}-\
+                      {matchup[0].team.abbreviation}-\
+                      {matchup[0].team.conference.name}-{next_round}-\
                       season-{season.season_number}"
                     ),
                 )

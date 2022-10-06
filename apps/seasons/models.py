@@ -120,5 +120,4 @@ class TeamStanding(models.Model):
         ]
 
     def __str__(self):
-        return f"""{self.team.abbreviation} standings -
-                Week {self.season.week_number} - {self.season}"""
+        return f"{self.team.abbreviation} standings - {self.season}"

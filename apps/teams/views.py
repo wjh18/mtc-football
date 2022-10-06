@@ -163,7 +163,7 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
     def get_queryset(self):
         League = apps.get_model("leagues.League")
-        Matchup = apps.get_model("matchup.Matchup")
+        Matchup = apps.get_model("matchups.Matchup")
         Season = apps.get_model("seasons.Season")
 
         league = League.objects.get(slug=self.kwargs["league"])

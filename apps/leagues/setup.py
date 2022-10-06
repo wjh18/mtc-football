@@ -2,8 +2,6 @@ from django.apps import apps
 
 from apps.teams.setup import read_team_info_from_csv
 
-from .models import Conference, Division
-
 
 def get_conference_data():
     """Get league conference names"""
@@ -35,6 +33,8 @@ def create_league_structure(league):
     """
     Team = apps.get_model("teams.Team")
     Season = apps.get_model("seasons.Season")
+    Conference = apps.get_model("leagues.Conference")
+    Division = apps.get_model("leagues.Division")
 
     # Get conference and division data
     conferences = get_conference_data()

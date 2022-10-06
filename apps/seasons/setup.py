@@ -3,7 +3,6 @@ import datetime
 from django.apps import apps
 from django.utils.text import slugify
 
-from .models import TeamStanding
 from .schedule import create_schedule
 
 
@@ -14,6 +13,7 @@ def create_season_details(season):
     """
     Matchup = apps.get_model("matchups.Matchup")
     Scoreboard = apps.get_model("matchups.Scoreboard")
+    TeamStanding = apps.get_model("seasons.TeamStanding")
 
     # Generate nested list of weeks and matchups
     league_id = season.league.pk

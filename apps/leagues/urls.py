@@ -2,9 +2,7 @@ from django.urls import include, path
 
 from . import views
 
-app_name = 'leagues'
-
-urlpatterns = [
+leagues_patterns = ([
     path('', views.LeagueListView.as_view(), name='league_list'),
     path('new/', views.LeagueCreateView.as_view(), name='league_create'),
     path('<slug:slug>/',
@@ -13,6 +11,10 @@ urlpatterns = [
          views.LeagueUpdateView.as_view(), name='league_edit'),
     path('<slug:slug>/delete/',
          views.LeagueDeleteView.as_view(), name='league_delete'),
+], 'leagues')
+
+urlpatterns = [
+    path('', include(leagues_patterns)),
     path('', include('apps.teams.urls', namespace='teams')),
     path('', include('apps.personnel.urls', namespace='personnel')),
     path('', include('apps.matchups.urls', namespace='matchups')),
