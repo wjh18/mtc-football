@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     # Local
     'apps.accounts.apps.AccountsConfig',
     'apps.web.apps.WebConfig',
-    'apps.leagues.apps.LeaguesConfig',
-    'apps.simulation.apps.SimulationConfig',
     'apps.core.apps.CoreConfig',
+    'apps.leagues.apps.LeaguesConfig',
+    'apps.teams.apps.TeamsConfig',
+    'apps.personnel.apps.PersonnelConfig',
+    'apps.matchups.apps.MatchupsConfig',
+    'apps.seasons.apps.SeasonsConfig',
 ]
 
 MIDDLEWARE = [
@@ -72,8 +75,10 @@ TEMPLATES = [
                 'apps.core.context_processors.site',
                 # Google Tag Manager ID
                 'apps.web.context_processors.google_tag_manager_id',
-                # Advance season form used in leagues/_league_base.html                
-                'apps.leagues.context_processors.advance_season_form',
+                # For advance season form used in base template               
+                'apps.seasons.context_processors.advance_season_form',
+                # Active user team
+                'apps.teams.context_processors.user_team',
             ],
         },
     },
