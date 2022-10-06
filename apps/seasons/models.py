@@ -68,7 +68,6 @@ class TeamStanding(models.Model):
         on_delete=models.CASCADE,
         related_name="team_standings",
     )
-    week_number = models.PositiveSmallIntegerField(default=1)
     # Basic standings
     wins = models.SmallIntegerField(default=0)
     losses = models.SmallIntegerField(default=0)
@@ -97,18 +96,7 @@ class TeamStanding(models.Model):
     last_5_wins = models.SmallIntegerField(default=0)
     last_5_losses = models.SmallIntegerField(default=0)
     last_5_ties = models.SmallIntegerField(default=0)
-
-    def __str__(self):
-        return f"""{self.team.abbreviation} standings -
-                Week {self.week_number} - {self.season}"""
-
-
-class TeamRanking(models.Model):
-    standing = models.OneToOneField(
-        TeamStanding,
-        related_name="ranking",
-        on_delete=models.CASCADE,
-    )
+    # Rankings
     # Regular season
     division_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)
@@ -124,7 +112,13 @@ class TeamRanking(models.Model):
     won_conf = models.BooleanField(default=False)
     won_champ = models.BooleanField(default=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["team", "season"], name="unique_team_standings_for_season"
+            ),
+        ]
+
     def __str__(self):
-        return f"""{self.standing.team.abbreviation} rankings -
-                Week {self.standing.week_number} -
-                {self.standing.season}"""
+        return f"""{self.team.abbreviation} standings -
+                Week {self.season.week_number} - {self.season}"""

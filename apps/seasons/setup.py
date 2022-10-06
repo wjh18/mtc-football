@@ -3,7 +3,7 @@ import datetime
 from django.apps import apps
 from django.utils.text import slugify
 
-from .models import TeamRanking, TeamStanding
+from .models import TeamStanding
 from .schedule import create_schedule
 
 
@@ -51,7 +51,7 @@ def create_season_details(season):
         [Scoreboard(matchup=matchup) for matchup in matchup_objs]
     )
 
-    # Create starting Standings and Rankings for each team
-    for team in season.league.teams.all():
-        standing = TeamStanding.objects.create(team=team, season=season)
-        TeamRanking.objects.create(standing=standing)
+    # Bulk create TeamStanding for each team
+    TeamStanding.objects.bulk_create(
+        [TeamStanding(team=team, season=season) for team in season.league.teams.all()]
+    )

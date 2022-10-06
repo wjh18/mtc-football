@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db.models import Q
 from django.utils.text import slugify
 
-from .models import TeamRanking, TeamStanding
+from .models import TeamStanding
 
 
 def update_final_playoff_clinches(season):
@@ -10,24 +10,22 @@ def update_final_playoff_clinches(season):
     Update final playoff clinches based on div and conf ranking
     at the end of the season.
     """
-    league_rankings = TeamRanking.objects.filter(
-        standing__season=season, standing__week_number=19
-    )
+    league_standings = TeamStanding.objects.filter(season=season)
 
-    for ranking in league_rankings:
-        if ranking.conference_ranking == 1:
-            ranking.clinch_bye = True
-            ranking.clinch_div = True
-            ranking.clinch_berth = True
-        elif ranking.division_ranking == 1:
-            ranking.clinch_div = True
-            ranking.clinch_berth = True
-        elif ranking.conference_ranking <= 7:
-            ranking.clinch_berth = True
+    for standing in league_standings:
+        if standing.conference_ranking == 1:
+            standing.clinch_bye = True
+            standing.clinch_div = True
+            standing.clinch_berth = True
+        elif standing.division_ranking == 1:
+            standing.clinch_div = True
+            standing.clinch_berth = True
+        elif standing.conference_ranking <= 7:
+            standing.clinch_berth = True
         else:
-            ranking.clinch_none = True
+            standing.clinch_none = True
 
-        ranking.save()
+        standing.save()
 
 
 def update_div_and_conf_clinches(standings, div=False, conf=False):
@@ -36,13 +34,13 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
     how many games back the second ranking team is.
     """
     if div:
-        lead_ranking = Q(ranking__division_ranking=1)
-        clinch_false = Q(ranking__clinch_div=False)
-        next_ranking = Q(ranking__division_ranking=2)
+        lead_ranking = Q(division_ranking=1)
+        clinch_false = Q(clinch_div=False)
+        next_ranking = Q(division_ranking=2)
     elif conf:
-        lead_ranking = Q(ranking__conference_ranking=1)
-        clinch_false = Q(ranking__clinch_bye=False)
-        next_ranking = Q(ranking__conference_ranking=2)
+        lead_ranking = Q(conference_ranking=1)
+        clinch_false = Q(clinch_bye=False)
+        next_ranking = Q(conference_ranking=2)
 
     # Div or conf rank 1's who haven't clinched div or conf yet
     lead_standings = standings.filter(lead_ranking, clinch_false)
@@ -67,13 +65,13 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         # Rank 1 clinches div (rank 2 is too many games behind)
         if rank_2_gb > rank_2_gl:
             if div:
-                rank_1.ranking.clinch_div = True
-                rank_1.ranking.clinch_berth = True
+                rank_1.clinch_div = True
+                rank_1.clinch_berth = True
             elif conf:
-                rank_1.ranking.clinch_bye = True
-                rank_1.ranking.clinch_berth = True
+                rank_1.clinch_bye = True
+                rank_1.clinch_berth = True
 
-            rank_1.ranking.save()
+            rank_1.save()
 
 
 def update_berths_and_eliminations(standings):
@@ -82,18 +80,14 @@ def update_berths_and_eliminations(standings):
     how many games back the eighth ranking and below teams are.
     """
     # Top and bottom standings who haven't clinched a berth or aren't out yet
-    top_7_standings = standings.filter(
-        ranking__conference_ranking__lte=7, ranking__clinch_berth=False
-    )
+    top_7_standings = standings.filter(conference_ranking__lte=7, clinch_berth=False)
 
-    bottom_8_standings = standings.filter(
-        ranking__conference_ranking__gte=8, ranking__clinch_none=False
-    )
+    bottom_8_standings = standings.filter(conference_ranking__gte=8, clinch_none=False)
 
     for top_7 in top_7_standings:
 
         rank_8 = standings.get(
-            ranking__conference_ranking=8,
+            conference_ranking=8,
             team__conference=top_7.team.conference,
         )
 
@@ -106,13 +100,13 @@ def update_berths_and_eliminations(standings):
 
         # Rank 1 clinches div (rank 2 is too many games behind)
         if rank_8_gb > rank_8_gl:
-            top_7.ranking.clinch_berth = True
-            top_7.ranking.save()
+            top_7.clinch_berth = True
+            top_7.save()
 
     for bottom_8 in bottom_8_standings:
 
         rank_7 = standings.get(
-            ranking__conference_ranking=7,
+            conference_ranking=7,
             team__conference=bottom_8.team.conference,
         )
 
@@ -125,8 +119,8 @@ def update_berths_and_eliminations(standings):
 
         # Rank 1 clinches div (rank 2 is too many games behind)
         if bottom_8_gb > bottom_8_gl:
-            bottom_8.ranking.clinch_none = True
-            bottom_8.ranking.save()
+            bottom_8.clinch_none = True
+            bottom_8.save()
 
 
 def update_running_playoff_clinches(season):
@@ -137,9 +131,7 @@ def update_running_playoff_clinches(season):
     # Only check in week 8 or later
     # (No team can clinch or be eliminated with 8 or less games)
     if season.week_number >= 8:
-        standings = TeamStanding.objects.filter(
-            season=season, week_number=season.week_number + 1
-        )
+        standings = TeamStanding.objects.filter(season=season)
 
         update_div_and_conf_clinches(standings, div=True)
         update_div_and_conf_clinches(standings, conf=True)
@@ -148,24 +140,21 @@ def update_running_playoff_clinches(season):
 
 def update_playoff_rankings(season, round_type, winner):
     """
-    Update week 19 rankings with playoff berth and win data.
+    Update team standings with playoff berth and win data.
     """
 
-    # Get week 19 TeamRanking instance and assign winner
-    ranking = TeamRanking.objects.get(
-        standing__team=winner, standing__season=season, standing__week_number=19
-    )
+    standing = TeamStanding.objects.get(team=winner, season=season)
 
     if round_type == "wildcard":
-        ranking.won_wild = True
+        standing.won_wild = True
     elif round_type == "divisional":
-        ranking.won_div = True
+        standing.won_div = True
     elif round_type == "conference":
-        ranking.won_conf = True
+        standing.won_conf = True
     else:
-        ranking.won_champ = True
+        standing.won_champ = True
 
-    ranking.save()
+    standing.save()
 
 
 def get_playoff_teams_by_conf(season):
@@ -173,16 +162,14 @@ def get_playoff_teams_by_conf(season):
     Return conference standings ordered by conf rank.
     Limited to playoff teams only (top 7 from each conf).
     """
-    league_rankings = TeamRanking.objects.filter(
-        standing__season=season, standing__week_number=19
-    )
+    league_standings = TeamStanding.objects.filter(season=season)
     conferences = season.league.conferences.all()
 
     both_conf_rankings = []
 
     for conference in conferences:
-        conf_rankings = league_rankings.filter(
-            standing__team__conference=conference, clinch_berth=True
+        conf_rankings = league_standings.filter(
+            team__conference=conference, clinch_berth=True
         ).order_by("conference_ranking")
 
         both_conf_rankings.append(conf_rankings)
@@ -231,7 +218,7 @@ def generate_round_matchups(
 
         elif round_type == "wildcard":
             # Filter conf standings by teams who won wc round and rank 1 team
-            cr = cr.filter(Q(standing__team__in=winners) | Q(conference_ranking=1))
+            cr = cr.filter(Q(team__in=winners) | Q(conference_ranking=1))
             next_round = "divisional"
 
             # Set divisional matchups for second week of playoffs.
@@ -241,7 +228,7 @@ def generate_round_matchups(
 
         elif round_type == "divisional":
             # Filter conf standings by teams who won div
-            cr = cr.filter(Q(standing__team__in=winners))
+            cr = cr.filter(Q(team__in=winners))
             next_round = "conference"
 
             # Set conference matchups for third week of playoffs.

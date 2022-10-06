@@ -1,21 +1,7 @@
+from django.apps import apps
+from django.db.models import Q
+
 from .models import TeamStanding
-
-
-def dupe_standings_for_byes(season, current_week):
-    """
-    Duplicate the standings of teams that have a regular season
-    bye week by copying their current week's TeamStanding instance.
-    """
-    teams = season.get_byes()
-    standings = TeamStanding.objects.filter(
-        team__in=teams, season=season, week_number=current_week
-    )
-
-    for standing in standings:
-        standing.pk = None
-        standing._state.adding = True
-        standing.week_number = current_week + 1
-        standing.save()
 
 
 class UpdateStanding:
@@ -136,15 +122,27 @@ class UpdateStanding:
         if last_5_week_num <= bye_week <= self.current_week:
             last_5_week_num -= 1
 
-        last_5_standing = TeamStanding.objects.get(
-            team=self.standing.team,
+        Matchup = apps.get_model("matchups.Matchup")
+        last_5_matchups = Matchup.objects.filter(
+            Q(home_team=self.standing.team) | Q(away_team=self.standing.team),
             season=self.standing.season,
-            week_number=last_5_week_num,
+            week_number__range=(last_5_week_num, self.current_week),
         )
+        last_5_ties = 0
+        last_5_wins = 0
+        last_5_losses = 0
+        for matchup in last_5_matchups:
+            winner = matchup.scoreboard.get_winner()
+            if winner == "Tie":
+                last_5_ties += 1
+            elif winner == self.standing.team:
+                last_5_wins += 1
+            else:
+                last_5_losses += 1
 
-        self.standing.last_5_wins = self.standing.wins - last_5_standing.wins
-        self.standing.last_5_losses = self.standing.losses - last_5_standing.losses
-        self.standing.last_5_ties = self.standing.ties - last_5_standing.ties
+        self.standing.last_5_ties = last_5_ties
+        self.standing.last_5_wins = last_5_wins
+        self.standing.last_5_losses = last_5_losses
 
 
 def update_standings(season, current_week, matchups):
@@ -156,13 +154,7 @@ def update_standings(season, current_week, matchups):
         winner = matchup.scoreboard.get_winner()
 
         for team in (matchup.home_team, matchup.away_team):
-            standing = TeamStanding.objects.get(
-                team=team, season=season, week_number=current_week
-            )
-
-            standing.pk = None
-            standing._state.adding = True
-            standing.week_number = current_week + 1
+            standing = TeamStanding.objects.get(team=team, season=season)
 
             # Set matchup types
             is_div = matchup.is_divisional

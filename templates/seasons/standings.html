@@ -70,22 +70,22 @@
           {% for standing in division_standings %}
             {% if standing.team in division.teams.all %}
             <tr {% if active_user_team.team == standing.team %}class="table-active bg-warning bg-opacity-25"{% endif %}>
-              <th scope="row">{{ standing.ranking.division_ranking }}</th>
+              <th scope="row">{{ standing.division_ranking }}</th>
               <td>
                 <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
-                {% if standing.ranking.clinch_bye %}
+                {% if standing.clinch_bye %}
                   <span class="clinches clinch-bye">
                     Z
                   </span>
-                {% elif standing.ranking.clinch_div %}
+                {% elif standing.clinch_div %}
                   <span class="clinches clinch-div">
                     Y
                   </span>
-                {% elif standing.ranking.clinch_berth %}
+                {% elif standing.clinch_berth %}
                   <span class="clinches clinch-berth">
                     X
                   </span>
-                {% elif standing.ranking.clinch_none %}
+                {% elif standing.clinch_none %}
                   <span class="clinches no-clinch">
                     O
                   </span>
@@ -156,23 +156,23 @@
           <tbody>
         {% for standing in conference_standings %}
           {% if standing.team.division in conference.divisions.all %}
-          <tr class="{% if active_user_team.team == standing.team %}table-active bg-warning bg-opacity-25{% else %}table-light{% endif %}{% if standing.ranking.conference_ranking == 4 %} table-row-divider-green{% endif %}{% if standing.ranking.conference_ranking == 7 %} table-row-divider-red{% endif %}">
-            <th scope="row">{{ standing.ranking.conference_ranking }}</th>
+          <tr class="{% if active_user_team.team == standing.team %}table-active bg-warning bg-opacity-25{% else %}table-light{% endif %}{% if standing.conference_ranking == 4 %} table-row-divider-green{% endif %}{% if standing.conference_ranking == 7 %} table-row-divider-red{% endif %}">
+            <th scope="row">{{ standing.conference_ranking }}</th>
             <td>
               <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
-              {% if standing.ranking.clinch_bye %}
+              {% if standing.clinch_bye %}
                 <span class="clinches">
                   Z
                 </span>
-              {% elif standing.ranking.clinch_div %}
+              {% elif standing.clinch_div %}
                 <span class="clinches">
                   Y
                 </span>
-              {% elif standing.ranking.clinch_berth %}
+              {% elif standing.clinch_berth %}
                 <span class="clinches">
                   X
                 </span>
-              {% elif standing.ranking.clinch_none %}
+              {% elif standing.clinch_none %}
                 <span class="clinches no-clinch">
                   O
                 </span>
@@ -244,19 +244,19 @@
         <td>{{ standing.team.overall_rating }}</td>
         <td>
           <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>            
-          {% if standing.ranking.clinch_bye %}
+          {% if standing.clinch_bye %}
             <span class="clinches clinch-bye">
               Z
             </span>
-          {% elif standing.ranking.clinch_div %}
+          {% elif standing.clinch_div %}
             <span class="clinches clinch-div">
               Y
             </span>
-          {% elif standing.ranking.clinch_berth %}
+          {% elif standing.clinch_berth %}
             <span class="clinches clinch-berth">
               X             
             </span>     
-          {% elif standing.ranking.clinch_none %}
+          {% elif standing.clinch_none %}
             <span class="clinches no-clinch">
               O
             </span>

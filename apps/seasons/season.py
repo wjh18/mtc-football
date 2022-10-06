@@ -3,9 +3,10 @@ import datetime
 from django.apps import apps
 from django.contrib import messages
 
+from .models import Season
 from .playoffs import advance_playoff_round, update_running_playoff_clinches
 from .rankings import update_rankings
-from .standings import dupe_standings_for_byes, update_standings
+from .standings import update_standings
 
 
 def advance_season_by_weeks(request, season, weeks=False):
@@ -57,7 +58,6 @@ def advance_regular_season(season, weeks, week_num):
     matchups = Matchup.objects.filter(
         season=season, week_number=week_num, scoreboard__is_final=False
     )
-    dupe_standings_for_byes(season, week_num)
     update_standings(season, week_num, matchups)
     update_rankings(season)
     update_running_playoff_clinches(season)
@@ -66,7 +66,7 @@ def advance_regular_season(season, weeks, week_num):
         # Enter playoffs, generate wildcard matchups
         season.phase = 5
         advance_playoff_round(season)
-        success_message += """ The first week of the postseason has begun."""
+        success_message += " The first week of the postseason has begun."
 
     return success_message
 
@@ -96,7 +96,6 @@ def advance_to_next_season(season):
     season.is_current = False
     season.save()
 
-    Season = apps.get_model("seasons.Season")
     new_season_start = season.start_date + datetime.timedelta(days=365)
     Season.objects.create(
         league=season.league,

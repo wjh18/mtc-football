@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db.models import F, Window
 from django.db.models.functions import Rank
 
-from .models import TeamRanking, TeamStanding
+from .models import TeamStanding
 
 
 def generate_division_rankings(season):
@@ -15,7 +15,6 @@ def generate_division_rankings(season):
     for division in divisions:
         division_rank_qs = TeamStanding.objects.filter(
             season=season,
-            week_number=season.week_number + 1,
             team__division__exact=division,
         ).annotate(
             rank=Window(
@@ -31,11 +30,10 @@ def generate_division_rankings(season):
         )
         division_rankings[division] = division_rank_qs
         for team in division.teams.all():
-            for division_rank in division_rankings[division]:
-                if division_rank.team == team:
-                    TeamRanking.objects.create(
-                        standing=division_rank, division_ranking=division_rank.rank
-                    )
+            for standing in division_rankings[division]:
+                if standing.team == team:
+                    standing.division_ranking = standing.rank
+                    standing.save()
 
 
 def generate_conference_rankings(season):
@@ -49,8 +47,7 @@ def generate_conference_rankings(season):
         top_4_conference = TeamStanding.objects.filter(
             season=season,
             team__conference=conference,
-            ranking__division_ranking=1,
-            week_number=season.week_number + 1,
+            division_ranking=1,
         ).annotate(
             rank=Window(
                 expression=Rank(),
@@ -68,9 +65,8 @@ def generate_conference_rankings(season):
             TeamStanding.objects.filter(
                 season=season,
                 team__conference=conference,
-                week_number=season.week_number + 1,
             )
-            .exclude(ranking__division_ranking=1)
+            .exclude(division_ranking=1)
             .annotate(
                 rank=Window(
                     expression=Rank(),
@@ -85,29 +81,20 @@ def generate_conference_rankings(season):
             )
         )
 
-        for top_4_with_rank in top_4_conference:
-            team_ranking = TeamRanking.objects.get(
-                standing=top_4_with_rank,
-            )
-            team_ranking.conference_ranking = top_4_with_rank.rank
-            team_ranking.save()
+        for standing in top_4_conference:
+            standing.conference_ranking = standing.rank
+            standing.save()
 
-        for bottom_12_with_rank in bottom_12_conference:
-            team_ranking = TeamRanking.objects.get(
-                standing=bottom_12_with_rank,
-            )
-            team_ranking.conference_ranking = bottom_12_with_rank.rank + 4
-            team_ranking.save()
+        for standing in bottom_12_conference:
+            standing.conference_ranking = standing.rank + 4
+            standing.save()
 
 
 def generate_league_rankings(season):
     """
     Generate league rankings based on new standings for next week.
     """
-    league_rankings = TeamStanding.objects.filter(
-        season=season,
-        week_number=season.week_number + 1,
-    ).annotate(
+    league_rankings = TeamStanding.objects.filter(season=season,).annotate(
         rank=Window(
             expression=Rank(),
             order_by=[
@@ -125,15 +112,8 @@ def generate_league_rankings(season):
     for team in season.league.teams.all():
         for standing in league_rankings:
             if standing.team == team:
-                league_rank = standing.rank
-
-        tr = TeamRanking.objects.get(
-            standing=TeamStanding.objects.get(
-                team=team, season=season, week_number=season.week_number + 1
-            ),
-        )
-        tr.power_ranking = league_rank
-        tr.save()
+                standing.power_ranking = standing.rank
+                standing.save()
 
 
 def update_rankings(season):

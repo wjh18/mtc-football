@@ -28,15 +28,9 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         league = League.objects.get(slug=self.kwargs["league"])
         season = Season.objects.get(league=league, is_current=True)
 
-        # Show final regular season standings during playoffs
-        if season.week_number >= 19:
-            week_number = 19
-        else:
-            week_number = season.week_number
-
         standings = (
-            TeamStanding.objects.filter(season=season, week_number=week_number)
-            .order_by("ranking__power_ranking", "-team__overall_rating")
+            TeamStanding.objects.filter(season=season)
+            .order_by("power_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),
                 win_pct=Case(
@@ -65,15 +59,9 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             raise Http404("Invalid standings entity supplied")
         context["entity"] = entity
 
-        # Show final regular season standings during playoffs
-        if season.week_number >= 19:
-            week_number = 19
-        else:
-            week_number = season.week_number
-
         context["division_standings"] = (
-            TeamStanding.objects.filter(season=season, week_number=week_number)
-            .order_by("ranking__division_ranking", "-team__overall_rating")
+            TeamStanding.objects.filter(season=season)
+            .order_by("division_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),
                 win_pct=Case(
@@ -89,8 +77,8 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         )
 
         context["conference_standings"] = (
-            TeamStanding.objects.filter(season=season, week_number=week_number)
-            .order_by("ranking__conference_ranking", "-team__overall_rating")
+            TeamStanding.objects.filter(season=season)
+            .order_by("conference_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),
                 win_pct=Case(
