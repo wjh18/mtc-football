@@ -1,5 +1,5 @@
-import datetime
 import random
+from datetime import date
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -22,7 +22,7 @@ class Matchup(models.Model):
         on_delete=models.CASCADE,
         related_name="matchups",
     )
-    date = models.DateField(default=datetime.date(2021, 8, 29))
+    date = models.DateField(default=date(date.today().year, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
     is_postseason = models.BooleanField(default=False)
     is_divisional = models.BooleanField(default=False)

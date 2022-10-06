@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 
 from django.db import models
 
@@ -19,8 +19,8 @@ class Season(models.Model):
         on_delete=models.CASCADE,
         related_name="seasons",
     )
-    start_date = models.DateField(default=datetime.date(2021, 8, 29))
-    current_date = models.DateField(default=datetime.date(2021, 8, 29))
+    start_date = models.DateField(default=date(date.today().year, 8, 29))
+    current_date = models.DateField(default=date(date.today().year, 8, 29))
     phase = models.PositiveSmallIntegerField(default=4, choices=PHASES)
     season_number = models.PositiveSmallIntegerField(default=1)
     week_number = models.PositiveSmallIntegerField(default=1)
