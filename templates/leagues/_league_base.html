@@ -64,18 +64,18 @@
       </ul>
     </div>
   </li>
-  {% if league.userteam %}
+  {% if active_user_team %}
     <li class="border-top my-3"></li>
     <li class="mb-1">
       <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#team-collapse" aria-expanded="true">
-        Team ({{ league.userteam.team.abbreviation }})
+        Team ({{ active_user_team.team.abbreviation }})
       </button>
       <div class="collapse show" id="team-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="{{ league.userteam.team.get_absolute_url }}" class="link-dark d-inline-flex text-decoration-none rounded">Details</a></li>
-          <li><a href="{% url 'teams:team_roster' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Roster</a></li>
-          <li><a href="{% url 'teams:depth_chart' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Depth Chart</a></li>
-          <li><a href="{% url 'teams:team_schedule' league.slug league.userteam.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
+          <li><a href="{{ active_user_team.team.get_absolute_url }}" class="link-dark d-inline-flex text-decoration-none rounded">Details</a></li>
+          <li><a href="{% url 'teams:team_roster' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Roster</a></li>
+          <li><a href="{% url 'teams:depth_chart' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Depth Chart</a></li>
+          <li><a href="{% url 'teams:team_schedule' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Trade Block</a></li>                      
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Finances</a></li>
         </ul>

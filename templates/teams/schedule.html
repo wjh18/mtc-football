@@ -7,7 +7,7 @@
   <div>
     <h1>
       Schedule &middot; {{ team.location }} {{ team.name }}
-      {% if team.userteam %}
+      {% if active_user_team.team == team %}
         <span class="my-team-tag">GM</span>
       {% endif %}
     </h1>

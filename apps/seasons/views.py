@@ -126,7 +126,7 @@ class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
         league = context["league"]
 
         try:
-            league.userteam
+            league.user_teams.get(is_active_team=True)
         except ObjectDoesNotExist:
             messages.error(request, "Please select a team before advancing.")
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

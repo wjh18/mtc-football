@@ -94,9 +94,10 @@ class Team(models.Model):
 
 
 class UserTeam(models.Model):
-    league = models.OneToOneField(
+    league = models.ForeignKey(
         "leagues.League",
         on_delete=models.CASCADE,
+        related_name="user_teams",
     )
     team = models.OneToOneField(Team, on_delete=models.CASCADE)
     is_active_team = models.BooleanField(default=True)

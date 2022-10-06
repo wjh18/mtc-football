@@ -77,6 +77,8 @@ TEMPLATES = [
                 'apps.web.context_processors.google_tag_manager_id',
                 # For advance season form used in base template               
                 'apps.seasons.context_processors.advance_season_form',
+                # Active user team
+                'apps.teams.context_processors.user_team',
             ],
         },
     },

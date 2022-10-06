@@ -5,7 +5,7 @@
 {% block content %}
 <h1>
   Playoff Picture &middot; Season {{ season.season_number }}
-  {% if team.userteam %}
+  {% if active_user_team.team == team %}
     <span class="my-team-tag">GM</span>
   {% endif %}
 </h1>

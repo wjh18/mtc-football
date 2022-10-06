@@ -6,7 +6,7 @@
 <div>
   <h1>
     {{ player }} &middot; {{ player.position }} &middot; {{ player.overall_rating }} OVR &middot; ({{ team.abbreviation }})
-    {% if team.userteam %}
+    {% if active_user_team.team == team %}
       <span class="my-team-tag">GM</span>
     {% endif %}
   </h1>
@@ -22,7 +22,7 @@
   </nav>
   <hr>
   <div>
-    {% if team.userteam %}
+    {% if active_user_team.team == team %}
       <h2>Manage</h2>
       <p>This player is signed to your team.</p>
       <a href="" class="btn btn-primary" role="button">

@@ -45,7 +45,7 @@
     </div>
   </div>
   <div class="my-3">
-    {% with league.userteam as myteam %}
+    {% with active_user_team as myteam %}
     {% if not myteam %}
       <h2>Select your team</h2>
       <p>Head over to the <a href="{% url 'teams:team_list' league.slug %}">list of teams</a> to select which team you want to control.</p>
