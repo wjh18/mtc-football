@@ -12,11 +12,12 @@ class LeagueViewTest(TestCase):
             email="leagueuser@example.com",
             password="testpass123",
         )
-        self.league = League.objects.create(
+        self.league = League(
             name="Test League",
             user=self.user,
             gm_name="Test GM",
         )
+        self.league.save(isolate=True)
 
     def test_league_list(self):
         self.assertEqual(f"{self.league.name}", "Test League")

@@ -23,7 +23,7 @@ class League(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def save(self, *args, **kwargs):
+    def save(self, isolate=False, *args, **kwargs):
         # Generate a unique slug
         if not self.slug:
             self.slug = slugify(self.name + "-" + random_string())
@@ -32,7 +32,8 @@ class League(models.Model):
         # Save League instance before creating its structure
         super().save(*args, **kwargs)
         # Only create structure on initial save() call
-        if no_instance_exists:
+        # And skip if isolate=True is passed (for tests, etc.)
+        if no_instance_exists and not isolate:
             create_league_structure(self)
 
     def get_absolute_url(self):
