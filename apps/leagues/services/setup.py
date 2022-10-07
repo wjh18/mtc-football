@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.db.models import F
 
 from apps.seasons.models import Season
 from apps.teams.models import Team
@@ -29,25 +30,26 @@ def create_league_structure(league):
         ]
     )
 
-    # Read team information from CSV
-    team_info = read_team_info_from_csv()
-    abbreviations = [*team_info.keys()]
-    team_info = [*team_info.values()]
+    # Create 32 teams in the correct confs and divs
+    team_dicts = read_team_info_from_csv()
 
-    # Create 32 teams for this league
-    for team in range(0, 32):
-        team_conference = Conference.objects.get(name=team_info[team][2], league=league)
-        team_division = Division.objects.get(
-            name=team_info[team][3], conference=team_conference
-        )
-        Team.objects.create(
-            location=team_info[team][0],
-            name=team_info[team][1],
-            abbreviation=abbreviations[team],
-            division=team_division,
-            conference=team_conference,
-            league=league,
-        )
+    Team.objects.bulk_create(
+        [
+            Team(
+                location=team_dict["loc"],
+                name=team_dict["name"],
+                abbreviation=team_dict["abbr"],
+                conference=Conference.objects.get(
+                    name=team_dict["conf"], league=league
+                ),
+                division=Division.objects.get(
+                    name=team_dict["div"], conference=F("conference")
+                ),
+                league=league,
+            )
+            for team_dict in team_dicts
+        ]
+    )
 
     # Create first season in league
     Season.objects.create(league=league)
