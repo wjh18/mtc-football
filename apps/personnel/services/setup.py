@@ -6,7 +6,7 @@ from django.utils.text import slugify
 
 from apps.core.utils import random_string_generator as random_string
 
-from .models import Player
+from ..models import Player
 
 
 def read_player_names_from_csv():
@@ -15,7 +15,7 @@ def read_player_names_from_csv():
     Returns a dict with first names as keys, last names as values.
     """
     with open(
-        os.path.join(os.path.dirname(__file__), "./data/retired-players.csv"), "r"
+        os.path.join(os.path.dirname(__file__), "../data/retired-players.csv"), "r"
     ) as player_name_file:
 
         name_reader = csv.reader(player_name_file, delimiter=",")

@@ -3,7 +3,7 @@ import datetime
 from django.apps import apps
 from django.contrib import messages
 
-from .models import Season
+from ..models import Season
 from .playoffs import advance_playoff_round, update_running_playoff_clinches
 from .rankings import update_rankings
 from .standings import update_standings

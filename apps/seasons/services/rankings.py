@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db.models import F, Window
 from django.db.models.functions import Rank
 
-from .models import TeamStanding
+from ..models import TeamStanding
 
 
 def generate_division_rankings(season):

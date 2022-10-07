@@ -8,7 +8,7 @@ def read_team_info_from_csv():
     Return a dict w/ abbrs as keys and remaining data as values.
     """
     with open(
-        os.path.join(os.path.dirname(__file__), "./data/nfl-teams.csv"), "r"
+        os.path.join(os.path.dirname(__file__), "../data/nfl-teams.csv"), "r"
     ) as team_data_file:
 
         team_reader = csv.reader(team_data_file, delimiter=",")

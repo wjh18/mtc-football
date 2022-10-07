@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
 
-from apps.personnel.setup import create_team_players
+from apps.personnel.services.setup import create_team_players
 
 
 class Team(models.Model):

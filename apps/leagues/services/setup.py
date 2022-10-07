@@ -1,6 +1,6 @@
 from django.apps import apps
 
-from apps.teams.setup import read_team_info_from_csv
+from apps.teams.services.setup import read_team_info_from_csv
 
 CONFERENCE_NAMES = ["American", "National"]
 

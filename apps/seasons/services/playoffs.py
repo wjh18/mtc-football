@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db.models import Q
 from django.utils.text import slugify
 
-from .models import TeamStanding
+from ..models import TeamStanding
 
 
 def update_final_playoff_clinches(season):

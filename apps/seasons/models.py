@@ -2,7 +2,7 @@ from datetime import date
 
 from django.db import models
 
-from .setup import create_season_details
+from .services.setup import create_season_details
 
 
 class Season(models.Model):

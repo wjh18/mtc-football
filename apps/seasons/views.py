@@ -11,7 +11,7 @@ from apps.leagues.permissions import LeagueOwnerMixin
 
 from .forms import AdvanceSeasonForm
 from .models import Season, TeamStanding
-from .season import advance_season_by_weeks
+from .services.season import advance_season_by_weeks
 
 
 class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):

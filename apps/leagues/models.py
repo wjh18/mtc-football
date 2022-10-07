@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 from apps.core.utils import random_string_generator as random_string
 
-from .setup import create_league_structure
+from .services.setup import create_league_structure
 
 
 class League(models.Model):

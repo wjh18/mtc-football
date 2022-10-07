@@ -193,7 +193,7 @@ DEBUG_TOOLBAR_CONFIG = {
         'debug_toolbar.panels.profiling.ProfilingPanel',
     },
     'SHOW_COLLAPSED': True,
-    'SHOW_TOOLBAR_CALLBACK': 'apps.core.config.show_toolbar'
+    'SHOW_TOOLBAR_CALLBACK': 'apps.core.services.config.show_toolbar'
 }
 SHOW_TOOLBAR = True # Disable toolbar globally
 
