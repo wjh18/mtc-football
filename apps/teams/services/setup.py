@@ -1,6 +1,11 @@
 import csv
 import os
 
+from django.apps import apps
+from django.db.models import F
+
+from ..models import Team
+
 
 def read_team_info_from_csv():
     """
@@ -27,3 +32,30 @@ def read_team_info_from_csv():
             team_dicts.append(team_dict)
 
     return team_dicts
+
+
+def create_teams(league):
+    """
+    Create 32 teams in the correct confs and divs
+    Called from create_league_structure() in apps.leagues.services.setup
+    """
+    Conference = apps.get_model("leagues.Conference")
+    Division = apps.get_model("leagues.Division")
+    team_dicts = read_team_info_from_csv()
+    Team.objects.bulk_create(
+        [
+            Team(
+                location=team_dict["loc"],
+                name=team_dict["name"],
+                abbreviation=team_dict["abbr"],
+                conference=Conference.objects.get(
+                    name=team_dict["conf"], league=league
+                ),
+                division=Division.objects.get(
+                    name=team_dict["div"], conference=F("conference")
+                ),
+                league=league,
+            )
+            for team_dict in team_dicts
+        ]
+    )

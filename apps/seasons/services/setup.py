@@ -6,6 +6,15 @@ from django.utils.text import slugify
 from .schedule import create_schedule
 
 
+def create_first_season(league):
+    """
+    Create the first season in a league
+    Called from create_league_structure() in apps.leagues.services.setup
+    """
+    Season = apps.get_model("seasons.Season")
+    Season.objects.create(league=league)
+
+
 def create_season_details(season):
     """
     Generates a season's schedule, matchups, scoreboards and initial rankings.
