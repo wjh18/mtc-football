@@ -3,8 +3,6 @@ from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
 
-from apps.personnel.services.setup import create_team_players
-
 
 class Team(models.Model):
     league = models.ForeignKey(
@@ -33,18 +31,6 @@ class Team(models.Model):
 
     def __str__(self):
         return f"{self.location} {self.name} ({self.abbreviation})"
-
-    def save(self, *args, **kwargs):
-        # Generate a unique slug
-        if not self.slug:
-            self.slug = self.abbreviation
-        # False if saving an existing instance
-        no_instance_exists = self._state.adding
-        # Save Team instance before creating players
-        super().save(*args, **kwargs)
-        # Only create players on initial save() call
-        if no_instance_exists:
-            create_team_players(self)
 
     def update_team_overall(self):
         """

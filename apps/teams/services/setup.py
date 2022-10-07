@@ -4,6 +4,8 @@ import os
 from django.apps import apps
 from django.db.models import F
 
+from apps.personnel.services.setup import create_team_players
+
 from ..models import Team
 
 
@@ -42,12 +44,13 @@ def create_teams(league):
     Conference = apps.get_model("leagues.Conference")
     Division = apps.get_model("leagues.Division")
     team_dicts = read_team_info_from_csv()
-    Team.objects.bulk_create(
+    team_objs = Team.objects.bulk_create(
         [
             Team(
                 location=team_dict["loc"],
                 name=team_dict["name"],
                 abbreviation=team_dict["abbr"],
+                slug=team_dict["abbr"],
                 conference=Conference.objects.get(
                     name=team_dict["conf"], league=league
                 ),
@@ -59,3 +62,5 @@ def create_teams(league):
             for team_dict in team_dicts
         ]
     )
+    for team in team_objs:
+        create_team_players(team)
