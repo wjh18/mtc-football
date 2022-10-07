@@ -105,7 +105,13 @@ class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         team = context["team"]
-        context["contracts"] = team.contracts.all()
+
+        contracts = team.contracts.all()
+        player_ids = contracts.values("player_id")
+        Player = apps.get_model("personnel.Player")
+        context["players"] = Player.objects.filter(id__in=player_ids).order_by(
+            "-overall_rating"
+        )
 
         # Context for team select dropdown
         league_slug = self.kwargs["league"]
@@ -141,9 +147,9 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context["positions"] = positions
         context["active_position"] = position
-        context["players"] = Player.objects.filter(
-            id__in=player_ids, position=position
-        ).order_by("-overall_rating")
+        context["players"] = players.filter(position=position).order_by(
+            "-overall_rating"
+        )
 
         # Context for team select dropdown
         league_slug = self.kwargs["league"]
