@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.db import models
+from django.db.models import Avg
 from django.urls import reverse
 
 from apps.personnel.setup import create_team_players
@@ -49,11 +50,8 @@ class Team(models.Model):
         """
         Called when player ratings are changed to update team rating.
         """
-        player_ratings = [
-            contract.player.overall_rating for contract in self.contracts.all()
-        ]
-        team_overall = int(sum(player_ratings) / 53)
-        self.overall_rating = team_overall
+        team_overall = self.player_set.aggregate(Avg("overall_rating"))
+        self.overall_rating = team_overall["overall_rating__avg"]
         self.save()
 
     def check_bye_week(self, season):
