@@ -68,7 +68,7 @@
             </thead>
             <tbody>
           {% for standing in division_standings %}
-            {% if standing.team in division.teams.all %}
+            {% if standing.team.division == division %}
             <tr {% if active_user_team.team == standing.team %}class="table-active bg-warning bg-opacity-25"{% endif %}>
               <th scope="row">{{ standing.division_ranking }}</th>
               <td>
@@ -155,7 +155,7 @@
           </thead>
           <tbody>
         {% for standing in conference_standings %}
-          {% if standing.team.division in conference.divisions.all %}
+          {% if standing.team.conference == conference %}
           <tr class="{% if active_user_team.team == standing.team %}table-active bg-warning bg-opacity-25{% else %}table-light{% endif %}{% if standing.conference_ranking == 4 %} table-row-divider-green{% endif %}{% if standing.conference_ranking == 7 %} table-row-divider-red{% endif %}">
             <th scope="row">{{ standing.conference_ranking }}</th>
             <td>
