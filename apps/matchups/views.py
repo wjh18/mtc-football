@@ -93,7 +93,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         context["week_num"] = week_number
         context["num_weeks"] = weeks
 
-        if week_number <= 18:
+        if 6 <= week_number <= 13:
             context["bye_teams"] = season.get_byes(week_number)
 
         return context

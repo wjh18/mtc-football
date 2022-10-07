@@ -46,14 +46,12 @@ class Season(models.Model):
             week_number = week_num
 
         matchups = self.matchups.filter(week_number=week_number)
-        teams_in_league = {team for team in self.league.teams.all()}
-        teams_playing_this_week = set()
 
-        for matchup in matchups:
-            teams_playing_this_week.add(matchup.home_team)
-            teams_playing_this_week.add(matchup.away_team)
+        home_team_ids = matchups.values_list("home_team", flat=True)
+        away_team_ids = matchups.values_list("away_team", flat=True)
+        team_ids = home_team_ids.union(away_team_ids)
 
-        teams_with_bye = teams_in_league - teams_playing_this_week
+        teams_with_bye = self.league.teams.exclude(id__in=team_ids)
         return teams_with_bye
 
 
