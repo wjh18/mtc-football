@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.views.generic.base import ContextMixin
+from django.views.generic.detail import SingleObjectMixin
 
 from .models import League
 
@@ -28,3 +29,8 @@ class LeagueContextMixin(ContextMixin):
             context["team"] = Team.objects.get(league=league, slug=team_slug)
 
         return context
+
+
+class LeagueObjectMixin(SingleObjectMixin):
+    def get_object(self, queryset=None):
+        return League.objects.get(slug=self.kwargs.get("league"))

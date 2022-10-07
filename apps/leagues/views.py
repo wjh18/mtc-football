@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .mixins import LeagueContextMixin
+from .mixins import LeagueContextMixin, LeagueObjectMixin
 from .models import League
 from .permissions import LeagueOwnerMixin
 
@@ -22,7 +22,9 @@ class LeagueListView(LoginRequiredMixin, ListView):
         return League.objects.filter(user=self.request.user)
 
 
-class LeagueDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+class LeagueDetailView(
+    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, DetailView
+):
     """
     View an individual league's details.
     """
@@ -30,9 +32,6 @@ class LeagueDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
     model = League
     context_object_name = "league"
     template_name = "leagues/league_detail.html"
-
-    def get_object(self, queryset=None):
-        return League.objects.get(slug=self.kwargs.get("league"))
 
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
@@ -55,7 +54,9 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("teams:team_list", args=[self.object.slug])
 
 
-class LeagueUpdateView(LeagueOwnerMixin, LeagueContextMixin, UpdateView):
+class LeagueUpdateView(
+    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, UpdateView
+):
     """
     Update an individual league's details.
     """
@@ -65,9 +66,6 @@ class LeagueUpdateView(LeagueOwnerMixin, LeagueContextMixin, UpdateView):
     template_name = "leagues/league_update.html"
     success_message = "Your league has been updated successfully."
 
-    def get_object(self, queryset=None):
-        return League.objects.get(slug=self.kwargs.get("league"))
-
     def form_valid(self, form):
         """Overriden to add success message"""
         form.instance.user = self.request.user
@@ -75,7 +73,9 @@ class LeagueUpdateView(LeagueOwnerMixin, LeagueContextMixin, UpdateView):
         return super().form_valid(form)
 
 
-class LeagueDeleteView(LeagueOwnerMixin, LeagueContextMixin, DeleteView):
+class LeagueDeleteView(
+    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, DeleteView
+):
     """
     Delete an individual league.
     """
@@ -84,9 +84,6 @@ class LeagueDeleteView(LeagueOwnerMixin, LeagueContextMixin, DeleteView):
     success_url = reverse_lazy("leagues:league_list")
     template_name = "leagues/league_delete.html"
     success_message = "Your league has been deleted sucessfully."
-
-    def get_object(self, queryset=None):
-        return League.objects.get(slug=self.kwargs.get("league"))
 
     def form_valid(self, form):
         """Overriden to add success message"""
