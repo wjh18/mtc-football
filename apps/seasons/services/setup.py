@@ -18,18 +18,16 @@ def create_first_season(league):
 def create_season_details(season):
     """
     Generates a season's schedule, matchups, scoreboards and initial rankings.
-    Called during initial save of new Team instance in models.py.
+    Called during initial save of new Season instance in models.py.
     """
     Matchup = apps.get_model("matchups.Matchup")
     Scoreboard = apps.get_model("matchups.Scoreboard")
     TeamStanding = apps.get_model("seasons.TeamStanding")
 
-    # Generate nested list of weeks and matchups
-    league_id = season.league.pk
-    matchups = create_schedule(str(league_id))
+    matchups = create_schedule(season)
 
     # Bulk create Matchups based on schedule
-    matchup_objs = Matchup.objects.bulk_create(
+    Matchup.objects.bulk_create(
         [
             Matchup(
                 home_team=matchup[0],
@@ -48,16 +46,24 @@ def create_season_details(season):
     )
 
     # Add matchup type fields and update instances
-    for matchup in matchup_objs:
+    matchup_qs = Matchup.objects.filter(season=season).select_related(
+        "home_team__division",
+        "home_team__conference",
+        "away_team__division",
+        "away_team__conference",
+    )
+    matchup_list = []
+    for matchup in matchup_qs:
         if matchup.home_team.division == matchup.away_team.division:
             matchup.is_divisional = True
         if matchup.home_team.conference == matchup.away_team.conference:
             matchup.is_conference = True
-    Matchup.objects.bulk_update(matchup_objs, ["is_divisional", "is_conference"])
+        matchup_list.append(matchup)
+    Matchup.objects.bulk_update(matchup_list, ["is_divisional", "is_conference"])
 
     # Bulk create Scoreboards for new Matchups
     Scoreboard.objects.bulk_create(
-        [Scoreboard(matchup=matchup) for matchup in matchup_objs]
+        [Scoreboard(matchup=matchup) for matchup in matchup_list]
     )
 
     # Bulk create TeamStanding for each team

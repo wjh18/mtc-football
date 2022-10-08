@@ -26,8 +26,9 @@ def generate_div_matchups(league_structure):
     """
     div_matchups = []
     for division in league_structure["divisions"]:
-        for team in division.teams.all():
-            for rival_team in division.teams.all().exclude(id=team.id):
+        div_teams = division.teams.all()
+        for team in div_teams:
+            for rival_team in div_teams.exclude(id=team.id):
                 div_matchups.append([team, rival_team])
 
     return div_matchups
@@ -274,11 +275,9 @@ def set_schedule(matchups, limit=500):
         # No solution was found. Shuffle and retry!
 
 
-def create_schedule(league_id):
+def create_schedule(season):
 
-    League = apps.get_model("leagues.League")
-    league = League.objects.get(pk=league_id)
-    league_structure = fetch_league_structure(league)
+    league_structure = fetch_league_structure(season.league)
     matchups = generate_matchups(league_structure)
     schedule = set_schedule(matchups)
 
