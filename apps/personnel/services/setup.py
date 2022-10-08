@@ -13,8 +13,8 @@ from .distributions import ATTR_DIST, POSITION_DIST
 
 def read_player_names_from_csv():
     """
-    Read names of retired NFL players from CSV, shuffle them randomly.
-    Returns a dict with first names as keys, last names as values.
+    Read names of retired NFL players from CSV and shuffle them randomly.
+    Returns a list of tuple pairs containing first and last names.
     """
     with open(
         os.path.join(os.path.dirname(__file__), "../data/retired-players.csv"), "r"
@@ -30,14 +30,14 @@ def read_player_names_from_csv():
             if "." not in row[2]
         ]
 
-        # Shuffle first and last names
+        # Randomize first and last names
         first_names = [names[0] for names in player_names]
         last_names = [names[1] for names in player_names]
         random.shuffle(first_names)
         random.shuffle(last_names)
 
-        # Limit player names to 32 teams * 53 players = 1696 names
-        player_names = list(zip(first_names, last_names))[:1696]
+        player_limit = 1696  # 32 teams * 53 players = 1696 names
+        player_names = list(zip(first_names, last_names))[:player_limit]
 
     return player_names
 
@@ -50,12 +50,11 @@ def generate_player_attributes(player_names):
 
     position_dist = copy.deepcopy(POSITION_DIST)
     attr_dist = copy.deepcopy(ATTR_DIST)
-
+    team_player_limit = 53
+    num_players = 0
     player_list = []
 
-    # Generate 53 players per team
-    num_players = 0
-    while num_players < 53:
+    while num_players < team_player_limit:
         player = {}
 
         # Set player names from parsed CSV data
@@ -76,9 +75,10 @@ def generate_player_attributes(player_names):
         # Assign player ages based on normal distribution
         player["age"] = int(random.gauss(1, 0.1) * random.randint(25, 35))
         default_rookie_age = 22
-        player["experience"] = player["age"] - default_rookie_age
-        if player["age"] < 22:
+        if player["age"] < default_rookie_age:
             player["experience"] = 0
+        else:
+            player["experience"] = player["age"] - default_rookie_age
 
         # Generate ratings based on weights and normal distribution
         base_rating = int(random.gauss(70, 20))
@@ -88,7 +88,7 @@ def generate_player_attributes(player_names):
         after_pos_weights = []
         for pw in range(len(pos_weights)):
             after_pos_weights.append(pos_weights[pw] + base_rating)
-        # Sigmas for standard deviation
+        # Sigmas for standard deviation by attribute
         sigmas = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
         final_ratings = list(map(random.gauss, after_pos_weights, sigmas))
 
@@ -134,14 +134,11 @@ def generate_player_attributes(player_names):
 
 def create_team_players(team, player_names):
     """
-    Creates players and generates their starting attributes on a per-team basis
-    - called during initial save of new Team instance in models.py.
+    Creates players and generates their starting attributes on a per-team basis.
+    Called during Team creation in apps.teams.services.setup.create_teams.
     """
 
-    # Read player names from CSV, generate attributes
     player_attributes = generate_player_attributes(player_names)
-
-    # Bulk create players
     player_objs = Player.objects.bulk_create(
         [
             Player(
@@ -156,11 +153,8 @@ def create_team_players(team, player_names):
         ]
     )
 
-    # Bulk create ManyToMany Player -> Teams through Contract
     Contract = Player.team.through
     Contract.objects.bulk_create(
         [Contract(team=team, player=player) for player in player_objs]
     )
-
-    # Set initial team overall rating
     team.update_team_overall()
