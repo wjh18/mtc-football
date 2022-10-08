@@ -4,7 +4,10 @@ import os
 from django.apps import apps
 from django.db.models import F
 
-from apps.personnel.services.setup import create_team_players
+from apps.personnel.services.setup import (
+    create_team_players,
+    read_player_names_from_csv,
+)
 
 from ..models import Team
 
@@ -62,5 +65,6 @@ def create_teams(league):
             for team_dict in team_dicts
         ]
     )
+    player_names = read_player_names_from_csv()
     for team in team_objs:
-        create_team_players(team)
+        create_team_players(team, player_names)

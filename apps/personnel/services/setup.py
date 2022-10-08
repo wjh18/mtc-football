@@ -1,3 +1,4 @@
+import copy
 import csv
 import os
 import random
@@ -7,6 +8,7 @@ from django.utils.text import slugify
 from apps.core.utils import random_string_generator as random_string
 
 from ..models import Player
+from .distributions import ATTR_DIST, POSITION_DIST
 
 
 def read_player_names_from_csv():
@@ -19,10 +21,13 @@ def read_player_names_from_csv():
     ) as player_name_file:
 
         name_reader = csv.reader(player_name_file, delimiter=",")
+        next(name_reader)  # Skip headings
+
         player_names = [
             [row[1], row[2]]
             for row in name_reader
-            if ("last_name" and ".") not in row[2]
+            # Skip last names that are only middle initials (CSV format issue)
+            if "." not in row[2]
         ]
 
         # Shuffle first and last names
@@ -31,156 +36,31 @@ def read_player_names_from_csv():
         random.shuffle(first_names)
         random.shuffle(last_names)
 
-        player_names = list(zip(first_names, last_names))
+        # Limit player names to 32 teams * 53 players = 1696 names
+        player_names = list(zip(first_names, last_names))[:1696]
 
     return player_names
 
 
-def get_position_distribution():
-    """
-    Positional constraints per 53 man roster
-    position_dist[posX][0] represents how many of posX are filled
-    position_dist[posX][1] means generate Y posX's for the starting roster
-    """
-    position_dist = {
-        "QB": [0, 3],
-        "HB": [0, 3],
-        "FB": [0, 1],
-        "WR": [0, 6],
-        "TE": [0, 3],
-        "LT": [0, 2],
-        "LG": [0, 2],
-        "C": [0, 2],
-        "RG": [0, 2],
-        "RT": [0, 2],
-        "DE": [0, 4],
-        "DT": [0, 4],
-        "OLB": [0, 4],
-        "MLB": [0, 3],
-        "CB": [0, 6],
-        "FS": [0, 2],
-        "SS": [0, 2],
-        "K": [0, 1],
-        "P": [0, 1],
-    }
-
-    return position_dist
-
-
-def get_attribute_distribution():
-    """
-    Attribute weights based on position and prototype, in this order:
-    [potential, confidence, iq, speed, strength, agility, awareness, stamina,
-    injury, run_off, pass_off, special_off, run_def, pass_def, special_def]
-    """
-    attr_dist = {
-        "QB": {
-            "Gunslinger": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Scrambler": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Field General": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "HB": {
-            "Elusive": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Power": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "All-Purpose": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "FB": {
-            "Blocking": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Rushing": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "WR": {
-            "Possession": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Deep Threat": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Route Runner": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "TE": {
-            "Blocking": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Receiving": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Hybrid": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "LT": {
-            "Pass Protector": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Blocker": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "LG": {
-            "Pass Protector": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Blocker": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "C": {
-            "Pass Protector": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Blocker": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "RG": {
-            "Pass Protector": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Blocker": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "RT": {
-            "Pass Protector": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Blocker": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "DE": {
-            "Pass Rusher": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Stuffer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "DT": {
-            "Pass Rusher": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Stuffer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "OLB": {
-            "Coverage": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Stuffer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "MLB": {
-            "Coverage": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Stuffer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "CB": {
-            "Ball Hawk": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Shutdown": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "FS": {
-            "Ball Hawk": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Shutdown": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "SS": {
-            "Ball Hawk": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Run Stuffer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "K": {
-            "Accurate": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Power": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        "P": {
-            "Coffin Corner": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "Power": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-    }
-
-    return attr_dist
-
-
-def generate_player_attributes():
+def generate_player_attributes(player_names):
     """
     Return a list of 53 dicts with player attributes
     that map to Player model fields.
     """
 
-    # Get player position distribution
-    position_dist = get_position_distribution()
-    # Get player attribute distribution
-    attr_dist = get_attribute_distribution()
-    # Get player names from CSV
-    player_names = read_player_names_from_csv()
+    position_dist = copy.deepcopy(POSITION_DIST)
+    attr_dist = copy.deepcopy(ATTR_DIST)
 
     player_list = []
 
     # Generate 53 players per team
-    for roster_spot in range(0, 53):
+    num_players = 0
+    while num_players < 53:
         player = {}
 
         # Set player names from parsed CSV data
-        player["first_name"] = player_names[roster_spot][0]
-        player["last_name"] = player_names[roster_spot][1]
+        player_name = player_names.pop()
+        player["first_name"], player["last_name"] = player_name[0], player_name[1]
 
         # Only assign player a position that isn't filled on the roster
         for pos, dist in position_dist.items():
@@ -247,17 +127,19 @@ def generate_player_attributes():
         player["overall_rating"] = int(sum(calc_overall) / len(calc_overall))
         player_list.append(player)
 
+        num_players += 1
+
     return player_list
 
 
-def create_team_players(team):
+def create_team_players(team, player_names):
     """
     Creates players and generates their starting attributes on a per-team basis
     - called during initial save of new Team instance in models.py.
     """
 
     # Read player names from CSV, generate attributes
-    player_attributes = generate_player_attributes()
+    player_attributes = generate_player_attributes(player_names)
 
     # Bulk create players
     player_objs = Player.objects.bulk_create(
