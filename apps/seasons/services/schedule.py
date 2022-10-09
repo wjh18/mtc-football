@@ -1,19 +1,20 @@
 import random
 
 from algorithm_x import AlgorithmX
-from django.apps import apps
+from django.db.models import Prefetch
 
 
 def fetch_league_structure(league):
-    Division = apps.get_model("leagues.Division")
-    teams = league.teams.all()
+    teams = (
+        league.teams.all()
+        .select_related("division")
+        .prefetch_related(Prefetch("division__teams"))
+    )
     conferences = league.conferences.all()
-    divisions = Division.objects.filter(conference__in=conferences)
 
     league_structure = {
         "teams": teams,
         "conferences": conferences,
-        "divisions": divisions,
     }
 
     return league_structure
@@ -25,10 +26,11 @@ def generate_div_matchups(league_structure):
     2 per team from the same division (2m x 3t)
     """
     div_matchups = []
-    for division in league_structure["divisions"]:
-        div_teams = division.teams.all()
-        for team in div_teams:
-            for rival_team in div_teams.exclude(id=team.id):
+    teams = league_structure["teams"]
+    for team in teams:
+        rival_teams = team.division.teams.all()
+        for rival_team in rival_teams:
+            if team != rival_team:
                 div_matchups.append([team, rival_team])
 
     return div_matchups
