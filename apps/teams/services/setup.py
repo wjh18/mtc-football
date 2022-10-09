@@ -75,4 +75,4 @@ def create_teams(league):
     )
     player_names = read_player_names_from_csv()
     for team in team_objs:
-        create_team_players(team, player_names)
+        create_team_players(league, team, player_names)

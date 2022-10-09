@@ -132,24 +132,24 @@ def generate_player_attributes(player_names):
     return player_list
 
 
-def create_team_players(team, player_names):
+def create_team_players(league, team, player_names):
     """
     Creates players and generates their starting attributes on a per-team basis.
     Called during Team creation in apps.teams.services.setup.create_teams.
     """
 
-    player_attributes = generate_player_attributes(player_names)
+    players = generate_player_attributes(player_names)
     player_objs = Player.objects.bulk_create(
         [
             Player(
-                league=team.league,
+                league=league,
                 slug=slugify(
                     f'{player["first_name"]}-{player["last_name"]}\
                 -{random_string()}'
                 ),
                 **player,
             )
-            for player in player_attributes
+            for player in players
         ]
     )
 
