@@ -2,7 +2,6 @@ import csv
 import os
 
 from django.apps import apps
-from django.db.models import F
 
 from apps.personnel.services.setup import (
     create_team_players,
@@ -44,9 +43,22 @@ def create_teams(league):
     Create 32 teams in the correct confs and divs
     Called from create_league_structure() in apps.leagues.services.setup
     """
-    Conference = apps.get_model("leagues.Conference")
     Division = apps.get_model("leagues.Division")
     team_dicts = read_team_info_from_csv()
+
+    confs = league.conferences.all()
+    divs = Division.objects.filter(conference__in=confs)
+
+    def update_team_dict_with_entity(entities, entity_name):
+        """Replace conf and div names with their objects"""
+        for entity in entities:
+            if entity.name == team_dict[entity_name]:
+                team_dict[entity_name] = entity
+
+    for team_dict in team_dicts:
+        update_team_dict_with_entity(confs, "conf")
+        update_team_dict_with_entity(divs, "div")
+
     team_objs = Team.objects.bulk_create(
         [
             Team(
@@ -54,12 +66,8 @@ def create_teams(league):
                 name=team_dict["name"],
                 abbreviation=team_dict["abbr"],
                 slug=team_dict["abbr"],
-                conference=Conference.objects.get(
-                    name=team_dict["conf"], league=league
-                ),
-                division=Division.objects.get(
-                    name=team_dict["div"], conference=F("conference")
-                ),
+                conference=team_dict["conf"],
+                division=team_dict["div"],
                 league=league,
             )
             for team_dict in team_dicts
