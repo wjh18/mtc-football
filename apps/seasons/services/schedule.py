@@ -10,7 +10,9 @@ def fetch_league_structure(league):
         .select_related("division")
         .prefetch_related(Prefetch("division__teams"))
     )
-    conferences = league.conferences.all()
+    conferences = league.conferences.all().prefetch_related(
+        Prefetch("divisions__teams")
+    )
 
     league_structure = {
         "teams": teams,
