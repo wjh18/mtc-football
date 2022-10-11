@@ -2,6 +2,8 @@ from datetime import date
 
 from django.db import models
 
+from apps.seasons.managers import TeamStandingManager
+
 from .services.setup import create_season_details
 
 
@@ -109,6 +111,7 @@ class TeamStanding(models.Model):
     won_div = models.BooleanField(default=False)
     won_conf = models.BooleanField(default=False)
     won_champ = models.BooleanField(default=False)
+    objects = TeamStandingManager()
 
     class Meta:
         constraints = [
