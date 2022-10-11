@@ -1,18 +1,15 @@
 import random
 
 from algorithm_x import AlgorithmX
-from django.db.models import Prefetch
 
 
 def fetch_league_structure(league):
     teams = (
         league.teams.all()
         .select_related("division")
-        .prefetch_related(Prefetch("division__teams"))
+        .prefetch_related("division__teams")
     )
-    conferences = league.conferences.all().prefetch_related(
-        Prefetch("divisions__teams")
-    )
+    conferences = league.conferences.all().prefetch_related("divisions__teams")
 
     league_structure = {
         "teams": teams,
