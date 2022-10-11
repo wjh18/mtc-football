@@ -30,6 +30,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         standings = (
             TeamStanding.objects.filter(season=season)
+            .select_related("team__league")
             .order_by("power_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),
@@ -61,6 +62,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context["division_standings"] = (
             TeamStanding.objects.filter(season=season)
+            .select_related("team__league", "team__division")
             .order_by("division_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),
@@ -78,6 +80,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         context["conference_standings"] = (
             TeamStanding.objects.filter(season=season)
+            .select_related("team__league", "team__conference")
             .order_by("conference_ranking", "-team__overall_rating")
             .annotate(
                 pt_diff=F("points_for") - F("points_against"),

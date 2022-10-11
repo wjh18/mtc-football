@@ -41,6 +41,12 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
 
         matchups = (
             Matchup.objects.filter(season=season, week_number=week_number)
+            .select_related(
+                "home_team__league",
+                "away_team__league",
+                "scoreboard",
+                "season__league",
+            )
             .annotate(
                 is_american=Case(
                     When(
@@ -152,7 +158,9 @@ class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        matchups = Matchup.objects.filter(season=context["season"], is_postseason=True)
+        matchups = Matchup.objects.filter(
+            season=context["season"], is_postseason=True
+        ).select_related("home_team", "away_team", "scoreboard", "season__league")
 
         american_case = Case(
             When(

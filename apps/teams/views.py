@@ -59,7 +59,9 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     template_name = "teams/team_list.html"
 
     def get_queryset(self):
-        return Team.objects.filter(league__slug=self.kwargs["league"])
+        return Team.objects.filter(league__slug=self.kwargs["league"]).select_related(
+            "league"
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -175,9 +177,11 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         league = League.objects.get(slug=self.kwargs["league"])
         team = Team.objects.get(league=league, slug=self.kwargs["team"])
         season = Season.objects.get(league=league, is_current=True)
-        matchups = Matchup.objects.filter(
-            Q(home_team=team) | Q(away_team=team), season=season
-        ).order_by("week_number")
+        matchups = (
+            Matchup.objects.filter(Q(home_team=team) | Q(away_team=team), season=season)
+            .select_related("home_team", "away_team", "scoreboard", "season__league")
+            .order_by("week_number")
+        )
 
         return matchups
 
