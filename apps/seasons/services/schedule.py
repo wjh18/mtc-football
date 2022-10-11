@@ -4,11 +4,7 @@ from algorithm_x import AlgorithmX
 
 
 def fetch_league_structure(league):
-    teams = (
-        league.teams.all()
-        .select_related("division")
-        .prefetch_related("division__teams")
-    )
+    teams = league.teams.all().prefetch_related("division__teams")
     conferences = league.conferences.all().prefetch_related("divisions__teams")
 
     league_structure = {

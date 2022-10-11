@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
 
+from .managers import TeamManager
+
 
 class Team(models.Model):
     league = models.ForeignKey(
@@ -25,6 +27,8 @@ class Team(models.Model):
     abbreviation = models.CharField(max_length=3)
     overall_rating = models.PositiveSmallIntegerField(default=1)
     slug = models.SlugField(blank=True, null=True)
+
+    objects = TeamManager()
 
     class Meta:
         ordering = ["location"]

@@ -59,9 +59,7 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
     template_name = "teams/team_list.html"
 
     def get_queryset(self):
-        return Team.objects.filter(league__slug=self.kwargs["league"]).select_related(
-            "league"
-        )
+        return Team.objects.filter(league__slug=self.kwargs["league"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
