@@ -37,9 +37,7 @@ def advance_season_by_weeks(request, season, weeks=False):
         elif is_offseason:
             new_message = advance_to_next_season(season)
         else:
-            new_message = (
-                """Sorry, we aren't in the right part of the season for that!"""
-            )
+            new_message = "Sorry, we aren't in the right part of the season for that!"
             message_type = messages.WARNING
             break
 
