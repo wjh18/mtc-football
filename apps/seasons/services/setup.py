@@ -46,12 +46,7 @@ def create_season_details(season):
     )
 
     # Add matchup type fields and update instances
-    matchup_qs = Matchup.objects.filter(season=season).select_related(
-        "home_team__division",
-        "home_team__conference",
-        "away_team__division",
-        "away_team__conference",
-    )
+    matchup_qs = Matchup.objects.filter(season=season)
     matchup_list = []
     for matchup in matchup_qs:
         if matchup.home_team.division == matchup.away_team.division:

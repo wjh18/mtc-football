@@ -5,6 +5,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 
+from .managers import MatchupManager
+
 
 class Matchup(models.Model):
     home_team = models.ForeignKey(
@@ -28,6 +30,7 @@ class Matchup(models.Model):
     is_divisional = models.BooleanField(default=False)
     is_conference = models.BooleanField(default=False)
     slug = models.SlugField(max_length=255, blank=True, null=True)
+    objects = MatchupManager()
 
     def __str__(self):
         return (

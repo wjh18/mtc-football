@@ -175,11 +175,9 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         league = League.objects.get(slug=self.kwargs["league"])
         team = Team.objects.get(league=league, slug=self.kwargs["team"])
         season = Season.objects.get(league=league, is_current=True)
-        matchups = (
-            Matchup.objects.filter(Q(home_team=team) | Q(away_team=team), season=season)
-            .select_related("home_team", "away_team", "scoreboard", "season__league")
-            .order_by("week_number")
-        )
+        matchups = Matchup.objects.filter(
+            Q(home_team=team) | Q(away_team=team), season=season
+        ).order_by("week_number")
 
         return matchups
 
