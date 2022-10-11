@@ -30,8 +30,10 @@ class Matchup(models.Model):
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"""{self.away_team.abbreviation} @ {self.home_team.abbreviation}
-                - Week {self.week_number} - {self.season}"""
+        return (
+            f"{self.away_team.abbreviation} @ {self.home_team.abbreviation}"
+            f" - Week {self.week_number} - {self.season}"
+        )
 
     def get_absolute_url(self):
         return reverse(

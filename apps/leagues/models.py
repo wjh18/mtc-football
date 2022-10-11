@@ -21,7 +21,7 @@ class League(models.Model):
         ordering = ["-creation_date"]
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
     def save(self, isolate=False, *args, **kwargs):
         # Generate a unique slug
@@ -50,7 +50,7 @@ class Conference(models.Model):
         ordering = ["name"]
 
     def __str__(self):
-        return f"{self.name} - {self.league}"
+        return f"{self.name} Conference ({self.league})"
 
 
 class Division(models.Model):
@@ -63,4 +63,4 @@ class Division(models.Model):
         ordering = ["name"]
 
     def __str__(self):
-        return f"{self.name} - {self.conference.league}"
+        return f"{self.name} ({self.conference.league})"

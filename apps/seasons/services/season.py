@@ -84,8 +84,8 @@ def advance_playoffs(season, weeks, week_num):
     elif week_num == 22:
         advance_playoff_round(season, "championship")
         season.phase = 6
-        success_message += """ You've entered the offseason. \
-            Advance at least one week to start a new season."""
+        success_message += " You've entered the offseason. \
+            Advance at least one week to start a new season."
 
     return success_message
 
