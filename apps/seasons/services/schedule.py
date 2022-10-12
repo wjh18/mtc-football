@@ -109,8 +109,8 @@ def generate_non_conf_matchups(league_structure):
         league_structure["conferences"][0],
         league_structure["conferences"][1],
     )
-    conf1_divs = conf1.divisions.all().order_by("name")
-    conf2_divs = conf2.divisions.all().order_by("?")
+    conf1_divs = conf1.divisions.all().prefetch_related("teams").order_by("name")
+    conf2_divs = conf2.divisions.all().prefetch_related("teams").order_by("?")
 
     # Build pairs of cross-conference divisions
     div_pairs = [
