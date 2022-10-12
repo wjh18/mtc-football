@@ -40,13 +40,6 @@ class Player(Person):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    # Find a way to pass team slug despite ManyToMany
-    # def get_absolute_url(self):
-    #     # self.league.teams.all()
-    #     return reverse("personnel:player_detail",
-    #                     args=[self.league, self.contract.team.slug,
-    #                           self.slug])
-
 
 class Contract(models.Model):
     player = models.ForeignKey(
