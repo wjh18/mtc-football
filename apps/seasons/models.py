@@ -120,5 +120,9 @@ class TeamStanding(models.Model):
             ),
         ]
 
+    @property
+    def get_league(self):
+        return self.season.league
+
     def __str__(self):
         return f"{self.team.abbreviation} standings - {self.season}"

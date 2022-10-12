@@ -82,5 +82,9 @@ class UserTeam(models.Model):
     team = models.OneToOneField(Team, on_delete=models.CASCADE)
     is_active_team = models.BooleanField(default=True)
 
+    @property
+    def get_user(self):
+        return self.league.user
+
     def __str__(self):
         return f"User team - {self.team.abbreviation} - {self.league}"

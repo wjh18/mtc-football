@@ -6,6 +6,7 @@ from .models import SiteSettings
 class SiteSettingAdmin(admin.ModelAdmin):
     model = SiteSettings
     list_display = [
+        "__str__",
         "site",
         "meta_description",
         "twitter_handle",

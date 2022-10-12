@@ -32,12 +32,12 @@
   </ul>
   <div class="mt-5">
     {% for conference in league.conferences.all %}
-      <h2 class="mt-5">{{ conference.name }}</h2>
+      <h2 class="mt-5">{{ conference }}</h2>
       <hr>
       {% for division in conference.divisions.all %}
         <div class="table-responsive mb-2">
           <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
-            <caption>{{ division.name }}</caption>
+            <caption>{{ division }}</caption>
             <colgroup>
               <col span="2">
               <col span="4" class="col-wlt">
@@ -49,7 +49,7 @@
             <thead>
               <tr>
                 <th scope="col">Rank</th>
-                <th scope="col">{{ division.name }}</th>
+                <th scope="col">{{ division }}</th>
                 <th scope="col">W</th>
                 <th scope="col">L</th>
                 <th scope="col">T</th>
@@ -119,7 +119,7 @@
 {% if entity == "conference" %}
   <div class="mt-5">
     {% for conference in league.conferences.all %}
-      <h2 class="mt-5">{{ conference.name }} - Playoff Picture</h2>
+      <h2 class="mt-5">{{ conference }} - Playoff Picture</h2>
       <hr>
       <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
@@ -136,7 +136,7 @@
           <thead>
             <tr>
               <th scope="col">Rank</th>
-              <th scope="col">{{ conference.name }}</th>
+              <th scope="col">{{ conference }}</th>
               <th scope="col">W</th>
               <th scope="col">L</th>
               <th scope="col">T</th>

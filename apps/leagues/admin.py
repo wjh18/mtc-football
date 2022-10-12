@@ -14,6 +14,7 @@ class LeagueAdmin(admin.ModelAdmin):
         "user",
         "gm_name",
         "creation_date",
+        "slug",
     )
     readonly_fields = ("id",)
 
@@ -26,12 +27,15 @@ class ConferenceAdmin(admin.ModelAdmin):
     inlines = [
         DivisionInline,
     ]
-    list_display = ("__str__", "league")
+    list_display = (
+        "__str__",
+        "league",
+    )
     readonly_fields = ("id",)
 
 
 class DivisionAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "conference")
+    list_display = ("__str__", "conference", "get_league")
     readonly_fields = ("id",)
 
 

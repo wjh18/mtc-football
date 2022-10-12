@@ -50,7 +50,7 @@ class Conference(models.Model):
         ordering = ["name"]
 
     def __str__(self):
-        return f"{self.name} Conference ({self.league})"
+        return f"{self.name} Conference"
 
 
 class Division(models.Model):
@@ -62,5 +62,9 @@ class Division(models.Model):
     class Meta:
         ordering = ["name"]
 
+    @property
+    def get_league(self):
+        return self.conference.league
+
     def __str__(self):
-        return f"{self.name} ({self.conference.league})"
+        return self.name

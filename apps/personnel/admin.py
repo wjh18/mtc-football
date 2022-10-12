@@ -9,6 +9,7 @@ class PlayerInline(admin.TabularInline):
     model = Player.team.through
     fields = (
         "player",
+        "team",
         "is_active",
     )
     readonly_fields = ("player",)
@@ -22,5 +23,9 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ("first_name",)
 
 
+class ContractAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "player", "team", "get_league")
+
+
 admin.site.register(Player, PlayerAdmin)
-admin.site.register(Contract)
+admin.site.register(Contract, ContractAdmin)
