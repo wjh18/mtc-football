@@ -1,1 +1,5 @@
-export const Layout = "Layouts are working."
+const Layout = (() => {
+  console.log("Layouts are working.")
+})();
+
+export default Layout;

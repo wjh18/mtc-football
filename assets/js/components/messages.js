@@ -1,6 +1,6 @@
 'use strict';
 
-export function autoFadeAlerts() {
+function autoFadeAlerts() {
   let messages = document.getElementById('messages');
   if (messages) {
     setTimeout(() => {
@@ -9,6 +9,8 @@ export function autoFadeAlerts() {
   }
 }
 
-export const Messages = {
-  autoFadeAlerts,
-};
+const Messages = (() => {
+  autoFadeAlerts();
+})();
+
+export default Messages;
