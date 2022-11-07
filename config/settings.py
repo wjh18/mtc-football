@@ -170,10 +170,14 @@ MESSAGE_TAGS = {
 }
 
 # django-debug-toolbar
-if DEBUG:
+if DEBUG and DATABASES['default']['HOST'] == 'db':
+    # Docker IPs
     import socket  # only if you haven't already imported this
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+elif DEBUG:
+    # Non-Docker IPs
+    INTERNAL_IPS = ["127.0.0.1"]
 
 DEBUG_TOOLBAR_CONFIG = {
     'DISABLE_PANELS': {
