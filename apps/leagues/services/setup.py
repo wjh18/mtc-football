@@ -3,8 +3,8 @@ from django.apps import apps
 from apps.seasons.services.setup import create_first_season
 from apps.teams.services.setup import create_teams
 
-CONFERENCE_NAMES = ["American", "National"]
-DIVISION_CARDINALS = ["East", "North", "South", "West"]
+CONFERENCE_NAMES = ("American", "National")
+DIVISION_CARDINALS = ("East", "North", "South", "West")
 
 
 def create_league_structure(league):

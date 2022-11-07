@@ -66,7 +66,7 @@ def generate_player_attributes(player_names):
             if dist[0] < dist[1]:
                 player["position"] = pos
                 # Pick a random prototype based on position
-                player["prototype"] = random.choice(list(attr_dist[pos]))
+                player["prototype"] = random.choice(tuple(attr_dist[pos]))
                 dist[0] += 1
                 break
             else:
@@ -89,7 +89,7 @@ def generate_player_attributes(player_names):
         for pw in range(len(pos_weights)):
             after_pos_weights.append(pos_weights[pw] + base_rating)
         # Sigmas for standard deviation by attribute
-        sigmas = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
+        sigmas = (20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20)
         final_ratings = list(map(random.gauss, after_pos_weights, sigmas))
 
         i = 0
