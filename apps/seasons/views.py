@@ -6,15 +6,14 @@ from django.db.models.functions import Cast
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import FormView, ListView
 
-from apps.leagues.mixins import LeagueContextMixin
-from apps.leagues.permissions import LeagueOwnerMixin
+from apps.leagues.mixins import LeagueOwnerContextMixin
 
 from .forms import AdvanceSeasonForm
 from .models import Season, TeamStanding
 from .services.season import advance_season_by_weeks
 
 
-class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class LeagueStandingsView(LeagueOwnerContextMixin, ListView):
     """
     View team standings by division, conference, or league-wide.
     """
@@ -96,7 +95,7 @@ class LeagueStandingsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class AdvanceSeasonFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
+class AdvanceSeasonFormView(LeagueOwnerContextMixin, FormView):
     """
     Advance the regular season, playoffs or to the next season
     based on the number of weeks submitted in the form.

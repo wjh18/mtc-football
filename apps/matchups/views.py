@@ -4,13 +4,12 @@ from django.db.models.fields import BooleanField
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 
-from apps.leagues.mixins import LeagueContextMixin
-from apps.leagues.permissions import LeagueOwnerMixin
+from apps.leagues.mixins import LeagueOwnerContextMixin
 
 from .models import Matchup
 
 
-class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class WeeklyMatchupsView(LeagueOwnerContextMixin, ListView):
     """
     View weekly matchups for the active league and its current season.
     """
@@ -99,7 +98,7 @@ class WeeklyMatchupsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+class MatchupDetailView(LeagueOwnerContextMixin, DetailView):
     """
     View additional details related to an individual matchup.
     """
@@ -140,7 +139,7 @@ class MatchupDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
         )
 
 
-class PlayoffsView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class PlayoffsView(LeagueOwnerContextMixin, ListView):
     """
     View playoff matchups / bracket for the current season
     """

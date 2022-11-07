@@ -3,6 +3,7 @@ from django.views.generic.base import ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 
 from .models import League
+from .permissions import LeagueOwnerMixin
 
 
 class LeagueContextMixin(ContextMixin):
@@ -34,3 +35,17 @@ class LeagueContextMixin(ContextMixin):
 class LeagueObjectMixin(SingleObjectMixin):
     def get_object(self, queryset=None):
         return League.objects.get(slug=self.kwargs.get("league"))
+
+
+class LeagueOwnerContextMixin(LeagueOwnerMixin, LeagueContextMixin):
+    """Combines 2 mixins commonly used together into 1 class."""
+
+    pass
+
+
+class LeagueOwnerContextObjectMixin(
+    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin
+):
+    """Combines 3 mixins commonly used together into 1 class."""
+
+    pass

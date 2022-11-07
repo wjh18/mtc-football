@@ -4,14 +4,13 @@ from django.db.models import Q
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
-from apps.leagues.mixins import LeagueContextMixin
-from apps.leagues.permissions import LeagueOwnerMixin
+from apps.leagues.mixins import LeagueOwnerContextMixin
 
 from .forms import TeamSelectForm
 from .models import Team, UserTeam
 
 
-class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
+class TeamSelectFormView(LeagueOwnerContextMixin, FormView):
     """
     Create the league's user-controlled team based on the
     league owner's team selection submitted in the form.
@@ -48,7 +47,7 @@ class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
         return self.request.META.get("HTTP_REFERER", "/")
 
 
-class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamListView(LeagueOwnerContextMixin, ListView):
     """
     List the teams belonging to the active league and provide context
     indicating whether the user's team has been selected.
@@ -70,7 +69,7 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+class TeamDetailView(LeagueOwnerContextMixin, DetailView):
     """
     View additional details about an individual team.
     """
@@ -92,7 +91,7 @@ class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
         return context
 
 
-class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamRosterView(LeagueOwnerContextMixin, ListView):
     """
     View an individual team's roster and player attributes,
     sorted by overall rating.
@@ -120,7 +119,7 @@ class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class DepthChartView(LeagueOwnerContextMixin, ListView):
     """
     View an individual team's depth chart by position.
     """
@@ -158,7 +157,7 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamScheduleView(LeagueOwnerContextMixin, ListView):
     """
     View the schedule of matchups for an individual team's current season.
     """
