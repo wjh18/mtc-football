@@ -1,6 +1,4 @@
 from django.apps import apps
-from django.db.models import Case, When
-from django.db.models.fields import BooleanField
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 
@@ -22,31 +20,8 @@ class WeeklyMatchupsView(LeagueOwnerContextMixin, ListView):
         season = self.get_season()
         week_number = self.get_week_number(season)
 
-        matchups = (
-            Matchup.objects.filter(season=season, week_number=week_number)
-            .annotate(
-                is_american=Case(
-                    When(
-                        home_team__conference__name="American",
-                        away_team__conference__name="American",
-                        then=True,
-                    ),
-                    default=False,
-                    output_field=BooleanField(),
-                ),
-                is_national=Case(
-                    When(
-                        home_team__conference__name="National",
-                        away_team__conference__name="National",
-                        then=True,
-                    ),
-                    default=False,
-                    output_field=BooleanField(),
-                ),
-            )
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
+        matchups = Matchup.objects.with_extras().filter(
+            season=season, week_number=week_number
         )
 
         return matchups
@@ -100,34 +75,8 @@ class MatchupDetailView(LeagueOwnerContextMixin, DetailView):
 
     def get_queryset(self):
         League = apps.get_model("leagues.League")
-
         league = League.objects.get(slug=self.kwargs["league"])
-        return (
-            Matchup.objects.filter(season__league=league)
-            .annotate(
-                is_american=Case(
-                    When(
-                        home_team__conference__name="American",
-                        away_team__conference__name="American",
-                        then=True,
-                    ),
-                    default=False,
-                    output_field=BooleanField(),
-                ),
-                is_national=Case(
-                    When(
-                        home_team__conference__name="National",
-                        away_team__conference__name="National",
-                        then=True,
-                    ),
-                    default=False,
-                    output_field=BooleanField(),
-                ),
-            )
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
-        )
+        return Matchup.objects.with_extras().filter(season__league=league)
 
 
 class PlayoffsView(LeagueOwnerContextMixin, ListView):
@@ -142,54 +91,12 @@ class PlayoffsView(LeagueOwnerContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        matchups = Matchup.objects.filter(season=context["season"], is_postseason=True)
-
-        american_case = Case(
-            When(
-                home_team__conference__name="American",
-                away_team__conference__name="American",
-                then=True,
-            ),
-            default=False,
-            output_field=BooleanField(),
+        matchups = Matchup.objects.with_extras().filter(
+            season=context["season"], is_postseason=True
         )
-        national_case = Case(
-            When(
-                home_team__conference__name="National",
-                away_team__conference__name="National",
-                then=True,
-            ),
-            default=False,
-            output_field=BooleanField(),
-        )
-
-        context["wildcard_matchups"] = (
-            matchups.filter(week_number=19)
-            .annotate(is_american=american_case, is_national=national_case)
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
-        )
-        context["divisional_matchups"] = (
-            matchups.filter(week_number=20)
-            .annotate(is_american=american_case, is_national=national_case)
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
-        )
-        context["conference_matchups"] = (
-            matchups.filter(week_number=21)
-            .annotate(is_american=american_case, is_national=national_case)
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
-        )
-        context["championship_matchups"] = (
-            matchups.filter(week_number=22)
-            .annotate(is_american=american_case, is_national=national_case)
-            .order_by(
-                "-is_american", "-is_national", "-is_divisional", "-is_conference"
-            )
-        )
+        context["wildcard_matchups"] = matchups.filter(week_number=19)
+        context["divisional_matchups"] = matchups.filter(week_number=20)
+        context["conference_matchups"] = matchups.filter(week_number=21)
+        context["championship_matchups"] = matchups.filter(week_number=22)
 
         return context
