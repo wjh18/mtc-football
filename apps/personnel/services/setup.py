@@ -68,7 +68,7 @@ def generate_player_attributes(player_names):
                 player["position"] = pos
                 # Pick a random prototype based on position
                 player["prototype"] = random.choice(tuple(attr_dist[pos]))
-                filled += 1
+                dist[0] += 1  # Fill roster spot
                 break
             else:
                 continue
