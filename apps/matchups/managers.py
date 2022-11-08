@@ -3,6 +3,18 @@ from django.db.models import Case, When
 from django.db.models.fields import BooleanField
 
 
+def conference_case(conf_name):
+    return Case(
+        When(
+            home_team__conference__name=conf_name,
+            away_team__conference__name=conf_name,
+            then=True,
+        ),
+        default=False,
+        output_field=BooleanField(),
+    )
+
+
 class MatchupManager(models.Manager):
     def get_queryset(self):
         return (
@@ -22,22 +34,6 @@ class MatchupManager(models.Manager):
 
     def with_extras(self):
         return self.annotate(
-            is_american=Case(
-                When(
-                    home_team__conference__name="American",
-                    away_team__conference__name="American",
-                    then=True,
-                ),
-                default=False,
-                output_field=BooleanField(),
-            ),
-            is_national=Case(
-                When(
-                    home_team__conference__name="National",
-                    away_team__conference__name="National",
-                    then=True,
-                ),
-                default=False,
-                output_field=BooleanField(),
-            ),
+            is_american=conference_case("American"),
+            is_national=conference_case("National"),
         ).order_by("-is_american", "-is_national", "-is_divisional", "-is_conference")
