@@ -32,14 +32,8 @@ class TeamStandingAdmin(admin.ModelAdmin):
         "division_ranking",
         "conference_ranking",
         "power_ranking",
-        "clinch_bye",
-        "clinch_div",
-        "clinch_berth",
-        "clinch_none",
-        "won_wild",
-        "won_div",
-        "won_conf",
-        "won_champ",
+        "clinched",
+        "round_won",
     )
 
 

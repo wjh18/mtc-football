@@ -54,6 +54,18 @@ class Season(models.Model):
 
 
 class TeamStanding(models.Model):
+    PLAYOFF_CLINCHES = (
+        ("BYE", "Bye Week"),
+        ("DIV", "Division"),
+        ("BTH", "Playoff Berth"),
+        ("OUT", "Out of Contention"),
+    )
+    PLAYOFF_ROUND_WINS = (
+        ("WLD", "Wildcard"),
+        ("DIV", "Divisional"),
+        ("CNF", "Conference"),
+        ("SHP", "Championship"),
+    )
     team = models.ForeignKey(
         "teams.Team",
         on_delete=models.CASCADE,
@@ -97,16 +109,12 @@ class TeamStanding(models.Model):
     division_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)
     power_ranking = models.PositiveSmallIntegerField(default=1)
-    # Postseason clinches
-    clinch_bye = models.BooleanField(default=False)
-    clinch_div = models.BooleanField(default=False)
-    clinch_berth = models.BooleanField(default=False)
-    clinch_none = models.BooleanField(default=False)
-    # Postseason advancement
-    won_wild = models.BooleanField(default=False)
-    won_div = models.BooleanField(default=False)
-    won_conf = models.BooleanField(default=False)
-    won_champ = models.BooleanField(default=False)
+    clinched = models.CharField(
+        max_length=3, choices=PLAYOFF_CLINCHES, blank=True, null=True
+    )
+    round_won = models.CharField(
+        max_length=3, choices=PLAYOFF_ROUND_WINS, blank=True, null=True
+    )
     objects = TeamStandingManager()
 
     class Meta:

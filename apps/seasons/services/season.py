@@ -74,13 +74,13 @@ def advance_playoffs(season, weeks, week_num):
     success_message = f"Advanced playoffs by {weeks} week(s)."
 
     if week_num == 19:
-        advance_playoff_round(season, "wildcard")
+        advance_playoff_round(season, "WLD")
     elif week_num == 20:
-        advance_playoff_round(season, "divisional")
+        advance_playoff_round(season, "DIV")
     elif week_num == 21:
-        advance_playoff_round(season, "conference")
+        advance_playoff_round(season, "CNF")
     elif week_num == 22:
-        advance_playoff_round(season, "championship")
+        advance_playoff_round(season, "SHP")
         season.phase = 6
         success_message += " You've entered the offseason. \
             Advance at least one week to start a new season."

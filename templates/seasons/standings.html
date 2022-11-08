@@ -73,19 +73,19 @@
               <th scope="row">{{ standing.division_ranking }}</th>
               <td>
                 <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
-                {% if standing.clinch_bye %}
-                  <span class="clinches clinch-bye">
+                {% if standing.clinched == "BYE" %}
+                  <span class="clinches">
                     Z
                   </span>
-                {% elif standing.clinch_div %}
-                  <span class="clinches clinch-div">
+                {% elif standing.clinched == "DIV" %}
+                  <span class="clinches">
                     Y
                   </span>
-                {% elif standing.clinch_berth %}
-                  <span class="clinches clinch-berth">
+                {% elif standing.clinched == "BTH" %}
+                  <span class="clinches">
                     X
                   </span>
-                {% elif standing.clinch_none %}
+                {% elif standing.clinched == "OUT" %}
                   <span class="clinches no-clinch">
                     O
                   </span>
@@ -160,19 +160,19 @@
             <th scope="row">{{ standing.conference_ranking }}</th>
             <td>
               <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
-              {% if standing.clinch_bye %}
+              {% if standing.clinched == "BYE" %}
                 <span class="clinches">
                   Z
                 </span>
-              {% elif standing.clinch_div %}
+              {% elif standing.clinched == "DIV" %}
                 <span class="clinches">
                   Y
                 </span>
-              {% elif standing.clinch_berth %}
+              {% elif standing.clinched == "BTH" %}
                 <span class="clinches">
                   X
                 </span>
-              {% elif standing.clinch_none %}
+              {% elif standing.clinched == "OUT" %}
                 <span class="clinches no-clinch">
                   O
                 </span>
@@ -244,19 +244,19 @@
         <td>{{ standing.team.overall_rating }}</td>
         <td>
           <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>            
-          {% if standing.clinch_bye %}
-            <span class="clinches clinch-bye">
+          {% if standing.clinched == "BYE" %}
+            <span class="clinches">
               Z
             </span>
-          {% elif standing.clinch_div %}
-            <span class="clinches clinch-div">
+          {% elif standing.clinched == "DIV" %}
+            <span class="clinches">
               Y
             </span>
-          {% elif standing.clinch_berth %}
-            <span class="clinches clinch-berth">
-              X             
-            </span>     
-          {% elif standing.clinch_none %}
+          {% elif standing.clinched == "BTH" %}
+            <span class="clinches">
+              X
+            </span>
+          {% elif standing.clinched == "OUT" %}
             <span class="clinches no-clinch">
               O
             </span>
