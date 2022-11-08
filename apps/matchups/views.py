@@ -19,24 +19,8 @@ class WeeklyMatchupsView(LeagueOwnerContextMixin, ListView):
     template_name = "matchups/matchups.html"
 
     def get_queryset(self):
-        League = apps.get_model("leagues.League")
-        Season = apps.get_model("seasons.Season")
-
-        league = League.objects.get(slug=self.kwargs["league"])
-        season = Season.objects.get(league=league, is_current=True)
-
-        week_kw = self.kwargs.get("week_num", False)
-        weeks = range(1, 23)
-
-        # Only accept valid week parameters in URL
-        if season.week_number == 23 and not week_kw:
-            week_number = season.week_number - 1
-        elif week_kw and (week_kw not in weeks or week_kw == 0):
-            raise Http404("Invalid week number supplied")
-        elif not week_kw:
-            week_number = season.week_number
-        else:
-            week_number = self.kwargs["week_num"]
+        season = self.get_season()
+        week_number = self.get_week_number(season)
 
         matchups = (
             Matchup.objects.filter(season=season, week_number=week_number)
@@ -70,12 +54,25 @@ class WeeklyMatchupsView(LeagueOwnerContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        season = self.get_season()
+        week_number = self.get_week_number(season)
+
+        context["week_num"] = week_number
+        context["num_weeks"] = range(1, 23)
+
+        if 6 <= week_number <= 13:
+            context["bye_teams"] = season.get_byes(week_number)
+
+        return context
+
+    def get_season(self):
         League = apps.get_model("leagues.League")
         Season = apps.get_model("seasons.Season")
-
         league = League.objects.get(slug=self.kwargs["league"])
         season = Season.objects.get(league=league, is_current=True)
+        return season
 
+    def get_week_number(self, season):
         week_kw = self.kwargs.get("week_num", False)
         weeks = range(1, 23)
 
@@ -89,13 +86,7 @@ class WeeklyMatchupsView(LeagueOwnerContextMixin, ListView):
         else:
             week_number = self.kwargs["week_num"]
 
-        context["week_num"] = week_number
-        context["num_weeks"] = weeks
-
-        if 6 <= week_number <= 13:
-            context["bye_teams"] = season.get_byes(week_number)
-
-        return context
+        return week_number
 
 
 class MatchupDetailView(LeagueOwnerContextMixin, DetailView):

@@ -42,11 +42,7 @@ class Season(models.Model):
 
     def get_byes(self, week_num=False):
         """Obtain teams with a bye week on the current week"""
-        if not week_num:
-            week_number = self.week_number
-        else:
-            week_number = week_num
-
+        week_number = self.week_number if not week_num else week_num
         matchups = self.matchups.filter(week_number=week_number)
 
         home_team_ids = matchups.values_list("home_team", flat=True)
