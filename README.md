@@ -144,6 +144,7 @@ CREATE DATABASE mtc_football_dev;
 CREATE USER mtc_football;
 ALTER USER mtc_football WITH PASSWORD 'mtc_football';
 GRANT ALL PRIVILEGES ON DATABASE mtc_football_dev TO mtc_football;
+ALTER USER mtc_football CREATEDB; /* Required step for PostgreSQL 15+ */
 ```
 
 Run the following management command to initialize your project locally (the additional `--local` flag is needed for non-Docker installs, it will change the `db_host` to `127.0.0.1` instead of `db`).
@@ -177,7 +178,3 @@ python manage.py createsuperuser
 ```
 
 See the Docker instructions for further details on each step, but run the commands locally instead of in the container.
-
-## How to Contribute
-
-Please see [CONTRIBUTING.md](https://github.com/wjh18/mtc-football/blob/master/CONTRIBUTING.md) for details on how to contribute to the codebase.

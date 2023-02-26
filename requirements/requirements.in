@@ -21,7 +21,7 @@ flake8
 black
 isort
 bandit[toml]
-safety
+# safety
 pre-commit
 pytest-django
 pytest-cov

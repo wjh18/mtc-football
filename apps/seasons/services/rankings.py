@@ -43,7 +43,6 @@ def generate_conference_rankings(season):
     Conference = apps.get_model("leagues.Conference")
     conferences = Conference.objects.filter(league=season.league)
     for conference in conferences:
-
         top_4_conference = TeamStanding.objects.filter(
             season=season,
             team__conference=conference,
@@ -94,7 +93,9 @@ def generate_league_rankings(season):
     """
     Generate league rankings based on new standings for next week.
     """
-    league_rankings = TeamStanding.objects.filter(season=season,).annotate(
+    league_rankings = TeamStanding.objects.filter(
+        season=season,
+    ).annotate(
         rank=Window(
             expression=Rank(),
             order_by=[

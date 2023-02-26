@@ -43,7 +43,6 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
     lead_standings = standings.filter(lead_ranking).exclude(already_clinched)
 
     for rank_1 in lead_standings:
-
         if div:
             match_entity = Q(team__division=rank_1.team.division)
         elif conf:
@@ -84,7 +83,6 @@ def update_berths_and_eliminations(standings):
     )
 
     for top_7 in top_7_standings:
-
         rank_8 = standings.get(
             conference_ranking=8,
             team__conference=top_7.team.conference,
@@ -103,7 +101,6 @@ def update_berths_and_eliminations(standings):
             top_7.save()
 
     for bottom_8 in bottom_8_standings:
-
         rank_7 = standings.get(
             conference_ranking=7,
             team__conference=bottom_8.team.conference,
@@ -198,7 +195,6 @@ def generate_round_matchups(
         return
 
     for cr in conf_rankings:
-
         if not round_type:
             next_round = "WLD"
 

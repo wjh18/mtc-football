@@ -1,22 +1,23 @@
 &copy; 2022, Will J. Holmes. All rights reserved.
 
-This project is source-available, but it does not meet the requirements for open-source software as defined by the Open Source Initiative (OSI). While the source code is publicly available, certain licensing conditions apply that prevent the code from being distributed and hosted for public or commercial use.
+This project is source-available but it does not meet the requirements for open-source software as defined by the Open Source Initiative (OSI). While the source code is publicly available, certain licensing conditions apply that prevent the code from being distributed and hosted for public or commercial use.
 
 Please see below for a list of these restrictions.
 
 # Usage Restrictions
 
 You may not, under any circumstances, use the software in the following ways:
-- Host a public version, closed or open, that anyone other than yourself can gain access to.
+
+- Host a public version, closed or open source, that any individual other than yourself can gain access to.
 - Repackage and redistribute the source code publicly via an alternate means (such as a mobile app) that allows others to install and run it independent of its intended distribution channel (mtcfootball.com).
 
 # Permitted Usage
 
 You are permitted to use the software in the following ways:
-- View the source code
-- Edit or modify the source code
-- Contribute to the original source code repo following acceptance of the project's Contributor License Agreement (see [CONTRIBUTING.md](https://github.com/wjh18/mtc-football/blob/master/CONTRIBUTING.md) for details)
-- Run a private copy of the source code locally, as long as only you have access to it
+
+- Browse the source code
+- Edit or modify the source code locally for private use
+- Run a private copy of the source code locally so long as it's solely accessible from your machine or LAN
 
 # No Liability
 

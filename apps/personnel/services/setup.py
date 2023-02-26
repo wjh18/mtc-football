@@ -19,7 +19,6 @@ def read_player_names_from_csv():
     with open(
         os.path.join(os.path.dirname(__file__), "../data/retired-players.csv"), "r"
     ) as player_name_file:
-
         name_reader = csv.reader(player_name_file, delimiter=",")
         next(name_reader)  # Skip headings
 
@@ -113,7 +112,6 @@ def generate_player_attributes(player_names):
             "pass_def",
             "special_def",
         ):
-
             rating = int(final_ratings[i])
             if rating > 99:
                 rating = 99

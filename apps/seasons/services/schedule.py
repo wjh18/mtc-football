@@ -79,7 +79,6 @@ def generate_conf_matchups(league_structure):
             for team in div_pair[0]:
                 opp_counter = 1
                 for opponent in div_pair[1]:
-
                     if team_counter % 2 == 0:
                         matchup = [team, opponent]
                     else:
@@ -257,10 +256,9 @@ def set_schedule(matchups, limit=500):
 
         # Try to find a solution within the given computation limit.
         for solution in solver.solve(limit=limit):
-
             # A solution was found! Convert it to a schedule and return it.
             schedule = [[] for week in range(18)]
-            for (tp, args, desc) in solution:
+            for tp, args, desc in solution:
                 if tp == "match":
                     matchup_idx, week = args
                     schedule[week].append(matchups[matchup_idx])
@@ -271,7 +269,6 @@ def set_schedule(matchups, limit=500):
 
 
 def create_schedule(season):
-
     league_structure = fetch_league_structure(season.league)
     matchups = generate_matchups(league_structure)
     schedule = set_schedule(matchups)

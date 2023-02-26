@@ -19,7 +19,6 @@ def read_team_info_from_csv():
     with open(
         os.path.join(os.path.dirname(__file__), "../data/nfl-teams.csv"), "r"
     ) as team_data_file:
-
         team_reader = csv.reader(team_data_file, delimiter=",")
         next(team_reader)  # Skip headings
 

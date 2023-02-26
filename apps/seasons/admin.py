@@ -4,7 +4,6 @@ from .models import Season, TeamStanding
 
 
 class SeasonAdmin(admin.ModelAdmin):
-
     list_display = (
         "__str__",
         "league",
@@ -18,7 +17,6 @@ class SeasonAdmin(admin.ModelAdmin):
 
 
 class TeamStandingAdmin(admin.ModelAdmin):
-
     list_display = (
         "team",
         "season",
