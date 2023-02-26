@@ -4,14 +4,14 @@ from django.db.models import Q
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
-from apps.leagues.mixins import LeagueContextMixin
-from apps.leagues.permissions import LeagueOwnerMixin
+from apps.leagues.mixins import LeagueOwnerContextMixin
 
 from .forms import TeamSelectForm
+from .mixins import TeamsContextMixin
 from .models import Team, UserTeam
 
 
-class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
+class TeamSelectFormView(LeagueOwnerContextMixin, FormView):
     """
     Create the league's user-controlled team based on the
     league owner's team selection submitted in the form.
@@ -48,7 +48,7 @@ class TeamSelectFormView(LeagueOwnerMixin, LeagueContextMixin, FormView):
         return self.request.META.get("HTTP_REFERER", "/")
 
 
-class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamListView(LeagueOwnerContextMixin, ListView):
     """
     List the teams belonging to the active league and provide context
     indicating whether the user's team has been selected.
@@ -70,7 +70,7 @@ class TeamListView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         return context
 
 
-class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
+class TeamDetailView(LeagueOwnerContextMixin, TeamsContextMixin, DetailView):
     """
     View additional details about an individual team.
     """
@@ -83,16 +83,8 @@ class TeamDetailView(LeagueOwnerMixin, LeagueContextMixin, DetailView):
         league_slug = self.kwargs["league"]
         return Team.objects.filter(league__slug=league_slug)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Context for team select dropdown
-        league_slug = self.kwargs["league"]
-        context["team_list"] = Team.objects.filter(league__slug=league_slug)
 
-        return context
-
-
-class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamRosterView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
     """
     View an individual team's roster and player attributes,
     sorted by overall rating.
@@ -113,14 +105,10 @@ class TeamRosterView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             "-overall_rating"
         )
 
-        # Context for team select dropdown
-        league_slug = self.kwargs["league"]
-        context["team_list"] = Team.objects.filter(league__slug=league_slug)
-
         return context
 
 
-class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class DepthChartView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
     """
     View an individual team's depth chart by position.
     """
@@ -151,14 +139,10 @@ class DepthChartView(LeagueOwnerMixin, LeagueContextMixin, ListView):
             "-overall_rating"
         )
 
-        # Context for team select dropdown
-        league_slug = self.kwargs["league"]
-        context["team_list"] = Team.objects.filter(league__slug=league_slug)
-
         return context
 
 
-class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
+class TeamScheduleView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
     """
     View the schedule of matchups for an individual team's current season.
     """
@@ -187,9 +171,5 @@ class TeamScheduleView(LeagueOwnerMixin, LeagueContextMixin, ListView):
         team = context["team"]
         season = context["season"]
         context["bye_week"] = team.check_bye_week(season)
-
-        # Context for team select dropdown
-        league_slug = self.kwargs["league"]
-        context["team_list"] = Team.objects.filter(league__slug=league_slug)
 
         return context

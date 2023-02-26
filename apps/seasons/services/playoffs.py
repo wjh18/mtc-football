@@ -14,16 +14,13 @@ def update_final_playoff_clinches(season):
 
     for standing in league_standings:
         if standing.conference_ranking == 1:
-            standing.clinch_bye = True
-            standing.clinch_div = True
-            standing.clinch_berth = True
+            standing.clinched = "BYE"
         elif standing.division_ranking == 1:
-            standing.clinch_div = True
-            standing.clinch_berth = True
+            standing.clinched = "DIV"
         elif standing.conference_ranking <= 7:
-            standing.clinch_berth = True
+            standing.clinched = "BTH"
         else:
-            standing.clinch_none = True
+            standing.clinched = "OUT"
 
         standing.save()
 
@@ -35,15 +32,15 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
     """
     if div:
         lead_ranking = Q(division_ranking=1)
-        clinch_false = Q(clinch_div=False)
+        already_clinched = Q(clinched="DIV")
         next_ranking = Q(division_ranking=2)
     elif conf:
         lead_ranking = Q(conference_ranking=1)
-        clinch_false = Q(clinch_bye=False)
+        already_clinched = Q(clinched="BYE")
         next_ranking = Q(conference_ranking=2)
 
     # Div or conf rank 1's who haven't clinched div or conf yet
-    lead_standings = standings.filter(lead_ranking, clinch_false)
+    lead_standings = standings.filter(lead_ranking).exclude(already_clinched)
 
     for rank_1 in lead_standings:
 
@@ -65,11 +62,9 @@ def update_div_and_conf_clinches(standings, div=False, conf=False):
         # Rank 1 clinches div (rank 2 is too many games behind)
         if rank_2_gb > rank_2_gl:
             if div:
-                rank_1.clinch_div = True
-                rank_1.clinch_berth = True
+                rank_1.clinched = "DIV"
             elif conf:
-                rank_1.clinch_bye = True
-                rank_1.clinch_berth = True
+                rank_1.clinched = "BYE"
 
             rank_1.save()
 
@@ -80,9 +75,13 @@ def update_berths_and_eliminations(standings):
     how many games back the eighth ranking and below teams are.
     """
     # Top and bottom standings who haven't clinched a berth or aren't out yet
-    top_7_standings = standings.filter(conference_ranking__lte=7, clinch_berth=False)
+    top_7_standings = standings.filter(conference_ranking__lte=7).exclude(
+        clinched="BTH"
+    )
 
-    bottom_8_standings = standings.filter(conference_ranking__gte=8, clinch_none=False)
+    bottom_8_standings = standings.filter(conference_ranking__gte=8).exclude(
+        clinched="OUT"
+    )
 
     for top_7 in top_7_standings:
 
@@ -100,7 +99,7 @@ def update_berths_and_eliminations(standings):
 
         # Rank 1 clinches div (rank 2 is too many games behind)
         if rank_8_gb > rank_8_gl:
-            top_7.clinch_berth = True
+            top_7.clinched = "BTH"
             top_7.save()
 
     for bottom_8 in bottom_8_standings:
@@ -119,7 +118,7 @@ def update_berths_and_eliminations(standings):
 
         # Rank 1 clinches div (rank 2 is too many games behind)
         if bottom_8_gb > bottom_8_gl:
-            bottom_8.clinch_none = True
+            bottom_8.clinched = "OUT"
             bottom_8.save()
 
 
@@ -142,18 +141,8 @@ def update_playoff_rankings(season, round_type, winner):
     """
     Update team standings with playoff berth and win data.
     """
-
     standing = TeamStanding.objects.get(team=winner, season=season)
-
-    if round_type == "wildcard":
-        standing.won_wild = True
-    elif round_type == "divisional":
-        standing.won_div = True
-    elif round_type == "conference":
-        standing.won_conf = True
-    else:
-        standing.won_champ = True
-
+    standing.round_won = round_type
     standing.save()
 
 
@@ -168,9 +157,11 @@ def get_playoff_teams_by_conf(season):
     both_conf_rankings = []
 
     for conference in conferences:
-        conf_rankings = league_standings.filter(
-            team__conference=conference, clinch_berth=True
-        ).order_by("conference_ranking")
+        conf_rankings = (
+            league_standings.filter(team__conference=conference)
+            .exclude(Q(clinched="OUT"))
+            .order_by("conference_ranking")
+        )
 
         both_conf_rankings.append(conf_rankings)
 
@@ -185,7 +176,7 @@ def generate_round_matchups(
     Matchup = apps.get_model("matchups.Matchup")
     Scoreboard = apps.get_model("matchups.Scoreboard")
 
-    if round_type == "conference":
+    if round_type == "CNF":
         # Generate championship matchup
         champ_matchup = Matchup.objects.create(
             home_team=winners[0],
@@ -209,27 +200,27 @@ def generate_round_matchups(
     for cr in conf_rankings:
 
         if not round_type:
-            next_round = "wildcard"
+            next_round = "WLD"
 
             # Set wildcard matchups for first week of playoffs.
             # Rank 1 in each conference gets a bye. Matchups by rank:
             # (2 @ 7) (3 @ 6) (4 @ 5)
             MATCHUPS = [(cr[1], cr[6]), (cr[2], cr[5]), (cr[3], cr[4])]
 
-        elif round_type == "wildcard":
+        elif round_type == "WLD":
             # Filter conf standings by teams who won wc round and rank 1 team
             cr = cr.filter(Q(team__in=winners) | Q(conference_ranking=1))
-            next_round = "divisional"
+            next_round = "DIV"
 
             # Set divisional matchups for second week of playoffs.
             # Rank 1 in each conference and wildcard winners. Matchups by rank:
             # (1 @ lowest_rank) (2nd_highest @ 3rd_highest)
             MATCHUPS = [(cr[0], cr[3]), (cr[1], cr[2])]
 
-        elif round_type == "divisional":
+        elif round_type == "DIV":
             # Filter conf standings by teams who won div
             cr = cr.filter(Q(team__in=winners))
-            next_round = "conference"
+            next_round = "CNF"
 
             # Set conference matchups for third week of playoffs.
             # Divisional winners by conference ranks. Matchups by rank:
@@ -275,7 +266,7 @@ def sim_round_matchups(season, round_type):
     Matchup = apps.get_model("matchups.Matchup")
     current_week = season.week_number
 
-    if round_type == "championship":
+    if round_type == "SHP":
         matchup = Matchup.objects.get(season=season, week_number=current_week)
 
         matchup.scoreboard.get_score()
@@ -311,9 +302,9 @@ def advance_playoff_round(season, round_type=False):
 
     if not round_type:
         generate_round_matchups(season, conf_rankings=conf_standings)
-    elif round_type == "wildcard":
+    elif round_type == "WLD":
         generate_round_matchups(season, round_type, conf_standings, winners)
-    elif round_type == "divisional":
+    elif round_type == "DIV":
         generate_round_matchups(season, round_type, conf_standings, winners)
-    elif round_type == "conference":
+    elif round_type == "CNF":
         generate_round_matchups(season, round_type, winners=winners)

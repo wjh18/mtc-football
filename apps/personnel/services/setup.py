@@ -33,8 +33,8 @@ def read_player_names_from_csv():
         # Randomize first and last names
         first_names = [names[0] for names in player_names]
         last_names = [names[1] for names in player_names]
-        random.shuffle(first_names)
-        random.shuffle(last_names)
+        for names in (first_names, last_names):
+            random.shuffle(names)
 
         player_limit = 1696  # 32 teams * 53 players = 1696 names
         player_names = list(zip(first_names, last_names))[:player_limit]
@@ -59,15 +59,16 @@ def generate_player_attributes(player_names):
 
         # Set player names from parsed CSV data
         player_name = player_names.pop()
-        player["first_name"], player["last_name"] = player_name[0], player_name[1]
+        player["first_name"], player["last_name"] = player_name
 
         # Only assign player a position that isn't filled on the roster
         for pos, dist in position_dist.items():
-            if dist[0] < dist[1]:
+            filled, limit = dist
+            if filled < limit:
                 player["position"] = pos
                 # Pick a random prototype based on position
-                player["prototype"] = random.choice(list(attr_dist[pos]))
-                dist[0] += 1
+                player["prototype"] = random.choice(tuple(attr_dist[pos]))
+                dist[0] += 1  # Fill roster spot
                 break
             else:
                 continue
@@ -89,7 +90,7 @@ def generate_player_attributes(player_names):
         for pw in range(len(pos_weights)):
             after_pos_weights.append(pos_weights[pw] + base_rating)
         # Sigmas for standard deviation by attribute
-        sigmas = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
+        sigmas = (20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20)
         final_ratings = list(map(random.gauss, after_pos_weights, sigmas))
 
         i = 0

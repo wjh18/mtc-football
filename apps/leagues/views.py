@@ -4,9 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .mixins import LeagueContextMixin, LeagueObjectMixin
+from .mixins import LeagueOwnerContextObjectMixin
 from .models import League
-from .permissions import LeagueOwnerMixin
 
 
 class LeagueListView(LoginRequiredMixin, ListView):
@@ -22,9 +21,7 @@ class LeagueListView(LoginRequiredMixin, ListView):
         return League.objects.filter(user=self.request.user)
 
 
-class LeagueDetailView(
-    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, DetailView
-):
+class LeagueDetailView(LeagueOwnerContextObjectMixin, DetailView):
     """
     View an individual league's details.
     """
@@ -54,9 +51,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("teams:team_list", args=[self.object.slug])
 
 
-class LeagueUpdateView(
-    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, UpdateView
-):
+class LeagueUpdateView(LeagueOwnerContextObjectMixin, UpdateView):
     """
     Update an individual league's details.
     """
@@ -73,9 +68,7 @@ class LeagueUpdateView(
         return super().form_valid(form)
 
 
-class LeagueDeleteView(
-    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin, DeleteView
-):
+class LeagueDeleteView(LeagueOwnerContextObjectMixin, DeleteView):
     """
     Delete an individual league.
     """

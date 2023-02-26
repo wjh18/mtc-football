@@ -157,19 +157,17 @@ def generate_non_conf_matchups(league_structure):
 
 
 def generate_matchups(league_structure):
+    """Generates divisional, conference and cross-conference matchups"""
     matchups = []
+    generate_matchup_funcs = (
+        generate_div_matchups,
+        generate_conf_matchups,
+        generate_non_conf_matchups,
+    )
 
-    # Generate divisional matchups
-    div_matchups = generate_div_matchups(league_structure)
-    matchups.extend(div_matchups)
-
-    # Generate conference matchups
-    conf_matchups = generate_conf_matchups(league_structure)
-    matchups.extend(conf_matchups)
-
-    # Generate cross-conference matchups
-    non_conf_matchups = generate_non_conf_matchups(league_structure)
-    matchups.extend(non_conf_matchups)
+    for func in generate_matchup_funcs:
+        type_matchups = func(league_structure)
+        matchups.extend(type_matchups)
 
     return matchups
 
@@ -279,17 +277,3 @@ def create_schedule(season):
     schedule = set_schedule(matchups)
 
     return schedule
-
-
-# # Tests
-
-# def test_schedule(league_id="fe386ad0-5c1c-4c55-87e8-755fe1b14543"):
-#     schedule = create_schedule(league_id)
-
-
-# from collections import Counter
-# def count_matchups(matchups):
-#     # Generator expression to test amount of matches per team
-#     total_matchups = Counter(x for match in matchups for x in match)
-#     # Generator expression to test amount of home games per team
-#     home_matchups = Counter(match[0] for match in matchups)

@@ -1,12 +1,14 @@
 from http import HTTPStatus
 
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
 from .views import AboutPageView, ContactPageView, HomePageView
 
 
-class RobotsTest(TestCase):
+class RobotsTest(SimpleTestCase):
+    databases = "__all__"
+
     def test_get(self):
         response = self.client.get("/robots.txt")
 
