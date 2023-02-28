@@ -31,11 +31,11 @@
               {% endif %}
             </p>
             <p class="matchup-teams">
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.away_team.abbreviation }}
               </span>
               @
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.home_team.abbreviation }}
               </span>
             </p>  
@@ -45,8 +45,8 @@
             </p>               
             {% if matchup.week_number < season.week_number %}
               <p class="matchup-score">
-                {{ matchup.scoreboard.away_score }}
-                - {{ matchup.scoreboard.home_score }}
+                {{ matchup.away_score }}
+                - {{ matchup.home_score }}
               </p>
             {% else %}
               <p class="matchup-date">
@@ -76,11 +76,11 @@
               {% endif %}
             </p>
             <p class="matchup-teams">
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.away_team.abbreviation }}
               </span>
               @
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.home_team.abbreviation }}
               </span>
             </p>  
@@ -90,8 +90,8 @@
             </p>               
             {% if matchup.week_number < season.week_number %}
               <p class="matchup-score">
-                {{ matchup.scoreboard.away_score }}
-                - {{ matchup.scoreboard.home_score }}
+                {{ matchup.away_score }}
+                - {{ matchup.home_score }}
               </p>
             {% else %}
               <p class="matchup-date">
@@ -121,11 +121,11 @@
               {% endif %}
             </p>
             <p class="matchup-teams">
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.away_team.abbreviation }}
               </span>
               @
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.home_team.abbreviation }}
               </span>
             </p>  
@@ -135,8 +135,8 @@
             </p>               
             {% if matchup.week_number < season.week_number %}
               <p class="matchup-score">
-                {{ matchup.scoreboard.away_score }}
-                - {{ matchup.scoreboard.home_score }}
+                {{ matchup.away_score }}
+                - {{ matchup.home_score }}
               </p>
             {% else %}
               <p class="matchup-date">
@@ -166,11 +166,11 @@
               {% endif %}
             </p>
             <p class="matchup-teams">
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.away_team.abbreviation }}
               </span>
               @
-              <span class="team1 {% if matchup.scoreboard.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.home_team.abbreviation }}
               </span>
             </p>  
@@ -180,8 +180,8 @@
             </p>               
             {% if matchup.week_number < season.week_number %}
               <p class="matchup-score">
-                {{ matchup.scoreboard.away_score }}
-                - {{ matchup.scoreboard.home_score }}
+                {{ matchup.away_score }}
+                - {{ matchup.home_score }}
               </p>
             {% else %}
               <p class="matchup-date">

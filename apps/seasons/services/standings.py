@@ -132,7 +132,7 @@ class UpdateStanding:
         last_5_wins = 0
         last_5_losses = 0
         for matchup in last_5_matchups:
-            winner = matchup.scoreboard.get_winner()
+            winner = matchup.get_winner()
             if winner == "Tie":
                 last_5_ties += 1
             elif winner == self.standing.team:
@@ -150,8 +150,8 @@ def update_standings(season, current_week, matchups):
     Generate scores and results for the current week, update standings.
     """
     for matchup in matchups:
-        scores = matchup.scoreboard.get_score()
-        winner = matchup.scoreboard.get_winner()
+        scores = matchup.get_score()
+        winner = matchup.get_winner()
 
         for team in (matchup.home_team, matchup.away_team):
             standing = TeamStanding.objects.get(team=team, season=season)

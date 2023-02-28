@@ -17,17 +17,16 @@ def create_first_season(league):
 
 def create_season_details(season):
     """
-    Generates a season's schedule, matchups, scoreboards and initial rankings.
+    Generates a season's schedule, matchups, and initial rankings.
     Called during initial save of new Season instance in models.py.
     """
     Matchup = apps.get_model("matchups.Matchup")
-    Scoreboard = apps.get_model("matchups.Scoreboard")
     TeamStanding = apps.get_model("seasons.TeamStanding")
 
     matchups = create_schedule(season)
 
     # Bulk create Matchups based on schedule
-    matchup_list = Matchup.objects.bulk_create(
+    Matchup.objects.bulk_create(
         [
             Matchup(
                 home_team=matchup[0],
@@ -43,11 +42,6 @@ def create_season_details(season):
             for week_num in range(1, len(matchups) + 1)
             for matchup in matchups[week_num - 1]
         ]
-    )
-
-    # Bulk create Scoreboards for new Matchups
-    Scoreboard.objects.bulk_create(
-        [Scoreboard(matchup=matchup) for matchup in matchup_list]
     )
 
     # Bulk create TeamStanding for each team

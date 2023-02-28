@@ -54,7 +54,7 @@ def advance_regular_season(season, weeks, week_num):
 
     Matchup = apps.get_model("matchups.Matchup")
     matchups = Matchup.objects.filter(
-        season=season, week_number=week_num, scoreboard__is_final=False
+        season=season, week_number=week_num, is_final=False
     )
     update_standings(season, week_num, matchups)
     update_rankings(season)

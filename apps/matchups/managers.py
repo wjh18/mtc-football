@@ -44,7 +44,6 @@ class MatchupManager(models.Manager):
                 "away_team__league",
                 "away_team__conference",
                 "away_team__division",
-                "scoreboard",
                 "season__league",
             )
         )
