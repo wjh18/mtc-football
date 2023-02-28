@@ -181,7 +181,6 @@ def generate_round_matchups(
             season=season,
             week_number=season.week_number + 1,
             date=season.current_date,
-            is_postseason=True,
             slug=slugify(
                 f"{winners[1].abbreviation}-\
                     {winners[0].abbreviation}-\
@@ -232,8 +231,6 @@ def generate_round_matchups(
                     season=season,
                     week_number=season.week_number + 1,
                     date=season.current_date,
-                    is_postseason=True,
-                    is_conference=True,
                     slug=slugify(
                         f"{matchup[1].team.abbreviation}-\
                       {matchup[0].team.abbreviation}-\
@@ -244,12 +241,6 @@ def generate_round_matchups(
                 for matchup in MATCHUPS
             ]
         )
-
-        # Update whether matchup is divisional
-        for matchup in create_matchups:
-            if matchup.home_team.division == matchup.away_team.division:
-                matchup.is_divisional = True
-        Matchup.objects.bulk_update(create_matchups, ["is_divisional"])
 
         # Bulk create Scoreboards for Matchups
         Scoreboard.objects.bulk_create(

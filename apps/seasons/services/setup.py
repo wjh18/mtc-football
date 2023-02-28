@@ -27,7 +27,7 @@ def create_season_details(season):
     matchups = create_schedule(season)
 
     # Bulk create Matchups based on schedule
-    Matchup.objects.bulk_create(
+    matchup_list = Matchup.objects.bulk_create(
         [
             Matchup(
                 home_team=matchup[0],
@@ -44,17 +44,6 @@ def create_season_details(season):
             for matchup in matchups[week_num - 1]
         ]
     )
-
-    # Add matchup type fields and update instances
-    matchup_qs = Matchup.objects.filter(season=season)
-    matchup_list = []
-    for matchup in matchup_qs:
-        if matchup.home_team.division == matchup.away_team.division:
-            matchup.is_divisional = True
-        if matchup.home_team.conference == matchup.away_team.conference:
-            matchup.is_conference = True
-        matchup_list.append(matchup)
-    Matchup.objects.bulk_update(matchup_list, ["is_divisional", "is_conference"])
 
     # Bulk create Scoreboards for new Matchups
     Scoreboard.objects.bulk_create(

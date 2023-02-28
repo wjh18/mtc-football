@@ -92,7 +92,7 @@ class PlayoffsView(LeagueOwnerContextMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         matchups = Matchup.objects.with_extras().filter(
-            season=context["season"], is_postseason=True
+            season=context["season"], week_number__gte=19
         )
         context["wildcard_matchups"] = matchups.filter(week_number=19)
         context["divisional_matchups"] = matchups.filter(week_number=20)

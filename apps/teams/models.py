@@ -47,10 +47,10 @@ class Team(models.Model):
     def check_bye_week(self, season):
         """Find a team's bye week"""
         home_matchup_weeks = self.home_matchups.filter(
-            season=season, is_postseason=False
+            season=season, week_number__lte=18
         ).values_list("week_number", flat=True)
         away_matchup_weeks = self.away_matchups.filter(
-            season=season, is_postseason=False
+            season=season, week_number__lte=18
         ).values_list("week_number", flat=True)
 
         matchup_weeks = home_matchup_weeks.union(away_matchup_weeks)

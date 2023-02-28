@@ -11,9 +11,6 @@ class MatchupAdmin(admin.ModelAdmin):
         "season",
         "date",
         "week_number",
-        "is_postseason",
-        "is_divisional",
-        "is_conference",
         "slug",
     )
     readonly_fields = ("id",)

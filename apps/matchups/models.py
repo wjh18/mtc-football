@@ -4,6 +4,7 @@ from datetime import date
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from .managers import MatchupManager
 
@@ -26,9 +27,6 @@ class Matchup(models.Model):
     )
     date = models.DateField(default=date(date.today().year, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
-    is_postseason = models.BooleanField(default=False)
-    is_divisional = models.BooleanField(default=False)
-    is_conference = models.BooleanField(default=False)
     slug = models.SlugField(max_length=255, blank=True, null=True)
     objects = MatchupManager()
 
@@ -42,6 +40,18 @@ class Matchup(models.Model):
         return reverse(
             "matchups:matchup_detail", args=[self.season.league.slug, self.slug]
         )
+
+    @cached_property
+    def is_postseason(self) -> bool:
+        return self.week_number >= 19
+
+    @cached_property
+    def is_divisional(self) -> bool:
+        return self.home_team.division == self.away_team.division
+
+    @cached_property
+    def is_conference(self) -> bool:
+        return self.home_team.conference == self.away_team.conference
 
 
 class PlayerMatchStat(models.Model):
