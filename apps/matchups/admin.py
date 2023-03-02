@@ -12,12 +12,12 @@ class MatchupAdmin(admin.ModelAdmin):
         "date",
         "week_number",
         "slug",
-        "home_score",
         "away_score",
+        "home_score",
         "is_final",
         "quarter",
-        "home_timeouts",
         "away_timeouts",
+        "home_timeouts",
     )
     readonly_fields = ("id",)
 

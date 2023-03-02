@@ -6,7 +6,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 
-from .managers import MatchupManager
+from .managers import MatchupManager, MatchupQuerySet
 
 
 class Matchup(models.Model):
@@ -42,7 +42,7 @@ class Matchup(models.Model):
         default=3, validators=[MinValueValidator(0), MaxValueValidator(3)]
     )
 
-    objects = MatchupManager()
+    objects = MatchupManager.from_queryset(MatchupQuerySet)()
 
     def __str__(self):
         return f"{self.away_team.abbreviation} @ {self.home_team.abbreviation}"

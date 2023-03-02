@@ -1,7 +1,9 @@
 from datetime import date
 
 from django.db import models
+from django.db.models import F, Q
 
+from apps.matchups.models import Matchup
 from apps.seasons.managers import TeamStandingManager
 
 from .services.setup import create_season_details
@@ -76,36 +78,12 @@ class TeamStanding(models.Model):
         on_delete=models.CASCADE,
         related_name="team_standings",
     )
-    # Basic standings
     wins = models.SmallIntegerField(default=0)
     losses = models.SmallIntegerField(default=0)
     ties = models.SmallIntegerField(default=0)
     points_for = models.SmallIntegerField(default=0)
     points_against = models.SmallIntegerField(default=0)
     streak = models.SmallIntegerField(default=0)
-    # Home and away records
-    home_wins = models.SmallIntegerField(default=0)
-    home_losses = models.SmallIntegerField(default=0)
-    home_ties = models.SmallIntegerField(default=0)
-    away_wins = models.SmallIntegerField(default=0)
-    away_losses = models.SmallIntegerField(default=0)
-    away_ties = models.SmallIntegerField(default=0)
-    # Division, conference, and non-conf records
-    div_wins = models.SmallIntegerField(default=0)
-    div_losses = models.SmallIntegerField(default=0)
-    div_ties = models.SmallIntegerField(default=0)
-    conf_wins = models.SmallIntegerField(default=0)
-    conf_losses = models.SmallIntegerField(default=0)
-    conf_ties = models.SmallIntegerField(default=0)
-    non_conf_wins = models.SmallIntegerField(default=0)
-    non_conf_losses = models.SmallIntegerField(default=0)
-    non_conf_ties = models.SmallIntegerField(default=0)
-    # Record for last 5 games
-    last_5_wins = models.SmallIntegerField(default=0)
-    last_5_losses = models.SmallIntegerField(default=0)
-    last_5_ties = models.SmallIntegerField(default=0)
-    # Rankings
-    # Regular season
     division_ranking = models.PositiveSmallIntegerField(default=1)
     conference_ranking = models.PositiveSmallIntegerField(default=1)
     power_ranking = models.PositiveSmallIntegerField(default=1)
@@ -124,9 +102,180 @@ class TeamStanding(models.Model):
             ),
         ]
 
+    def __str__(self):
+        return f"{self.team.abbreviation} standings - {self.season}"
+
     @property
     def get_league(self):
         return self.season.league
 
-    def __str__(self):
-        return f"{self.team.abbreviation} standings - {self.season}"
+    @property
+    def home_wins(self):
+        query = Q(home_score__gt=F("away_score")) & Q(home_team=self.team)
+        home_win_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return home_win_count
+
+    @property
+    def away_wins(self):
+        query = Q(away_score__gt=F("home_score")) & Q(away_team=self.team)
+        away_win_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return away_win_count
+
+    @property
+    def home_losses(self):
+        query = Q(home_score__lt=F("away_score")) & Q(home_team=self.team)
+        home_loss_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return home_loss_count
+
+    @property
+    def away_losses(self):
+        query = Q(away_score__lt=F("home_score")) & Q(away_team=self.team)
+        away_loss_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return away_loss_count
+
+    @property
+    def home_ties(self):
+        query = Q(home_score=F("away_score")) & Q(home_team=self.team)
+        home_tie_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return home_tie_count
+
+    @property
+    def away_ties(self):
+        query = Q(away_score=F("home_score")) & Q(away_team=self.team)
+        away_tie_count = (
+            Matchup.objects.completed_for_season_by_team(self.season, self.team)
+            .filter(query)
+            .count()
+        )
+        return away_tie_count
+
+    @property
+    def div_wins(self):
+        div_win_count = (
+            Matchup.objects.completed_for_season_by_team_in_div(self.season, self.team)
+            .home_or_away_wins(self.team)
+            .count()
+        )
+        return div_win_count
+
+    @property
+    def div_losses(self):
+        div_loss_count = (
+            Matchup.objects.completed_for_season_by_team_in_div(self.season, self.team)
+            .home_or_away_losses(self.team)
+            .count()
+        )
+        return div_loss_count
+
+    @property
+    def div_ties(self):
+        div_tie_count = (
+            Matchup.objects.completed_for_season_by_team_in_div(self.season, self.team)
+            .home_or_away_ties()
+            .count()
+        )
+        return div_tie_count
+
+    @property
+    def conf_wins(self):
+        conf_win_count = (
+            Matchup.objects.completed_for_season_by_team_in_conf(self.season, self.team)
+            .home_or_away_wins(self.team)
+            .count()
+        )
+        return conf_win_count
+
+    @property
+    def conf_losses(self):
+        conf_loss_count = (
+            Matchup.objects.completed_for_season_by_team_in_conf(self.season, self.team)
+            .home_or_away_losses(self.team)
+            .count()
+        )
+        return conf_loss_count
+
+    @property
+    def conf_ties(self):
+        conf_tie_count = (
+            Matchup.objects.completed_for_season_by_team_in_conf(self.season, self.team)
+            .home_or_away_ties()
+            .count()
+        )
+        return conf_tie_count
+
+    @property
+    def non_conf_wins(self):
+        non_conf_win_count = (
+            Matchup.objects.completed_for_season_by_team_non_conf(
+                self.season, self.team
+            )
+            .home_or_away_wins(self.team)
+            .count()
+        )
+        return non_conf_win_count
+
+    @property
+    def non_conf_losses(self):
+        non_conf_loss_count = (
+            Matchup.objects.completed_for_season_by_team_non_conf(
+                self.season, self.team
+            )
+            .home_or_away_losses(self.team)
+            .count()
+        )
+        return non_conf_loss_count
+
+    @property
+    def non_conf_ties(self):
+        non_conf_tie_count = (
+            Matchup.objects.completed_for_season_by_team_non_conf(
+                self.season, self.team
+            )
+            .home_or_away_ties()
+            .count()
+        )
+        return non_conf_tie_count
+
+    @property
+    def last_5_wins(self):
+        last_5 = Matchup.objects.last_5(self.season, self.team)
+        last_5_win_count = (
+            Matchup.objects.filter(id__in=last_5).home_or_away_wins(self.team).count()
+        )
+        return last_5_win_count
+
+    @property
+    def last_5_losses(self):
+        last_5 = Matchup.objects.last_5(self.season, self.team)
+        last_5_loss_count = (
+            Matchup.objects.filter(id__in=last_5).home_or_away_losses(self.team).count()
+        )
+        return last_5_loss_count
+
+    @property
+    def last_5_ties(self):
+        last_5 = Matchup.objects.last_5(self.season, self.team)
+        last_5_tie_count = (
+            Matchup.objects.filter(id__in=last_5).home_or_away_ties().count()
+        )
+        return last_5_tie_count
