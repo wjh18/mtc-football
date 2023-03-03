@@ -16,8 +16,8 @@ def advance_season_by_weeks(request, season, weeks=False):
     message_type = messages.SUCCESS
 
     round_limits_and_funcs = {
-        "Regular Season": (17 - current_week, advance_regular_season),
-        "Playoffs": (21 - current_week, advance_playoffs),
+        "Regular Season": (19 - current_week, advance_regular_season),
+        "Playoffs": (23 - current_week, advance_playoffs),
         "Offseason": (1, advance_to_next_season),
     }
 

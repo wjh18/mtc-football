@@ -13,35 +13,32 @@ def update_standings(season, matchups):
             standing = TeamStanding.objects.get(team=team, season=season)
 
             # Update results and streaks
-            streak = standing.streak
             if result == "Tie":
                 standing.ties += 1
-                if not streak == 0:
-                    streak = 0
+                if not standing.streak == 0:
+                    standing.streak = 0
             elif result == team:
                 standing.wins += 1
-                if not streak > 0:
-                    streak = 1
+                if not standing.streak > 0:
+                    standing.streak = 1
                 else:
-                    streak += 1
+                    standing.streak += 1
             else:
                 standing.losses += 1
-                if not streak < 0:
-                    streak = -1
+                if not standing.streak < 0:
+                    standing.streak = -1
                 else:
-                    streak -= 1
+                    standing.streak -= 1
 
             # Update PF and PA
             home_score = scores["Home"]
             away_score = scores["Away"]
-            pf = standing.points_for
-            pa = standing.points_against
 
             if team == matchup.home_team:
-                pf += home_score
-                pa += away_score
+                standing.points_for += home_score
+                standing.points_against += away_score
             else:
-                pf += away_score
-                pa += home_score
+                standing.points_for += away_score
+                standing.points_against += home_score
 
             standing.save()
