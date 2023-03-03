@@ -260,7 +260,7 @@ class TeamStanding(models.Model):
     def last_5_wins(self):
         last_5 = Matchup.objects.last_5(self.season, self.team)
         last_5_win_count = (
-            Matchup.objects.filter(id__in=last_5).home_or_away_wins(self.team).count()
+            Matchup.objects.in_last_5(last_5).home_or_away_wins(self.team).count()
         )
         return last_5_win_count
 
@@ -268,14 +268,12 @@ class TeamStanding(models.Model):
     def last_5_losses(self):
         last_5 = Matchup.objects.last_5(self.season, self.team)
         last_5_loss_count = (
-            Matchup.objects.filter(id__in=last_5).home_or_away_losses(self.team).count()
+            Matchup.objects.in_last_5(last_5).home_or_away_losses(self.team).count()
         )
         return last_5_loss_count
 
     @property
     def last_5_ties(self):
         last_5 = Matchup.objects.last_5(self.season, self.team)
-        last_5_tie_count = (
-            Matchup.objects.filter(id__in=last_5).home_or_away_ties().count()
-        )
+        last_5_tie_count = Matchup.objects.in_last_5(last_5).home_or_away_ties().count()
         return last_5_tie_count

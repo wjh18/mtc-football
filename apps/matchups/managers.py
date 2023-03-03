@@ -55,7 +55,7 @@ class MatchupQuerySet(models.QuerySet):
         ).order_by("-is_american", "-is_national", "-is_divisional", "-is_conference")
 
     def completed_for_season(self, season):
-        return self.filter(season=season, is_final=True)
+        return self.filter(season=season, is_final=True, week_number__lte=18)
 
     def filter_by_team(self, team):
         return self.filter(Q(home_team=team) | Q(away_team=team))
@@ -109,3 +109,6 @@ class MatchupQuerySet(models.QuerySet):
         return self.completed_for_season_by_team(season, team).order_by("-week_number")[
             :5
         ]
+
+    def in_last_5(self, last_5):
+        return self.filter(id__in=last_5)
