@@ -23,4 +23,5 @@ class TeamStandingManager(models.Manager):
                 default=F("wins"),
                 output_field=FloatField(),
             ),
+            games_played=F("wins") + F("losses") + F("ties"),
         )
