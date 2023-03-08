@@ -53,7 +53,7 @@ class Contract(models.Model):
     is_active = models.BooleanField(default=True)
 
     @property
-    def get_league(self):
+    def league(self):
         return self.team.league
 
     def __str__(self):

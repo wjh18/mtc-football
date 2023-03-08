@@ -35,7 +35,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
 
 class DivisionAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "conference", "get_league")
+    list_display = ("__str__", "conference", "league")
     readonly_fields = ("id",)
 
 

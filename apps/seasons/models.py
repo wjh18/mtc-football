@@ -107,7 +107,7 @@ class TeamStanding(models.Model):
         return f"{self.team.abbreviation} standings - {self.season}"
 
     @cached_property
-    def get_league(self):
+    def league(self):
         return self.season.league
 
     @property

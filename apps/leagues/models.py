@@ -64,7 +64,7 @@ class Division(models.Model):
         ordering = ["name"]
 
     @cached_property
-    def get_league(self):
+    def league(self):
         return self.conference.league
 
     def __str__(self):

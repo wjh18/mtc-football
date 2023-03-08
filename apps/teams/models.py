@@ -84,7 +84,7 @@ class UserTeam(models.Model):
     is_active_team = models.BooleanField(default=True)
 
     @cached_property
-    def get_user(self):
+    def user(self):
         return self.league.user
 
     def __str__(self):
