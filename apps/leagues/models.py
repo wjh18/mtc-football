@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 from apps.core.utils import random_string_generator as random_string
@@ -62,7 +63,7 @@ class Division(models.Model):
     class Meta:
         ordering = ["name"]
 
-    @property
+    @cached_property
     def get_league(self):
         return self.conference.league
 

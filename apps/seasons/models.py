@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.db.models import F, Q
+from django.utils.functional import cached_property
 
 from apps.matchups.models import Matchup
 from apps.seasons.managers import TeamStandingManager
@@ -105,7 +106,7 @@ class TeamStanding(models.Model):
     def __str__(self):
         return f"{self.team.abbreviation} standings - {self.season}"
 
-    @property
+    @cached_property
     def get_league(self):
         return self.season.league
 

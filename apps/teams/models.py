@@ -2,6 +2,7 @@ from django.apps import apps
 from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from .managers import TeamManager
 
@@ -82,7 +83,7 @@ class UserTeam(models.Model):
     team = models.OneToOneField(Team, on_delete=models.CASCADE)
     is_active_team = models.BooleanField(default=True)
 
-    @property
+    @cached_property
     def get_user(self):
         return self.league.user
 
