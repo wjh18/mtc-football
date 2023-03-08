@@ -1,4 +1,3 @@
-from django.apps import apps
 from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
@@ -45,8 +44,15 @@ class Team(models.Model):
         self.overall_rating = team_overall["overall_rating__avg"]
         self.save()
 
-    def check_bye_week(self, season):
+    @property
+    def current_season(self):
+        return self.league.seasons.get(is_current=True)
+
+    @property
+    def bye_week(self):
         """Find a team's bye week"""
+        season = self.current_season
+
         home_matchup_weeks = self.home_matchups.filter(
             season=season, week_number__lte=18
         ).values_list("week_number", flat=True)
@@ -60,14 +66,11 @@ class Team(models.Model):
 
         return bye_week
 
-    def get_current_record(self):
+    @property
+    def current_record(self):
         """Get a team's current W/L/T record"""
-        Season = apps.get_model("seasons.Season")
-        TeamStanding = apps.get_model("seasons.TeamStanding")
-
-        season = Season.objects.get(league=self.league, is_current=True)
-
-        standing = TeamStanding.objects.get(team=self, season=season)
+        season = self.current_season
+        standing = self.team_standings.get(season=season)
         return f"({standing.wins}-{standing.losses}-{standing.ties})"
 
     def get_absolute_url(self):
