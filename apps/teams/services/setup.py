@@ -1,8 +1,7 @@
 import csv
 import os
 
-from django.apps import apps
-
+from apps.leagues.models import Division
 from apps.personnel.services.setup import (
     create_team_players,
     read_player_names_from_csv,
@@ -42,7 +41,6 @@ def create_teams(league):
     Create 32 teams in the correct confs and divs
     Called from create_league_structure() in apps.leagues.services.setup
     """
-    Division = apps.get_model("leagues.Division")
     team_dicts = read_team_info_from_csv()
 
     confs = league.conferences.all()

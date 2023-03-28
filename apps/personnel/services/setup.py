@@ -69,8 +69,6 @@ def generate_player_attributes(player_names):
                 player["prototype"] = random.choice(tuple(attr_dist[pos]))
                 dist[0] += 1  # Fill roster spot
                 break
-            else:
-                continue
 
         # Assign player ages based on normal distribution
         player["age"] = int(random.gauss(1, 0.1) * random.randint(25, 35))
@@ -92,25 +90,26 @@ def generate_player_attributes(player_names):
         sigmas = (20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20)
         final_ratings = list(map(random.gauss, after_pos_weights, sigmas))
 
-        i = 0
         calc_overall = []
         # Assign final ratings to player key
-        for attribute in (
-            "potential",
-            "confidence",
-            "iq",
-            "speed",
-            "strength",
-            "agility",
-            "awareness",
-            "stamina",
-            "injury",
-            "run_off",
-            "pass_off",
-            "special_off",
-            "run_def",
-            "pass_def",
-            "special_def",
+        for i, attribute in enumerate(
+            (
+                "potential",
+                "confidence",
+                "iq",
+                "speed",
+                "strength",
+                "agility",
+                "awareness",
+                "stamina",
+                "injury",
+                "run_off",
+                "pass_off",
+                "special_off",
+                "run_def",
+                "pass_def",
+                "special_def",
+            )
         ):
             rating = int(final_ratings[i])
             if rating > 99:
@@ -120,7 +119,6 @@ def generate_player_attributes(player_names):
             player[attribute] = rating
 
             calc_overall.append(rating)
-            i += 1
 
         # Calculate overall rating and add player to list
         player["overall_rating"] = int(sum(calc_overall) / len(calc_overall))

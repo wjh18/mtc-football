@@ -3,6 +3,8 @@ import datetime
 from django.apps import apps
 from django.utils.text import slugify
 
+from apps.matchups.models import Matchup
+
 from .schedule import create_schedule
 
 
@@ -11,6 +13,7 @@ def create_first_season(league):
     Create the first season in a league
     Called from create_league_structure() in apps.leagues.services.setup
     """
+    # Can't manually import due to circular import in models.py
     Season = apps.get_model("seasons.Season")
     Season.objects.create(league=league)
 
@@ -20,7 +23,7 @@ def create_season_details(season):
     Generates a season's schedule, matchups, and initial rankings.
     Called during initial save of new Season instance in models.py.
     """
-    Matchup = apps.get_model("matchups.Matchup")
+    # Can't manually import due to circular import in models.py
     TeamStanding = apps.get_model("seasons.TeamStanding")
 
     matchups = create_schedule(season)
