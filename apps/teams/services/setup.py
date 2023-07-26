@@ -1,7 +1,8 @@
 import csv
 import os
 
-from apps.leagues.models import Division
+from django.apps import apps
+
 from apps.personnel.services.setup import (
     create_team_players,
     read_player_names_from_csv,
@@ -44,6 +45,7 @@ def create_teams(league):
     team_dicts = read_team_info_from_csv()
 
     confs = league.conferences.all()
+    Division = apps.get_model("leagues.Division")
     divs = Division.objects.filter(conference__in=confs)
 
     def update_team_dict_with_entity(entities, entity_name):
