@@ -43,12 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.forms',
     # 3rd-party
+    'rest_framework',
     'crispy_forms',
     'crispy_bootstrap5',
-    'allauth',
-    'allauth.account',
-    'django_extensions',
     'debug_toolbar',
+    'django_extensions',
     # Custom
     'apps.accounts.apps.AccountsConfig',
     'apps.web.apps.WebConfig',
@@ -160,23 +159,12 @@ SITE_ID = 1
 AUTH_USER_MODEL = 'accounts.CustomUser'  # Custom User
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # default
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'  # default
 ]
 
-LOGIN_URL = 'account_login'
+LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'web:home'
-LOGOUT_REDIRECT_URL = 'web:home'
-
-# django-allauth config
-ACCOUNT_LOGOUT_REDIRECT = 'web:home'
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-ACCOUNT_SESSION_REMEMBER = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+LOGOUT_REDIRECT_URL = 'accounts:logout_done'
 
 PASSWORD_RESET_TIMEOUT = 259200  # Default
 PASSWORD_HASHERS = [
@@ -200,6 +188,39 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+### Django REST Framework
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
+
+if not DEBUG:
+    # Disable Browsable API in production
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        "rest_framework.renderers.JSONRenderer",
+    )
+    # Disable form and multipart parsers in production
+    REST_FRAMEWORK["DEFAULT_PARSER_CLASSES"] = (
+        "rest_framework.parsers.JSONParser",
+    )
 
 
 ### Email
