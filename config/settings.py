@@ -71,10 +71,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Global site context
+                # Custom context processors
+                ## Global site context
                 'apps.core.context_processors.site',
-                # Google Tag Manager ID
+                ## Google Tag Manager ID
                 'apps.web.context_processors.google_tag_manager_id',
+                ## Font Awesome Kit ID
+                'apps.web.context_processors.font_awesome_kit_id',
                 # For advance season form used in base template               
                 'apps.seasons.context_processors.advance_season_form',
                 # Active user team
@@ -202,3 +205,4 @@ DEBUG_TOOLBAR_CONFIG = {
 SHOW_TOOLBAR = True # Disable toolbar globally
 
 GTM_ID = os.environ.get('GTM_ID', '') # Google Tag Manager ID
+FONT_AWESOME_KIT_ID = os.environ.get('FA_KIT_ID', '') # Font Awesome icons

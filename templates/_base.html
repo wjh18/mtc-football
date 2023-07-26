@@ -10,6 +10,9 @@
   {% include 'meta/structured_data.html' %}
   {% include 'meta/styles.html' %}
   {% include 'meta/favicons.html' %}
+  {% if FA_KIT_ID %}
+    {% include 'meta/fonts.html' %}
+  {% endif %}
   {% if GTM_ID and not debug %}
     {% include 'meta/gtm.html' %}
   {% endif %}

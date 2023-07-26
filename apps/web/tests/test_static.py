@@ -1,26 +1,16 @@
-from http import HTTPStatus
+"""
+Tests for static web pages.
+
+Note:
+    `databases = "__all__"` is a workaround for SimpleTestCase
+    due to a bug in pytest-django outlined in issue#472. Default fixtures
+    set up a test database for every test case, even when not needed.
+"""
 
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
-from .views import AboutPageView, ContactPageView, HomePageView
-
-
-class RobotsTest(SimpleTestCase):
-    databases = "__all__"
-
-    def test_get(self):
-        response = self.client.get("/robots.txt")
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response["content-type"], "text/plain")
-        lines = response.content.decode().splitlines()
-        self.assertEqual(lines[0], "User-Agent: *")
-
-    def test_post(self):
-        response = self.client.post("/robots.txt")
-
-        self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
+from ..views import AboutPageView, ContactPageView, HomePageView
 
 
 class HomepageTests(SimpleTestCase):
