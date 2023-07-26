@@ -4,7 +4,12 @@
 
 {% block content %}
 <div class="container">
-  <h1>Contact Page</h1>
-  <p>This is a contact page placeholder.</p>
+  <h1>Contact</h1>
+  <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 </div>
 {% endblock content %}

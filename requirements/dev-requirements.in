@@ -1,0 +1,16 @@
+-c requirements.txt
+# Django
+django-debug-toolbar
+django-extensions
+pygraphviz
+
+# Python tooling
+pip-tools
+flake8
+black
+isort
+bandit[toml]
+# safety  # https://github.com/pyupio/safety/issues/455
+pre-commit
+pytest-django
+pytest-cov

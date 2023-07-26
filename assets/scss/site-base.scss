@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+// 1. Vendors
+@import
+  'app/vendors/sidebars'; // Old css, needs updating
+
+// 2. Components
+@import
+  'app/components/old'; // Old css, needs updating
+
+// 3. Page-specific styles
+@import
+  'app/pages/home';

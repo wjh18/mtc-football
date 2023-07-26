@@ -1,77 +1,82 @@
 # Move the Chains (MTC) Football
 
-Move the Chains is a web-based (American) football simulation game built with Python, Django, Bootstrap and Vanilla JS.
+Move the Chains is a web-based (American) football simulation engine built with Python, Django, Bootstrap and Vanilla JS.
 
 ![A screenshot of the divisional standings page](screenshots/divisional-standings.png)
 
-Although it's semi-playable in its current state, a lot of work still needs to be done before a production version can be released.
+In its current state, the project can be better described as a simulation engine than a management simulation game (such as Football Manager), although the ultimate goal is to reach a playable state.
 
-Currently, you can simulate full seasons but the game results are based on a random coin flip. Game statistics and management functions like trading or free agent signing have also yet to be added.
+For example, you can simulate full seasons including playoffs but the game results are based on a random coin flip. Game statistics and management functions like trading or free agent signing have also yet to be added.
 
-In its current state, the game is really just a simple football matchup engine with a schedule, standings, playoffs, teams, and placeholder players.
+The engine does, however, support scheduling, standings, regular season / playoff matchups, team creation, player generation, and more.
 
-The reasoning behind this was to make the game functional as quickly as possible. Once the league operations and management portions of the game are built out to a substantial level, then the simulation engine can be improved upon incrementally without sacrificing playability.
+The reasoning behind this approach was to make the game functional as quickly as possible. Once the league operations and management portions of the game are built out to a substantial level, then the simulation engine can be improved upon incrementally without sacrificing playability.
 
-## Is there a hosted version of the game?
+## Is there a hosted version?
 
 Not currently. There are plans to release a publicly hosted beta version of the game eventually. However, the management portion of the game still needs some work before that can happen. A basic simulation engine would be a nice touch as well so the game results aren't so random.
 
 You are welcome to run a version locally to test it out in the meantime. With that said, please don't host your own public version of the code anywhere. Feel free to review the [LICENSE.md](https://github.com/wjh18/mtc-football/blob/master/LICENSE.md) for more guidelines surrounding this limitation.
 
-See the installation instructions below for details on how to setup a local version of the game for testing purposes.
+Please see the installation instructions below for details on how to setup a local version of the game for testing purposes.
 
 ## Installation Options
 
-The easiest way to set up the project is with [Docker](#install-with-docker). To do so, you'll need to have Docker installed on your machine. You can download Docker Desktop from the official site.
+The most convenient way to set up your development environment is with [Docker](#docker-setup). To do so, you'll need to have Docker installed on your machine. You can [download Docker Desktop](https://www.docker.com/products/docker-desktop/) from the official site if you haven't already.
 
-Alternatively, the project also supports a [local setup](#install-locally) with a Python virtual environment (highly recommended) and local PostgreSQL database.
+Alternatively, the project also supports a [local setup](#local-setup) with a Python virtual environment and local PostgreSQL database.
 
-## Managing Dependencies
+Either way, start off by forking, cloning, downloading or using (generating a new repo with) the template.
 
-This project uses pip-tools and pip to manage Python dependencies. Simply pin any additional requirements you need to the `requirements/requirements.in` file and run `pip-compile requirements/requirements.in` to compile them to `requirements/requirements.txt`.
+## Environment Variables
 
-If using Docker, rebuild your image to install the new dependencies. Otherwise, you can install them with `pip install -r requirements/requirements.txt` with your virtual environment active.
+Environment variables are used to provide the container (via Docker environment variables) or local Python application (via `python-dotenv`) with context-specific environment details.
 
-## Install with Docker
-
-Fork the repository and clone your fork (if contributing), otherwise just clone it:
+First, copy the contents of `.env.example` to a `.env` file in your project root.
 
 ```shell
-git clone https://github.com/wjh18/mtc-football.git
-cd mtc-football
+cat .env.example >> .env
 ```
 
-Run the following management command to initialize your project locally.
+Next, generate a secret key and update the following fields in `.env`.
 
-```shell
-python manage.py init_local mtc_football
-```
+*Note: Django has a utility function to help with this in `django.core.management.utils` called `get_random_secret_key`, but if you don't have Django installed any random value will suffice in development to start out. You can generate a new secret key later if necessary once your container is running.*
 
-Where `mtc_football` is the db name and details. If you use anything other than `mtc_football`, make sure to update the environment variables in `docker-compose.yml` with the appropriate values as well.
-
-This command will generate a secret key and create a `.env` file at the root of your project. If the generated secret key has any `$` in it, escape them with an additional `$` (`$$`) or remove them.
-
-You could also manually generate a secret key with `django.core.management.utils.generate_secret_key()`, create the file, and input your db creds with the following. The command is just for convenience's sake.
-
-```shell
-touch .env
-```
-
-The recommended contents of `.env`:
+For Docker development:
 
 ```text
-DJANGO_DEBUG=1
 DJANGO_SECRET_KEY=foo
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-DJANGO_SQL_ENGINE=django.db.backends.postgresql
-DJANGO_SQL_DATABASE=mtc_football_dev
-DJANGO_SQL_USER=mtc_football
-DJANGO_SQL_PASSWORD=mtc_football
-DJANGO_SQL_HOST=db
-DJANGO_SQL_PORT=5432
+DJANGO_POSTGRES_NAME=your_db_dev
+DJANGO_POSTGRES_USER=your_db
+DJANGO_POSTGRES_PASS=your_db
+DJANGO_POSTGRES_HOST=db
+GTM_ID=GTM-XXXXXX
+FA_KIT_ID=XXXXXXXXXX
 ```
 
-If necessary, update the permissions of the entrypoint file (this should be stored by git so it may not be necessary):
+For local development:
+
+```text
+DJANGO_SECRET_KEY=foo
+DJANGO_POSTGRES_NAME=your_db_dev
+DJANGO_POSTGRES_USER=your_db
+DJANGO_POSTGRES_PASS=your_db
+DJANGO_POSTGRES_HOST=127.0.0.1
+GTM_ID=GTM-XXXXXX
+FA_KIT_ID=XXXXXXXXXX
+```
+
+Note the difference between `DJANGO_POSTGRES_HOST` in Docker vs. local setup. `GTM_ID` is only necessary in a production environment and `FA_KIT_ID` is optional unless you want to use Font Awesome icons.
+
+## Makefile
+
+Use `make` from the CLI to automate common commands used in project setup and administration. See `Makefile` for details.
+
+## Docker Setup
+
+Here's how to get set up with Docker. Skip this section if using a local environment.
+
+If necessary, update the permissions of the entrypoint file (they should be tracked by git so it may not be necessary):
 
 ```shell
 chmod +x entrypoint.sh
@@ -84,30 +89,30 @@ docker-compose build
 docker-compose up -d
 ```
 
-Check to make sure the containers are running and the images / Postgres volume were created. There should be two images, `mtc-football-web` and `postgres`.
+Check to make sure the containers are running and the images / Postgres volume were created. There should be two images, `<your-project>-web` and `postgres`.
 
-Once you've confirmed this, flush and migrate the database:
+Once you've confirmed this, flush and migrate the database from within the container:
 
 ```shell
 docker-compose exec web python manage.py flush --no-input
 docker-compose exec web python manage.py migrate
 ```
 
-You can build the frontend in development mode with `npm` (see `package.json` for details):
+Next, build the frontend in development mode with `npm` (see `package.json` for details):
 
 ```shell
-npm install # Install
-npm run dev # Build
-npm run dev-watch # Build and watch
+docker-compose exec web npm install # Install dependencies
+docker-compose exec web npm run dev # Build
+docker-compose exec web npm run dev-watch # Build and watch
 ```
+
+You can also run the above locally outside of the container if you wish.
 
 Lastly, create a superuser:
 
 ```shell
 docker-compose exec web python manage.py createsuperuser
 ```
-
-Now you should be able to login with your superuser via the GUI or Django Admin at localhost:8000. You can also use the signup flow to create a user but you won't be able to log into the Django Admin with it.
 
 How to tear down the container after the initial build and stand it back up:
 
@@ -122,9 +127,7 @@ How to rebuild the container and stand it back up in detached mode in one comman
 docker-compose up -d --build
 ```
 
-That's it! Now you can create a league, select a team, simulate a few seasons or explore the UI. Whatever your heart desires.
-
-## Install Locally
+## Local Setup
 
 The local instructions are similar to the Docker instructions with a few distinct differences.
 
@@ -134,37 +137,18 @@ After cloning the repo, you should create a virtual environment at the project r
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements/requirements.txt
+pip install -r requirements/requirements.txt -r requirements/dev-requirements.txt
 ```
 
-Next, create a local Postgres DB and user by launching `psql` from the command line.
+Next, create a local Postgres DB and user by launching `psql` from the command line. The exact commands may differ depending on your PostgreSQL version.
 
 ```postgresql
-CREATE DATABASE mtc_football_dev;
-CREATE USER mtc_football;
-ALTER USER mtc_football WITH PASSWORD 'mtc_football';
-GRANT ALL PRIVILEGES ON DATABASE mtc_football_dev TO mtc_football;
-ALTER USER mtc_football CREATEDB; /* Required step for PostgreSQL 15+ */
-```
-
-Run the following management command to initialize your project locally (the additional `--local` flag is needed for non-Docker installs, it will change the `db_host` to `127.0.0.1` instead of `db`).
-
-```shell
-python manage.py init_local mtc_football --local
-```
-
-Your `.env` file should look like this:
-
-```text
-DJANGO_DEBUG=1
-DJANGO_SECRET_KEY=foo
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-DJANGO_SQL_ENGINE=django.db.backends.postgresql
-DJANGO_SQL_DATABASE=mtc_football_dev
-DJANGO_SQL_USER=mtc_football
-DJANGO_SQL_PASSWORD=mtc_football
-DJANGO_SQL_HOST=127.0.0.1
-DJANGO_SQL_PORT=5432
+CREATE DATABASE <db_name>_dev;
+CREATE USER <db_name>;
+ALTER USER <db_name> WITH PASSWORD '<db_name>';
+GRANT ALL PRIVILEGES ON DATABASE <db_name>_dev TO <db_name>;
+ALTER USER <db_name> CREATEDB; /* Required step for PostgreSQL 15+ */
+ALTER DATABASE <db_name>_dev OWNER TO <db_name>; /* Required step for PostgreSQL 15+ */
 ```
 
 Migrate the db, build the frontend (requires `npm`), run the server, and create a superuser:
@@ -173,8 +157,42 @@ Migrate the db, build the frontend (requires `npm`), run the server, and create 
 python manage.py migrate
 npm install
 npm run dev
-python manage.py runserver
 python manage.py createsuperuser
+python manage.py runserver
 ```
 
-See the Docker instructions for further details on each step, but run the commands locally instead of in the container.
+See the Docker instructions for further details on each step, but run the commands locally in a venv instead of in the container.
+
+## Getting Started
+
+From the homepage, log in to the superuser you created and make sure you can access `http://localhost:8000/admin`. You can also login via the Django Admin itself or use the signup flow to create a user without admin access.
+
+While in the admin, feel free to update your site domain and name at `http://localhost:8000/admin/sites/site/`. These site fields are provided to the global request context via a context processor. They can be accessed from templates with `site.domain` and `site.name`. In development, setting domain to `localhost:8000` or whatever port you're running the server on is best practice.
+
+Additionally, update your site settings/metadata at `http://localhost:8000/admin/core/sitesettings/`. These site fields can also be accessed from the global request context with `site.settings.*`. They store various bits of metadata used for SEO in the HTML `<head>`.
+
+## Managing Dependencies
+
+This project uses `pip-tools` and `pip` to manage Python dependencies.
+
+Simply pin any additional requirements you need to the `requirements/requirements.in` file and run `pip-compile requirements/requirements.in` to compile them to `requirements/requirements.txt`.
+
+For development dependencies, the same process applies but using `dev-requirements.*`.
+
+If using Docker, rebuild your image to install the new dependencies. For local environments, you can install them with `pip install -r requirements/requirements.txt -r requirements/dev-requirements.txt` with your virtual environment active.
+
+In production, only install `requirements.txt`.
+
+## Python tooling
+
+Run these in your container or with your virtual environment active.
+
+- Make sure tests are passing with the `pytest` command.
+- Run coverage checks with `pytest --cov`
+- ~~Run python package vulnerability checks with `safety check`~~ `safety` currently excluded from dependencies due to compatibility issue/bug
+- Sort Python imports with `isort .`
+- Format Python code with `black .`
+- Lint Python code with `flake8`
+- Run Python code security checks with `bandit -c pyproject.toml -r .`
+- Skip pre-commit checks with `--no-verify` flag after commit message
+- Run black, isort, flake8 and bandit checks automatically on commit by installing pre-commit hooks with `pre-commit install` and testing them with `pre-commit run --all-files`

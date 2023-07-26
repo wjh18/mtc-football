@@ -1,27 +1,13 @@
-# Core
+# Django
 Django
-psycopg2-binary
-Pillow
-
-# Django apps
 django-allauth
-django-debug-toolbar
-django-extensions
 django-crispy-forms
 crispy-bootstrap5
 
-# Misc
-algorithm-x
-pygraphviz
+# Python
+psycopg2-binary
+Pillow
 python-dotenv
 
-# Testing, etc.
-pip-tools
-flake8
-black
-isort
-bandit[toml]
-# safety
-pre-commit
-pytest-django
-pytest-cov
+# App
+algorithm-x
