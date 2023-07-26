@@ -41,7 +41,7 @@
     <h2 class="fs-4">
       <a href="{{ matchup.get_absolute_url }}" class="text-decoration-none">Week {{ matchup.week_number }}</a>
     </h2>
-    <span class="{% if matchup.scoreboard.get_winner == matchup.away_team %}
+    <span class="{% if matchup.get_winner == matchup.away_team %}
                   text-success
                   {% else %}
                   text-danger
@@ -52,9 +52,9 @@
       {{ matchup.away_team.abbreviation }}
     </span>
     {% if matchup.week_number < season.week_number %}
-      - <span class="fw-bold">{{ matchup.scoreboard.away_score }}</span>
+      - <span class="fw-bold">{{ matchup.away_score }}</span>
     {% endif %} @
-    <span class="{% if matchup.scoreboard.get_winner == matchup.home_team %}
+    <span class="{% if matchup.get_winner == matchup.home_team %}
                     text-success
                   {% else %}
                     text-danger
@@ -65,7 +65,7 @@
       {{ matchup.home_team.abbreviation }}
     </span>
     {% if matchup.week_number < season.week_number %}
-      - <span class="fw-bold">{{ matchup.scoreboard.home_score }}</span>
+      - <span class="fw-bold">{{ matchup.home_score }}</span>
     {% endif %}
   </div>
   {% if matchup.week_number == bye_week|add:"-1" %}

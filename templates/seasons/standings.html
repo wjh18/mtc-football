@@ -40,7 +40,7 @@
             <caption>{{ division }}</caption>
             <colgroup>
               <col span="2">
-              <col span="4" class="col-wlt">
+              <col span="5" class="col-wlt">
               <col span="3">
               <col span="2" class="col-ha">
               <col span="3">
@@ -52,8 +52,9 @@
                 <th scope="col">{{ division }}</th>
                 <th scope="col">W</th>
                 <th scope="col">L</th>
-                <th scope="col">T</th>
+                <th scope="col">T</th>                
                 <th scope="col">W%</th>
+                <th scope="col">GP</th>
                 <th scope="col">PF</th>
                 <th scope="col">PA</th>
                 <th scope="col">+/-</th>
@@ -94,8 +95,9 @@
               </td>
               <td>{{ standing.wins }}</td>
               <td>{{ standing.losses }}</td>
-              <td>{{ standing.ties }}</td>
+              <td>{{ standing.ties }}</td>              
               <td>{{ standing.win_pct|floatformat:3 }}</td>
+              <td>{{ standing.games_played }}</td>
               <td>{{ standing.points_for }}</td>
               <td>{{ standing.points_against }}</td>
               <td>{{ standing.pt_diff }}</td>
@@ -127,7 +129,7 @@
           Z = First round bye &middot; Y = Clinched division &middot; X = Clinched playoff berth &middot; O = Missed playoffs</caption>
           <colgroup>
             <col span="2">
-            <col span="4" class="col-wlt">
+            <col span="5" class="col-wlt">
             <col span="3">
             <col span="2" class="col-ha">
             <col span="3">
@@ -139,8 +141,9 @@
               <th scope="col">{{ conference }}</th>
               <th scope="col">W</th>
               <th scope="col">L</th>
-              <th scope="col">T</th>
+              <th scope="col">T</th>              
               <th scope="col">W%</th>
+              <th scope="col">GP</th>
               <th scope="col">PF</th>
               <th scope="col">PA</th>
               <th scope="col">+/-</th>
@@ -181,8 +184,9 @@
             </td>
             <td>{{ standing.wins }}</td>
             <td>{{ standing.losses }}</td>
-            <td>{{ standing.ties }}</td>
+            <td>{{ standing.ties }}</td>            
             <td>{{ standing.win_pct|floatformat:3 }}</td>
+            <td>{{ standing.games_played }}</td>
             <td>{{ standing.points_for }}</td>
             <td>{{ standing.points_against }}</td>
             <td>{{ standing.pt_diff }}</td>
@@ -209,8 +213,8 @@
     <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
       <caption>Power rankings are determined by W/L/T, team rating and recent performance in that order.</caption>
       <colgroup>
-        <col span="2">
-        <col span="4" class="col-wlt">
+        <col span="3">
+        <col span="5" class="col-wlt">
         <col span="3">
         <col span="2" class="col-ha">
         <col span="3">
@@ -223,8 +227,9 @@
           <th scope="col">{{ league.name }}</th>            
           <th scope="col">W</th>
           <th scope="col">L</th>
-          <th scope="col">T</th>
-          <th scope="col">W%</th>                     
+          <th scope="col">T</th>          
+          <th scope="col">W%</th>
+          <th scope="col">GP</th>   
           <th scope="col">PF</th>
           <th scope="col">PA</th>
           <th scope="col">+/-</th>            
@@ -265,8 +270,9 @@
         </td>
         <td>{{ standing.wins }}</td>
         <td>{{ standing.losses }}</td>
-        <td>{{ standing.ties }}</td>   
-        <td>{{ standing.win_pct|floatformat:3 }}</td>                
+        <td>{{ standing.ties }}</td>        
+        <td>{{ standing.win_pct|floatformat:3 }}</td>
+        <td>{{ standing.games_played }}</td>            
         <td>{{ standing.points_for }}</td>
         <td>{{ standing.points_against }}</td>
         <td>{{ standing.pt_diff }}</td>          

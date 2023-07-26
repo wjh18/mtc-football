@@ -4,8 +4,9 @@ from datetime import date
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 
-from .managers import MatchupManager
+from .managers import MatchupManager, MatchupQuerySet
 
 
 class Matchup(models.Model):
@@ -26,22 +27,70 @@ class Matchup(models.Model):
     )
     date = models.DateField(default=date(date.today().year, 8, 29))
     week_number = models.PositiveSmallIntegerField(default=1)
-    is_postseason = models.BooleanField(default=False)
-    is_divisional = models.BooleanField(default=False)
-    is_conference = models.BooleanField(default=False)
     slug = models.SlugField(max_length=255, blank=True, null=True)
-    objects = MatchupManager()
+    # Scoreboard fields
+    home_score = models.PositiveSmallIntegerField(default=0)
+    away_score = models.PositiveSmallIntegerField(default=0)
+    is_final = models.BooleanField(default=False)
+    quarter = models.PositiveSmallIntegerField(
+        default=1, validators=[MinValueValidator(1), MaxValueValidator(4)]
+    )
+    home_timeouts = models.PositiveSmallIntegerField(
+        default=3, validators=[MinValueValidator(0), MaxValueValidator(3)]
+    )
+    away_timeouts = models.PositiveSmallIntegerField(
+        default=3, validators=[MinValueValidator(0), MaxValueValidator(3)]
+    )
+
+    objects = MatchupManager.from_queryset(MatchupQuerySet)()
 
     def __str__(self):
-        return (
-            f"{self.away_team.abbreviation} @ {self.home_team.abbreviation}"
-            f" - Week {self.week_number} - {self.season}"
-        )
+        return f"{self.away_team.abbreviation} @ {self.home_team.abbreviation}"
 
     def get_absolute_url(self):
         return reverse(
             "matchups:matchup_detail", args=[self.season.league.slug, self.slug]
         )
+
+    @cached_property
+    def is_postseason(self) -> bool:
+        return self.week_number >= 19
+
+    @cached_property
+    def is_divisional(self) -> bool:
+        return self.home_team.division == self.away_team.division
+
+    @cached_property
+    def is_conference(self) -> bool:
+        return self.home_team.conference == self.away_team.conference
+
+    def get_score(self):
+        """Obtain match score based on random dice rolls"""
+        if not self.is_final:
+            self.home_score = random.randint(0, 50)
+            self.away_score = random.randint(0, 50)
+
+            # If postseason and a tie, break it with an "overtime" roll
+            if self.is_postseason and self.home_score == self.away_score:
+                overtime_pts = random.choice([self.home_score, self.away_score])
+                if overtime_pts == self.home_score:
+                    self.home_score += random.randint(3, 7)
+                else:
+                    self.away_score += random.randint(3, 7)
+
+            self.is_final = True
+            self.save()
+
+        return {"Home": self.home_score, "Away": self.away_score}
+
+    def get_winner(self):
+        """Determine match winner based on final score"""
+        if self.home_score > self.away_score:
+            return self.home_team
+        elif self.away_score > self.home_score:
+            return self.away_team
+        else:
+            return "Tie"
 
 
 class PlayerMatchStat(models.Model):
@@ -114,57 +163,3 @@ class PlayerMatchStat(models.Model):
 
     def __str__(self):
         return f"{self.player} stats - {self.matchup}"
-
-
-class Scoreboard(models.Model):
-    """
-    Add game clock (countdown will happen in JS
-        then update the DB after every play)
-    Separate PossessionFieldPosition model for
-        down, distance, field position, etc.?
-    """
-
-    matchup = models.OneToOneField(Matchup, on_delete=models.CASCADE)
-    home_score = models.PositiveSmallIntegerField(default=0)
-    away_score = models.PositiveSmallIntegerField(default=0)
-    is_final = models.BooleanField(default=False)
-    quarter = models.PositiveSmallIntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(4)]
-    )
-    home_timeouts = models.PositiveSmallIntegerField(
-        default=3, validators=[MinValueValidator(0), MaxValueValidator(3)]
-    )
-    away_timeouts = models.PositiveSmallIntegerField(
-        default=3, validators=[MinValueValidator(0), MaxValueValidator(3)]
-    )
-
-    def __str__(self):
-        return f"Scoreboard - {self.matchup}"
-
-    def get_score(self):
-        """Obtain match score based on random dice rolls"""
-        if not self.is_final:
-            self.home_score = random.randint(0, 50)
-            self.away_score = random.randint(0, 50)
-
-            # If postseason and a tie, break it with an "overtime" roll
-            if self.matchup.is_postseason and self.home_score == self.away_score:
-                overtime_pts = random.choice([self.home_score, self.away_score])
-                if overtime_pts == self.home_score:
-                    self.home_score += random.randint(3, 7)
-                else:
-                    self.away_score += random.randint(3, 7)
-
-            self.is_final = True
-            self.save()
-
-        return {"Home": self.home_score, "Away": self.away_score}
-
-    def get_winner(self):
-        """Determine match winner based on final score"""
-        if self.home_score > self.away_score:
-            return self.matchup.home_team
-        elif self.away_score > self.home_score:
-            return self.matchup.away_team
-        else:
-            return "Tie"

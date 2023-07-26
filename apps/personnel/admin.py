@@ -24,7 +24,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "player", "team", "get_league")
+    list_display = ("__str__", "player", "team", "league")
 
 
 admin.site.register(Player, PlayerAdmin)

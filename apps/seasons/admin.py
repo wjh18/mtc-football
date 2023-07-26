@@ -20,7 +20,7 @@ class TeamStandingAdmin(admin.ModelAdmin):
     list_display = (
         "team",
         "season",
-        "get_league",
+        "league",
         "wins",
         "losses",
         "ties",

@@ -13,30 +13,28 @@ def advance_season_by_weeks(request, season, weeks=False):
     """Advance the season by X number of weeks."""
     current_week = season.week_number
     current_phase = season.get_phase_display()
-    is_regular_season = current_phase == "Regular Season"
-    is_playoffs = current_phase == "Playoffs"
-    is_offseason = current_phase == "Offseason"
     message_type = messages.SUCCESS
 
+    round_limits_and_funcs = {
+        "Regular Season": (19 - current_week, advance_regular_season),
+        "Playoffs": (23 - current_week, advance_playoffs),
+        "Offseason": (1, advance_to_next_season),
+    }
+
     # Limit number of sim weeks to at most the end of the phase
-    if is_regular_season:
-        week_limit = 18 - (current_week - 1)
-    elif is_playoffs:
-        week_limit = 22 - (current_week - 1)
-    elif is_offseason:
-        week_limit = 1
+    week_limit = round_limits_and_funcs[current_phase][0]
     if not weeks or weeks > week_limit:
         weeks = week_limit
 
     # Simulate based on selected or limited number of weeks
     for week_num in range(current_week, current_week + weeks):
-        if is_regular_season:
-            new_message = advance_regular_season(season, weeks, week_num)
-        elif is_playoffs:
-            new_message = advance_playoffs(season, weeks, week_num)
-        elif is_offseason:
-            new_message = advance_to_next_season(season)
-        else:
+        try:
+            adv_func = round_limits_and_funcs[current_phase][1]
+            if current_phase == "Offseason":
+                new_message = adv_func(season)
+            else:
+                new_message = adv_func(season, weeks, week_num)
+        except KeyError:
             new_message = "Sorry, we aren't in the right part of the season for that!"
             message_type = messages.WARNING
             break
@@ -54,9 +52,9 @@ def advance_regular_season(season, weeks, week_num):
 
     Matchup = apps.get_model("matchups.Matchup")
     matchups = Matchup.objects.filter(
-        season=season, week_number=week_num, scoreboard__is_final=False
+        season=season, week_number=week_num, is_final=False
     )
-    update_standings(season, week_num, matchups)
+    update_standings(season, matchups)
     update_rankings(season)
     update_running_playoff_clinches(season)
 
@@ -73,14 +71,12 @@ def advance_playoffs(season, weeks, week_num):
     """Advance the playoffs depending on round."""
     success_message = f"Advanced playoffs by {weeks} week(s)."
 
-    if week_num == 19:
-        advance_playoff_round(season, "WLD")
-    elif week_num == 20:
-        advance_playoff_round(season, "DIV")
-    elif week_num == 21:
-        advance_playoff_round(season, "CNF")
-    elif week_num == 22:
-        advance_playoff_round(season, "SHP")
+    round_weeks = {19: "WLD", 20: "DIV", 21: "CNF", 22: "SHP"}
+    round_name = round_weeks[week_num]
+    advance_playoff_round(season, round_name)
+
+    # Advance to next season after championship
+    if round_name == "SHP":
         season.phase = 6
         success_message += " You've entered the offseason. \
             Advance at least one week to start a new season."

@@ -12,7 +12,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class UserTeamAdmin(admin.ModelAdmin):
-    list_display = ("league", "team", "get_user", "is_active_team")
+    list_display = ("league", "team", "user", "is_active_team")
 
 
 admin.site.register(Team, TeamAdmin)

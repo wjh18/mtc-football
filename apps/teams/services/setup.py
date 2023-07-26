@@ -42,10 +42,10 @@ def create_teams(league):
     Create 32 teams in the correct confs and divs
     Called from create_league_structure() in apps.leagues.services.setup
     """
-    Division = apps.get_model("leagues.Division")
     team_dicts = read_team_info_from_csv()
 
     confs = league.conferences.all()
+    Division = apps.get_model("leagues.Division")
     divs = Division.objects.filter(conference__in=confs)
 
     def update_team_dict_with_entity(entities, entity_name):

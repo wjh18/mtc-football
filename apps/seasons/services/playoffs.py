@@ -171,17 +171,15 @@ def generate_round_matchups(
     """Generate playoff matchups for the upcoming round"""
 
     Matchup = apps.get_model("matchups.Matchup")
-    Scoreboard = apps.get_model("matchups.Scoreboard")
 
     if round_type == "CNF":
         # Generate championship matchup
-        champ_matchup = Matchup.objects.create(
+        Matchup.objects.create(
             home_team=winners[0],
             away_team=winners[1],
             season=season,
             week_number=season.week_number + 1,
             date=season.current_date,
-            is_postseason=True,
             slug=slugify(
                 f"{winners[1].abbreviation}-\
                     {winners[0].abbreviation}-\
@@ -189,8 +187,6 @@ def generate_round_matchups(
             ),
         )
 
-        # Create Scoreboard for championship Matchup
-        Scoreboard.objects.create(matchup=champ_matchup)
         # Return function to prevent other matchups from being created
         return
 
@@ -224,7 +220,7 @@ def generate_round_matchups(
             MATCHUPS = [(cr[0], cr[1])]
 
         # Bulk create Matchups
-        create_matchups = Matchup.objects.bulk_create(
+        Matchup.objects.bulk_create(
             [
                 Matchup(
                     home_team=matchup[0].team,
@@ -232,8 +228,6 @@ def generate_round_matchups(
                     season=season,
                     week_number=season.week_number + 1,
                     date=season.current_date,
-                    is_postseason=True,
-                    is_conference=True,
                     slug=slugify(
                         f"{matchup[1].team.abbreviation}-\
                       {matchup[0].team.abbreviation}-\
@@ -245,17 +239,6 @@ def generate_round_matchups(
             ]
         )
 
-        # Update whether matchup is divisional
-        for matchup in create_matchups:
-            if matchup.home_team.division == matchup.away_team.division:
-                matchup.is_divisional = True
-        Matchup.objects.bulk_update(create_matchups, ["is_divisional"])
-
-        # Bulk create Scoreboards for Matchups
-        Scoreboard.objects.bulk_create(
-            [Scoreboard(matchup=matchup) for matchup in create_matchups]
-        )
-
 
 def sim_round_matchups(season, round_type):
     """Sim round matchups based on round type."""
@@ -265,8 +248,8 @@ def sim_round_matchups(season, round_type):
     if round_type == "SHP":
         matchup = Matchup.objects.get(season=season, week_number=current_week)
 
-        matchup.scoreboard.get_score()
-        winner = matchup.scoreboard.get_winner()
+        matchup.get_score()
+        winner = matchup.get_winner()
 
         update_playoff_rankings(season, round_type, winner)
 
@@ -278,8 +261,8 @@ def sim_round_matchups(season, round_type):
 
         winners = []
         for matchup in matchups:
-            matchup.scoreboard.get_score()
-            winner = matchup.scoreboard.get_winner()
+            matchup.get_score()
+            winner = matchup.get_winner()
             winners.append(winner)
 
             update_playoff_rankings(season, round_type, winner)

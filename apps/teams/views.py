@@ -169,7 +169,6 @@ class TeamScheduleView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         team = context["team"]
-        season = context["season"]
-        context["bye_week"] = team.check_bye_week(season)
+        context["bye_week"] = team.bye_week
 
         return context
