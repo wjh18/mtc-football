@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
-
+    'django.forms',
     # 3rd-party
     'crispy_forms',
     'crispy_bootstrap5',
@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'django_extensions',
     'debug_toolbar',
-
     # Custom
     'apps.accounts.apps.AccountsConfig',
     'apps.web.apps.WebConfig',
@@ -106,6 +105,9 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 
 ### Database
 

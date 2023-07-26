@@ -8,11 +8,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
     protocol = "https"
 
     def items(self):
-        return [
-            "web:home",
-            "web:about",
-            "web:contact",
-        ]
+        return ["web:home", "web:about", "web:contact", "web:terms", "web:privacy"]
 
     def location(self, item):
         return reverse(item)
