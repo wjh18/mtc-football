@@ -2,6 +2,18 @@ from django.contrib.sites.models import Site
 from django.db import models
 
 
+class BaseModel(models.Model):
+    """
+    Base model that includes default created / updated timestamps.
+    """
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
 class SiteSettings(models.Model):
     """
     Extension of the Sites model that holds more info about the site.
