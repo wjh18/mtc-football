@@ -4,8 +4,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {  
   entry: {
-    'site-base': './assets/site-base.js',  // base styles shared between frameworks
-    'site-bootstrap': './assets/site-bootstrap.js',  // required for bootstrap styles
+    'site-base': './assets/site-base.js',  // Base styles
+    'site-bootstrap': './assets/site-bootstrap.js',  // Bootstrap styles and overrides
     app: './assets/js/app.js',  // path to our input file
   },
   output: {
