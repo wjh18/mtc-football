@@ -10,7 +10,7 @@ from django.views import generic
 from django.views.decorators.debug import sensitive_post_parameters
 
 from ..forms import CustomUserCreationForm, EmailVerifyConfirmForm, EmailVerifyForm
-from ..permissions import SelfOrAdminRequiredMixin
+from ..mixins import SelfOrAdminRequiredMixin
 from ..tokens import email_verification_token, send_email_verification
 
 CustomUser = get_user_model()

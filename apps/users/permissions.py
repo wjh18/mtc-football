@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
 from rest_framework import permissions
 
 
@@ -14,14 +13,3 @@ class IsSelfOrAdminUser(permissions.BasePermission):
                 return True
             return obj == request.user
         return False
-
-
-class SelfOrAdminRequiredMixin(UserPassesTestMixin):
-    """Permits a user (or admins) to view their own profile.
-
-    For use in Django generic views only.
-    """
-
-    def test_func(self):
-        user = self.request.user
-        return user.is_staff or user == self.get_object()
