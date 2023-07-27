@@ -1,10 +1,11 @@
 {% extends '_base.html' %}
+{% load i18n %}
 
-{% block title %}Privacy Policy | {{ site.name }}{% endblock title %}
+{% block title %}{% trans "Privacy Policy" %} | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container">
-  <h1>Privacy Policy</h1>
+  <h1>{% trans "Privacy Policy" %}</h1>
   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lacinia maximus velit eget lobortis. Fusce vitae ipsum ac arcu pretium sollicitudin. Duis id congue tortor. Ut porta ornare turpis, sit amet gravida velit rutrum non. In gravida maximus lectus, ut vestibulum tellus semper quis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Fusce sit amet imperdiet massa, eu ullamcorper quam. Suspendisse ante justo, efficitur fermentum nulla sed, porttitor efficitur ante. Phasellus imperdiet vulputate ligula, eget aliquam turpis efficitur nec.</p>
   <p>Duis ac maximus purus. Donec molestie augue velit, ac varius risus posuere eget. Donec at sem in sapien consequat lobortis sit amet non ante. Aliquam rhoncus orci quis sagittis luctus. Nulla facilisi. Proin congue, nulla sed tincidunt maximus, nibh quam volutpat nisl, eu tristique nisi tortor et nulla. Sed lobortis, enim aliquet iaculis tempor, risus urna finibus ipsum, non aliquet ipsum erat id eros. Nulla luctus ligula et odio aliquet, interdum scelerisque purus eleifend. Pellentesque interdum purus vitae mauris blandit, ac tincidunt risus gravida.</p>
   <p>Vestibulum tempus interdum quam. Donec sollicitudin pulvinar enim. Phasellus leo quam, laoreet et turpis sed, placerat luctus arcu. Aenean finibus dignissim turpis eu efficitur. Morbi non risus et magna efficitur viverra non nec sapien. Donec odio massa, mollis faucibus purus et, eleifend ultrices orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer est nibh, molestie non ipsum id, tristique consectetur libero. Pellentesque at massa pulvinar, finibus nisi sit amet, pharetra sem. Ut ut egestas tortor. Phasellus pellentesque turpis sapien, ac venenatis sem dictum sed.</p>

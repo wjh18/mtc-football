@@ -1,6 +1,7 @@
 {% extends '_base.html' %}
+{% load i18n %}
 
-{% block title %}Home | {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Home" %} | {{ block.super }}{% endblock title %}
 {% block structured_data %}
 <script type="application/ld+json">
   {
@@ -22,25 +23,25 @@
   <div class="d-flex flex-row justify-content-center">
     <div class="col col-md-8 col-xl-5">
       {% if user.is_authenticated %}
-        <h1>Welcome to Move the Chains football, {{user}}!</h1>
-        <p>Get started by viewing your active leagues or create a new one to start from scratch.</p>
+        <h1>{% trans "Welcome to" %} Move the Chains football, {{user}}!</h1>
+        <p>{% trans "Get started by viewing your active leagues or create a new one to start from scratch." %}</p>
         <div class="d-flex flex-wrap gap-2">
           <a href="{% url 'leagues:league_list' %}" class="btn btn-outline-dark me-2" role="button">
-            My Leagues
+            {% trans "My Leagues" %}
           </a>
           <a href="{% url 'leagues:league_create' %}" class="btn btn-success" role="button">
-            New League
+            {% trans "New League" %}
           </a>
         </div>
       {% else %}
-        <h1>Welcome to Move the Chains football!</h1>
-        <p>The premier web-based American football simulation game. Log in or sign up to start playing.</p>
+        <h1>{% trans "Welcome to" %} Move the Chains football!</h1>
+        <p>{% trans "The premier web-based American football simulation game. Log in or sign up to start playing." %}</p>
         <div class="d-flex flex-wrap gap-2">
           <a href="{% url 'users:login' %}" class="btn btn-outline-dark me-2" role="button">
-            Login
+            {% trans "Login" %}
           </a>
           <a href="{% url 'users:signup' %}" class="btn btn btn-success" role="button">
-            Signup
+            {% trans "Signup" %}
           </a>
         </div>
       {% endif %}

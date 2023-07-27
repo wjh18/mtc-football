@@ -1,10 +1,11 @@
 {% extends '_base.html' %}
+{% load i18n %}
 
-{% block title %}About | {{ block.super }}{% endblock title %}
+{% block title %}{% trans "About" %} | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container">
-  <h1>About</h1>
-  <p>This is an about page placeholder.</p>
+  <h1>{% trans "About" %}</h1>
+  <p>{{ site.settings.meta_description }}</p>
 </div>
 {% endblock content %}

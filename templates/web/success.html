@@ -1,10 +1,11 @@
 {% extends '_base.html' %}
+{% load i18n %}
 
-{% block title %}Success | {{ site.name }}{% endblock title %}
+{% block title %}{% trans "Success" %} | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container">
-  <h1>Message Sent</h1>
-  <p>You'll hear back from us shortly.</p>
+  <h1>{% trans "Message Sent" %}</h1>
+  <p>{% trans "You'll hear back from us shortly." %}</p>
 </div>
 {% endblock content %}
