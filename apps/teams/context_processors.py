@@ -7,6 +7,9 @@ def user_team(request):
     Make active UserTeam available in template context
     """
     if hasattr(request, "resolver_match"):
+        # Required for tests that don't have a resolver_match set to pass
+        if request.resolver_match is None:
+            return {}
         League = apps.get_model("leagues.League")
         league_slug = request.resolver_match.kwargs.get("league")
     try:
