@@ -8,7 +8,6 @@ from .models import League
 class LeagueViewTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="leagueuser",
             email="leagueuser@example.com",
             password="testpass123",
         )
@@ -36,6 +35,6 @@ class LeagueViewTest(TestCase):
         response = self.client.get(reverse("leagues:league_list"))
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, "%s?next=/leagues/" % (reverse("account_login")))
-        response = self.client.get("%s?next=/leagues/" % (reverse("account_login")))
+        self.assertRedirects(response, "%s?next=/leagues/" % (reverse("users:login")))
+        response = self.client.get("%s?next=/leagues/" % (reverse("users:login")))
         self.assertContains(response, "Log In")

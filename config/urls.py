@@ -17,7 +17,10 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt',TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # User management
-    path('accounts/', include('allauth.urls')),
+    path('accounts/', include('apps.users.urls.tmpl_urls')),  # Template auth (custom)
+    path('accounts/', include('django.contrib.auth.urls')),  # Built-in auth fallback
+    path('api/accounts/', include('apps.users.urls.api_urls', namespace="api_users")),  # API auth (custom)
+    path('api-auth/', include('rest_framework.urls')),  # Browsable API auth
     # Local apps
     path('', include('apps.web.urls', namespace='web')),
     path('leagues/', include('apps.leagues.urls')),

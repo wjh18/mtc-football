@@ -1,0 +1,10 @@
+{% extends '_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Email Verification Sent" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Email Verification Sent" %}</h1>
+<p>{% blocktrans %}We have sent you an e-mail. Please contact us if you do not receive it within a few minutes.{% endblocktrans %}</p>
+<p><em>{% blocktrans %}Note: if your account is already active, you won't receive an email.{% endblocktrans %}</em></p>
+{% endblock %}

@@ -7,7 +7,7 @@
   <meta name="description" content="{% block description %}{{ site.settings.meta_description }}{% endblock description %}">
   {% include 'meta/open_graph.html' %}
   {% include 'meta/twitter_cards.html' %}
-  {% include 'meta/structured_data.html' %}
+  {% block structured_data %}{% endblock %}
   {% include 'meta/styles.html' %}
   {% include 'meta/favicons.html' %}
   {% if FA_KIT_ID %}
@@ -42,7 +42,7 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link {% if request.path == '/accounts/logout/' %}active{% endif %}" href="{% url 'account_logout' %}">Sign out</a>
+              <a class="nav-link {% if request.path == '/accounts/logout/' %}active{% endif %}" href="{% url 'users:logout' %}">Sign out</a>
             </li>
             {% endif %}
           </ul>
@@ -55,8 +55,8 @@
                 New League
               </a>
             {% else %}
-              <a href="{% url 'account_login' %}" class="btn btn-outline-light me-2" role="button">Login</a>
-              <a href="{% url 'account_signup' %}" class="btn btn-success" role="button">Sign-up</a>
+              <a href="{% url 'users:login' %}" class="btn btn-outline-light me-2" role="button">Login</a>
+              <a href="{% url 'users:signup' %}" class="btn btn-success" role="button">Sign-up</a>
             {% endif %}
           </div>
         </div>
@@ -98,8 +98,9 @@
             </button>
             <div class="collapse show" id="account-collapse">
               <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li><a href="{% url 'account_change_password' %}" class="link-dark d-inline-flex text-decoration-none rounded">Change Password</a></li>
-                <li><a href="{% url 'account_logout' %}" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
+                <li><a href="{% url 'users:profile' user.handle %}" class="link-dark d-inline-flex text-decoration-none rounded">Profile</a></li>
+                <li><a href="{% url 'users:password_change' %}" class="link-dark d-inline-flex text-decoration-none rounded">Change Password</a></li>
+                <li><a href="{% url 'users:logout' %}" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
               </ul>
             </div>
           </li>
