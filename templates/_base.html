@@ -7,7 +7,7 @@
   <meta name="description" content="{% block description %}{{ site.settings.meta_description }}{% endblock description %}">
   {% include 'meta/open_graph.html' %}
   {% include 'meta/twitter_cards.html' %}
-  {% include 'meta/structured_data.html' %}
+  {% block structured_data %}{% endblock %}
   {% include 'meta/styles.html' %}
   {% include 'meta/favicons.html' %}
   {% if FA_KIT_ID %}

@@ -1,6 +1,22 @@
 {% extends '_base.html' %}
 
 {% block title %}Home | {{ block.super }}{% endblock title %}
+{% block structured_data %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "{{ site.settings.server_root }}#/schema/website/1",
+        "url": "{{ site.settings.server_root }}",
+        "name": "{{ site.name }}",
+        "description": "{{ site.settings.meta_description }}",
+      }
+    ]
+  }
+</script>
+{% endblock %}
 
 {% block content %}
   <div class="d-flex flex-row justify-content-center">
