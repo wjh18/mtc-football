@@ -1,18 +1,22 @@
 {% extends '_base.html' %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}Login | {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Log In" %} | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="d-flex flex-row justify-content-center">
   <div class="col-8 col-lg-4">
-    <h1>Log In</h1>
+    <h2>{% trans "Log In" %}</h2>
     <form method="post" class="mt-3">
       {% csrf_token %}
       {{ form|crispy }}
-      <button class="btn btn-primary" type="submit">Log In</button>
-      <a href="{% url 'account_reset_password' %}" class="ms-3">Forgot Password?</a>
-    </form>      
+      <button class="btn btn-primary" type="submit">{% trans "Log In" %}</button>
+      <a href="{% url 'password_reset' %}" class="ms-3">{% trans "Forgot Password?" %}</a>
+      <p class="mt-3">
+        {% trans "Trouble logging in? Please ensure you've " %}<a href="{% url 'users:email_verify' %}">{% trans "verified your account" %}</a>.
+      </p>
+    </form>
   </div>
 </div>
 {% endblock content %}

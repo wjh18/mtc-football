@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Verify Your Email" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>{% if validlink %}{% trans "Verify Your Email" %}{% else %}{% trans "Bad Token" %}{% endif %}</h1>
+  {% if validlink %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button class="btn btn-primary" type="submit">{% trans 'Verify Your Email' %}</button>
+    </form>
+  {% else %}
+    {% url 'users:email_verify' as email_verify_url %}
+    <p>{% blocktrans %}The email verification link was invalid, possibly because it has already been used.
+      Please request a <a href="{{ email_verify_url }}">new verification email</a>.{% endblocktrans %}</p>
+  {% endif %}
+</div>
+{% endblock %}

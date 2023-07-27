@@ -1,0 +1,14 @@
+{% extends '_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Logged Out" %}{% endblock title %}
+
+{% block content %}
+<div class="d-flex flex-row">
+  <div>
+    <h1>{% trans "Logged Out" %}</h1>
+    <p>You've been logged out. Thanks for visiting.</p>
+    <a class="btn btn-primary" href="{% url 'users:login' %}">Log In Again</a>
+  <div>
+<div>
+{% endblock content %}

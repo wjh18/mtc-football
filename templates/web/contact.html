@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Contact | {{ site.name }}{% endblock title %}
 
@@ -8,7 +9,7 @@
   <p>Fill out the form below and we'll get back to you as soon as possible.</p>
   <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>

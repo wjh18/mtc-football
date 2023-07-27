@@ -1,0 +1,32 @@
+{% extends '_base.html' %}
+{% load i18n %}
+
+{% block title %}{{ profile_user }} | {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ profile_user }}</h1>
+  
+  <ul>
+    {% if profile_user.is_staff %}
+      <li><strong>{% trans "Staff member" %}</strong></li>
+    {% endif %}
+    {% if profile_user.is_superuser %}
+      <li><strong>{% trans "Superuser" %}</strong></li>
+    {% endif %}
+
+    {% if profile_user.is_active %}
+      <li><strong>{% trans "Account status:" %}</strong> {% trans "Active" %}</li>
+    {% else %}
+      <li><strong>{% trans "Account status:" %}</strong> {% trans "Inactive" %}</li>
+    {% endif %}
+
+    <li><strong>{% trans "Email:" %}</strong> {{ profile_user.email }}</li>
+    <li><strong>{% trans "Handle:" %}</strong> {{ profile_user }}</li>
+    <li><strong>{% trans "Last login:" %}</strong> {{ profile_user.last_login }}</li>
+    <li><strong>{% trans "Date joined:" %}</strong> {{ profile_user.date_joined }}</li>
+  </ul>
+
+  <a href="{% url 'users:update_handle' profile_user.handle %}" class="btn btn-primary">{% trans "Update handle" %}</a>
+</div>
+{% endblock content %}

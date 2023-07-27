@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hi {{ user.email }},
+
+You're receiving this email because you requested an account verification email for {{ site.name }}.
+
+Please click on the link below to confirm your registration and activate your account.
+
+{{ protocol }}://{{ site.domain }}{% url 'users:email_verify_confirm' uidb64=uid token=token %}
+{% endautoescape %}

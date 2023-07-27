@@ -1,0 +1,20 @@
+{% extends '_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Log Out" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-row">
+  <div>
+    <h1>{% trans "Log Out" %}</h1>
+    <p>{% trans "Are you sure you want to log out?" %}</p>
+    <form method="post" action="{% url 'users:logout' %}">
+      {% csrf_token %}      
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline-dark">{% trans "Go Back" %}</a>
+        <button class="btn btn-danger" type="submit">{% trans "Log Out" %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     # Custom
-    'apps.accounts.apps.AccountsConfig',
+    'apps.users.apps.UsersConfig',
     'apps.web.apps.WebConfig',
     'apps.core.apps.CoreConfig',
     'apps.leagues.apps.LeaguesConfig',
@@ -156,15 +156,15 @@ SITE_ID = 1
 
 ### Authentication
 
-AUTH_USER_MODEL = 'accounts.CustomUser'  # Custom User
+AUTH_USER_MODEL = 'users.CustomUser'  # Custom User
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend'  # default
 ]
 
-LOGIN_URL = 'accounts:login'
+LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'web:home'
-LOGOUT_REDIRECT_URL = 'accounts:logout_done'
+LOGOUT_REDIRECT_URL = 'users:logout_done'
 
 PASSWORD_RESET_TIMEOUT = 259200  # Default
 PASSWORD_HASHERS = [
