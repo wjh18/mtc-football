@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
 from .models import League
 
@@ -11,7 +11,10 @@ class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         if self.kwargs.get("league"):
-            league = League.objects.get(slug=self.kwargs["league"])
+            try:
+                league = League.objects.get(slug=self.kwargs["league"])
+            except ObjectDoesNotExist:
+                return False
             return self.request.user == league.user
         else:
             # Fallback for generic views where league kwarg is 'object'

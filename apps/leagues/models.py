@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -39,6 +40,14 @@ class League(models.Model):
 
     def get_absolute_url(self):
         return reverse("leagues:league_detail", args=[self.slug])
+
+    @property
+    def current_season(self):
+        try:
+            season = self.seasons.get(is_current=True)
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            season = None
+        return season
 
 
 class Conference(models.Model):

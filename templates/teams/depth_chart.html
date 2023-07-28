@@ -75,7 +75,7 @@
     <tbody>
     {% for player in players %}
       <tr>
-        <th scope="row"><a href="{% url 'personnel:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+        <th scope="row"><a href="{{ player.get_absolute_url }}">{{ player.first_name }} {{ player.last_name }}</a></th>
         <td>{{ player.age }}</td>
         <td>{{ player.experience }}</td>
         <td>{{ player.position }}</td>

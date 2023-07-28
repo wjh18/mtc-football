@@ -8,7 +8,13 @@
         <div class="me-3">
           <a class="navbar-brand fs-4" href="{{ league.get_absolute_url}}">{{ league }}</a>
           <div class="text-light text-opacity-50">
+            {% with league.current_season as season %}
+            {% if season is not None %}
             Season {{ season.season_number }} &middot; Week {{ season.week_number }} &middot; {{ season.get_phase_display }}
+            {% else %}
+            Offseason
+            {% endif %}
+            {% endwith %}
           </div>
         </div>
         {% include 'seasons/forms/advance_season_form.html' %}

@@ -1,9 +1,15 @@
 from django.apps import apps
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import ContextMixin
-from django.views.generic.detail import SingleObjectMixin
 
 from .models import League
 from .permissions import LeagueOwnerMixin
+
+
+class LeagueOwnerRequiredMixin(LoginRequiredMixin):
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        return queryset.filter(user=self.request.user)
 
 
 class LeagueContextMixin(ContextMixin):
@@ -32,20 +38,7 @@ class LeagueContextMixin(ContextMixin):
         return context
 
 
-class LeagueObjectMixin(SingleObjectMixin):
-    def get_object(self, queryset=None):
-        return League.objects.get(slug=self.kwargs.get("league"))
-
-
 class LeagueOwnerContextMixin(LeagueOwnerMixin, LeagueContextMixin):
     """Combines 2 mixins commonly used together into 1 class."""
-
-    pass
-
-
-class LeagueOwnerContextObjectMixin(
-    LeagueOwnerMixin, LeagueContextMixin, LeagueObjectMixin
-):
-    """Combines 3 mixins commonly used together into 1 class."""
 
     pass

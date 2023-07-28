@@ -45,10 +45,6 @@ class Team(models.Model):
         self.save()
 
     @property
-    def current_season(self):
-        return self.league.seasons.get(is_current=True)
-
-    @property
     def bye_week(self):
         """Find a team's bye week"""
         season = self.current_season

@@ -4,11 +4,11 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .mixins import LeagueOwnerContextObjectMixin
+from .mixins import LeagueOwnerRequiredMixin
 from .models import League
 
 
-class LeagueListView(LoginRequiredMixin, ListView):
+class LeagueListView(LeagueOwnerRequiredMixin, ListView):
     """
     List the logged-in user's active leagues.
     """
@@ -17,11 +17,8 @@ class LeagueListView(LoginRequiredMixin, ListView):
     context_object_name = "leagues"
     template_name = "leagues/league_list.html"
 
-    def get_queryset(self):
-        return League.objects.filter(user=self.request.user)
 
-
-class LeagueDetailView(LeagueOwnerContextObjectMixin, DetailView):
+class LeagueDetailView(LeagueOwnerRequiredMixin, DetailView):
     """
     View an individual league's details.
     """
@@ -29,6 +26,14 @@ class LeagueDetailView(LeagueOwnerContextObjectMixin, DetailView):
     model = League
     context_object_name = "league"
     template_name = "leagues/league_detail.html"
+    slug_field = "slug"
+    slug_url_kwarg = "league"
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     league = self.get_object()
+    #     context["season"] = league.seasons.get(is_current=True)
+    #     return context
 
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
@@ -51,7 +56,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("teams:team_list", args=[self.object.slug])
 
 
-class LeagueUpdateView(LeagueOwnerContextObjectMixin, UpdateView):
+class LeagueUpdateView(LeagueOwnerRequiredMixin, UpdateView):
     """
     Update an individual league's details.
     """
@@ -68,7 +73,7 @@ class LeagueUpdateView(LeagueOwnerContextObjectMixin, UpdateView):
         return super().form_valid(form)
 
 
-class LeagueDeleteView(LeagueOwnerContextObjectMixin, DeleteView):
+class LeagueDeleteView(LeagueOwnerRequiredMixin, DeleteView):
     """
     Delete an individual league.
     """
