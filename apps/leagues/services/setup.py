@@ -18,11 +18,11 @@ def create_league_structure(league):
 
     # Create conferences and divisions
     conf_objs = Conference.objects.bulk_create(
-        [Conference(league=league, name=conf_name) for conf_name in CONFERENCE_NAMES]
+        [Conference(name=conf_name, league=league) for conf_name in CONFERENCE_NAMES]
     )
     Division.objects.bulk_create(
         [
-            Division(conference=conf, name=f"{conf.name} {cardinal}")
+            Division(name=cardinal, conference=conf)
             for cardinal in DIVISION_CARDINALS
             for conf in conf_objs
         ]

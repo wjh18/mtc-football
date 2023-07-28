@@ -77,4 +77,4 @@ class Division(models.Model):
         return self.conference.league
 
     def __str__(self):
-        return self.name
+        return f"{self.conference.name} {self.name}"

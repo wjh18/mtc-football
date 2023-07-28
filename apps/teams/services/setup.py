@@ -11,7 +11,7 @@ from apps.personnel.services.setup import (
 from ..models import Team
 
 
-def read_team_info_from_csv():
+def read_team_info_from_csv(league, confs, divs):
     """
     Read locations, names, and abbr of teams from CSV.
     Return a dict w/ abbrs as keys and remaining data as values.
@@ -26,11 +26,13 @@ def read_team_info_from_csv():
         for row in team_reader:
             loc, name, abbr, conf, div = row[1:6]
             team_dict = {
-                "loc": loc,
+                "location": loc,
                 "name": name,
-                "abbr": abbr,
-                "conf": conf,
-                "div": f"{conf} {div}",
+                "abbreviation": abbr,
+                "slug": abbr,
+                "conference": confs.get(name=conf),
+                "division": divs.get(name=div, conference__name=conf),
+                "league": league,
             }
             team_dicts.append(team_dict)
 
@@ -42,35 +44,14 @@ def create_teams(league):
     Create 32 teams in the correct confs and divs
     Called from create_league_structure() in apps.leagues.services.setup
     """
-    team_dicts = read_team_info_from_csv()
 
     confs = league.conferences.all()
     Division = apps.get_model("leagues.Division")
     divs = Division.objects.filter(conference__in=confs)
-
-    def update_team_dict_with_entity(entities, entity_name):
-        """Replace conf and div names with their objects"""
-        for entity in entities:
-            if entity.name == team_dict[entity_name]:
-                team_dict[entity_name] = entity
-
-    for team_dict in team_dicts:
-        update_team_dict_with_entity(confs, "conf")
-        update_team_dict_with_entity(divs, "div")
+    team_dicts = read_team_info_from_csv(league, confs, divs)
 
     team_objs = Team.objects.bulk_create(
-        [
-            Team(
-                location=team_dict["loc"],
-                name=team_dict["name"],
-                abbreviation=team_dict["abbr"],
-                slug=team_dict["abbr"],
-                conference=team_dict["conf"],
-                division=team_dict["div"],
-                league=league,
-            )
-            for team_dict in team_dicts
-        ]
+        [Team(**team_dict) for team_dict in team_dicts]
     )
     player_names = read_player_names_from_csv()
     for team in team_objs:
