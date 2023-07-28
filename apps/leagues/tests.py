@@ -8,8 +8,7 @@ from .models import League
 class LeagueViewTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            email="leagueuser@example.com",
-            password="testpass123",
+            email="leagueuser@example.com", password="testpass123", is_active=True
         )
         self.league = League(
             name="Test League",
