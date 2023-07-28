@@ -8,7 +8,7 @@ leagues_patterns = ([
     path('<slug:slug>/',
          views.LeagueDetailView.as_view(), name='league_detail'),
     path('<slug:slug>/edit/',
-         views.LeagueUpdateView.as_view(), name='league_edit'),
+         views.LeagueUpdateView.as_view(), name='league_update'),
     path('<slug:slug>/delete/',
          views.LeagueDeleteView.as_view(), name='league_delete'),
 ], 'leagues')

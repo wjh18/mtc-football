@@ -18,7 +18,7 @@
       <strong>Created:</strong> {{ league.creation_date }}
     </p>
     <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'leagues:league_edit' league.slug %}" class="btn btn-primary" role="button">
+      <a href="{% url 'leagues:league_update' league.slug %}" class="btn btn-primary" role="button">
         Edit Info
       </a>
       <a href="{% url 'leagues:league_delete' league.slug %}" class="btn btn-danger" role="button">
