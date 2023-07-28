@@ -4,14 +4,14 @@ from django.db.models import Q
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
-from apps.leagues.mixins import LeagueOwnerContextMixin
+from apps.leagues.mixins import IsLeagueOwner, LeagueContextMixin
 
 from .forms import TeamSelectForm
-from .mixins import TeamsContextMixin
+from .mixins import LeagueTeamsMixin
 from .models import Team, UserTeam
 
 
-class TeamSelectFormView(LeagueOwnerContextMixin, FormView):
+class TeamSelectFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     """
     Create the league's user-controlled team based on the
     league owner's team selection submitted in the form.
@@ -48,18 +48,15 @@ class TeamSelectFormView(LeagueOwnerContextMixin, FormView):
         return self.request.META.get("HTTP_REFERER", "/")
 
 
-class TeamListView(LeagueOwnerContextMixin, ListView):
+class TeamListView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, ListView):
     """
     List the teams belonging to the active league and provide context
     indicating whether the user's team has been selected.
     """
 
     model = Team
-    context_object_name = "team_list"
+    context_object_name = "teams"
     template_name = "teams/team_list.html"
-
-    def get_queryset(self):
-        return Team.objects.filter(league__slug=self.kwargs["league"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,7 +67,7 @@ class TeamListView(LeagueOwnerContextMixin, ListView):
         return context
 
 
-class TeamDetailView(LeagueOwnerContextMixin, TeamsContextMixin, DetailView):
+class TeamDetailView(IsLeagueOwner, LeagueContextMixin, DetailView):
     """
     View additional details about an individual team.
     """
@@ -79,12 +76,8 @@ class TeamDetailView(LeagueOwnerContextMixin, TeamsContextMixin, DetailView):
     context_object_name = "team"
     template_name = "teams/team_detail.html"
 
-    def get_queryset(self):
-        league_slug = self.kwargs["league"]
-        return Team.objects.filter(league__slug=league_slug)
 
-
-class TeamRosterView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
+class TeamRosterView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, DetailView):
     """
     View an individual team's roster and player attributes,
     sorted by overall rating.
@@ -96,9 +89,8 @@ class TeamRosterView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        team = context["team"]
 
-        contracts = team.contracts.all()
+        contracts = self.object.contracts.all()
         player_ids = contracts.values("player_id")
         Player = apps.get_model("personnel.Player")
         context["players"] = Player.objects.filter(id__in=player_ids).order_by(
@@ -108,7 +100,7 @@ class TeamRosterView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
         return context
 
 
-class DepthChartView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
+class DepthChartView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, DetailView):
     """
     View an individual team's depth chart by position.
     """
@@ -122,8 +114,7 @@ class DepthChartView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
 
         Player = apps.get_model("personnel.Player")
 
-        team = context["team"]
-        contracts = team.contracts.all()
+        contracts = self.object.contracts.all()
         player_ids = contracts.values("player_id")
         players = Player.objects.filter(id__in=player_ids)
 
@@ -142,7 +133,7 @@ class DepthChartView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
         return context
 
 
-class TeamScheduleView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
+class TeamScheduleView(IsLeagueOwner, LeagueContextMixin, ListView):
     """
     View the schedule of matchups for an individual team's current season.
     """
@@ -168,7 +159,15 @@ class TeamScheduleView(LeagueOwnerContextMixin, TeamsContextMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        team = context["team"]
+        Team = apps.get_model("teams.Team")
+        league = context["league"]
+
+        team_slug = self.kwargs.get("team")
+        if team_slug is not None:
+            team = Team.objects.get(league=league, slug=team_slug)
+
+        context["team"] = team
         context["bye_week"] = team.bye_week
+        context["teams"] = Team.objects.filter(league=league)
 
         return context

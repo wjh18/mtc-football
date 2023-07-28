@@ -4,14 +4,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import FormView, ListView
 
-from apps.leagues.mixins import LeagueOwnerContextMixin
+from apps.leagues.mixins import IsLeagueOwner, LeagueContextMixin
 
 from .forms import AdvanceSeasonForm
 from .models import Season, TeamStanding
 from .services.season import advance_season_by_weeks
 
 
-class LeagueStandingsView(LeagueOwnerContextMixin, ListView):
+class LeagueStandingsView(IsLeagueOwner, LeagueContextMixin, ListView):
     """
     View team standings by division, conference, or league-wide.
     """
@@ -60,7 +60,7 @@ class LeagueStandingsView(LeagueOwnerContextMixin, ListView):
         return context
 
 
-class AdvanceSeasonFormView(LeagueOwnerContextMixin, FormView):
+class AdvanceSeasonFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     """
     Advance the regular season, playoffs or to the next season
     based on the number of weeks submitted in the form.

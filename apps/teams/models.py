@@ -47,7 +47,7 @@ class Team(models.Model):
     @property
     def bye_week(self):
         """Find a team's bye week"""
-        season = self.current_season
+        season = self.league.current_season
 
         home_matchup_weeks = self.home_matchups.filter(
             season=season, week_number__lte=18
@@ -65,7 +65,7 @@ class Team(models.Model):
     @property
     def current_record(self):
         """Get a team's current W/L/T record"""
-        season = self.current_season
+        season = self.league.current_season
         standing = self.team_standings.get(season=season)
         return f"({standing.wins}-{standing.losses}-{standing.ties})"
 
