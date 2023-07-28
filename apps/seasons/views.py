@@ -4,7 +4,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import FormView, ListView
 
-from apps.leagues.mixins import IsLeagueOwner, LeagueContextMixin
+from apps.leagues.mixins import LeagueContextMixin
+from apps.leagues.permissions import IsLeagueOwner
 
 from .forms import AdvanceSeasonForm
 from .models import Season, TeamStanding

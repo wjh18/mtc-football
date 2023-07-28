@@ -4,7 +4,8 @@ from django.db.models import Q
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
-from apps.leagues.mixins import IsLeagueOwner, LeagueContextMixin
+from apps.leagues.mixins import LeagueContextMixin
+from apps.leagues.permissions import IsLeagueOwner
 
 from .forms import TeamSelectForm
 from .mixins import LeagueTeamsMixin

@@ -2,7 +2,8 @@ from django.apps import apps
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 
-from apps.leagues.mixins import IsLeagueOwner, LeagueContextMixin
+from apps.leagues.mixins import LeagueContextMixin
+from apps.leagues.permissions import IsLeagueOwner
 
 from .models import Matchup
 
