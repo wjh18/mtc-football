@@ -26,14 +26,6 @@ class LeagueDetailView(LeagueOwnerRequiredMixin, DetailView):
     model = League
     context_object_name = "league"
     template_name = "leagues/league_detail.html"
-    slug_field = "slug"
-    slug_url_kwarg = "league"
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     league = self.get_object()
-    #     context["season"] = league.seasons.get(is_current=True)
-    #     return context
 
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
@@ -68,7 +60,6 @@ class LeagueUpdateView(LeagueOwnerRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         """Overriden to add success message"""
-        form.instance.user = self.request.user
         messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
