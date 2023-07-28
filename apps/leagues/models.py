@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
@@ -12,7 +12,7 @@ from .services.setup import create_league_structure
 
 class League(models.Model):
     user = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="leagues"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="leagues"
     )
     name = models.CharField(max_length=50)
     gm_name = models.CharField(max_length=50)
