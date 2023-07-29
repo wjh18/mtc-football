@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 import random
 from datetime import date
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from apps.teams.models import Team
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from .exceptions import MatchFinalizedError, MatchInProgressError
 from .managers import MatchupManager, MatchupQuerySet
 
 
@@ -83,14 +90,40 @@ class Matchup(models.Model):
 
         return {"Home": self.home_score, "Away": self.away_score}
 
-    def get_winner(self):
-        """Determine match winner based on final score"""
-        if self.home_score > self.away_score:
-            return self.home_team
-        elif self.away_score > self.home_score:
-            return self.away_team
-        else:
-            return "Tie"
+    def get_leading_team(self) -> Team | None:
+        """
+        Determine the match leader based on current score. Calling on a match
+        that's already complete results in an exception.
+
+        Returns:
+            The leading team or None if the match is currently tied.
+        """
+        if not self.is_final:
+            return self._get_leading_or_winning_team()
+        raise MatchFinalizedError(
+            "Unable to determine leading team. Match has been finalized."
+        )
+
+    def get_winning_team(self) -> Team | None:
+        """
+        Determine the match winner based on final score. Calling on a match
+        that's still in progress results in an exception.
+
+        Returns:
+            The winning team or None if the match resulted in a tie.
+        """
+        if self.is_final:
+            return self._get_leading_or_winning_team()
+        raise MatchInProgressError(
+            "Unable to determine winning team. Match still in progress."
+        )
+
+    def _get_leading_or_winning_team(self) -> Team | None:
+        home_score, away_score = self.home_score, self.away_score
+        home_team, away_team = self.home_team, self.away_team
+
+        if home_score != away_score:
+            return home_team if home_score > away_score else away_team
 
 
 class PlayerMatchStat(models.Model):

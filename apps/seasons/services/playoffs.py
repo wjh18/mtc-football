@@ -249,7 +249,7 @@ def sim_round_matchups(season, round_type):
         matchup = Matchup.objects.get(season=season, week_number=current_week)
 
         matchup.get_score()
-        winner = matchup.get_winner()
+        winner = matchup.get_winning_team()
 
         update_playoff_rankings(season, round_type, winner)
 
@@ -262,7 +262,7 @@ def sim_round_matchups(season, round_type):
         winners = []
         for matchup in matchups:
             matchup.get_score()
-            winner = matchup.get_winner()
+            winner = matchup.get_winning_team()
             winners.append(winner)
 
             update_playoff_rankings(season, round_type, winner)

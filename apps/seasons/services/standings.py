@@ -7,13 +7,13 @@ def update_standings(season, matchups):
     """
     for matchup in matchups:
         scores = matchup.get_score()
-        result = matchup.get_winner()
+        result = matchup.get_winning_team()
 
         for team in (matchup.home_team, matchup.away_team):
             standing = TeamStanding.objects.get(team=team, season=season)
 
             # Update results and streaks
-            if result == "Tie":
+            if result is None:
                 standing.ties += 1
                 if not standing.streak == 0:
                     standing.streak = 0

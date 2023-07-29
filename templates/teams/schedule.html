@@ -41,7 +41,7 @@
     <h2 class="fs-4">
       <a href="{{ matchup.get_absolute_url }}" class="text-decoration-none">Week {{ matchup.week_number }}</a>
     </h2>
-    <span class="{% if matchup.get_winner == matchup.away_team %}
+    <span class="{% if matchup.get_winning_team == matchup.away_team %}
                   text-success
                   {% else %}
                   text-danger
@@ -54,7 +54,7 @@
     {% if matchup.week_number < season.week_number %}
       - <span class="fw-bold">{{ matchup.away_score }}</span>
     {% endif %} @
-    <span class="{% if matchup.get_winner == matchup.home_team %}
+    <span class="{% if matchup.get_winning_team == matchup.home_team %}
                     text-success
                   {% else %}
                     text-danger
