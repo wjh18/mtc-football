@@ -248,6 +248,7 @@ def sim_round_matchups(season, round_type):
     if round_type == "SHP":
         matchup = Matchup.objects.get(season=season, week_number=current_week)
 
+        matchup.simulate()
         matchup.get_score()
         winner = matchup.get_winning_team()
 
@@ -261,6 +262,7 @@ def sim_round_matchups(season, round_type):
 
         winners = []
         for matchup in matchups:
+            matchup.simulate()
             matchup.get_score()
             winner = matchup.get_winning_team()
             winners.append(winner)

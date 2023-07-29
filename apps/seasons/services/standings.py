@@ -6,6 +6,7 @@ def update_standings(season, matchups):
     Generate scores and results for the current week, update standings.
     """
     for matchup in matchups:
+        matchup.simulate()
         scores = matchup.get_score()
         result = matchup.get_winning_team()
 
