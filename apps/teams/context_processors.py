@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 
 def user_team(request):
@@ -18,5 +18,5 @@ def user_team(request):
         return {
             "active_user_team": active_user_team,
         }
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, MultipleObjectsReturned):
         return {}

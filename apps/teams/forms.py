@@ -1,12 +1,13 @@
 from django import forms
+from django.db.models import Q
 
 from .models import Team
 
 
 class TeamSelectForm(forms.Form):
     """
-    Form for selecting the user-controlled team
-    from a list of the current league's teams.
+    Form for selecting the user-controlled team in a league.
+
     Bound form processed in TeamSelectFormView.
     Unbound form initialized in TeamListView context.
     """
@@ -16,16 +17,17 @@ class TeamSelectForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        # pop() prevents __init__ from having too many args
-        if kwargs.get("form_kwargs"):
-            # Unbound form in TeamListView - object in 'form_kwargs'
-            form_kwargs = kwargs.pop("form_kwargs")
+        form_kwargs = kwargs.pop("form_kwargs", None)
+        if form_kwargs is not None:
+            # Unbound form in TeamListView - league object from form_kwargs
             league = form_kwargs["league"]
-            team = Team.objects.filter(league=league)
+            query = Q(league=league)
         else:
-            # Bound form in TeamSelectFormView - slug in 'league' kwargs
+            # Bound form in TeamSelectFormView - league slug from URL kwargs
             league = kwargs.pop("league")
-            team = Team.objects.filter(league__slug=league)
+            query = Q(league__slug=league)
+
+        team = Team.objects.filter(query)
 
         super().__init__(*args, **kwargs)
 
