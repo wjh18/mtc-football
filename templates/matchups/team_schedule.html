@@ -28,7 +28,7 @@
       </button>
       <ul class="dropdown-menu" aria-labelledby="filter-by-team">
         {% for new_team in teams%}
-          <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'teams:team_schedule' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
+          <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'matchups:team_schedule' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
         {% endfor %}
       </ul>
     </div>

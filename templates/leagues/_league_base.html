@@ -81,7 +81,7 @@
           <li><a href="{{ active_user_team.team.get_absolute_url }}" class="link-dark d-inline-flex text-decoration-none rounded">Details</a></li>
           <li><a href="{% url 'teams:team_roster' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Roster</a></li>
           <li><a href="{% url 'teams:depth_chart' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Depth Chart</a></li>
-          <li><a href="{% url 'teams:team_schedule' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
+          <li><a href="{% url 'matchups:team_schedule' league.slug active_user_team.team.slug %}" class="link-dark d-inline-flex text-decoration-none rounded">Schedule</a></li>
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Trade Block</a></li>                      
           <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Finances</a></li>
         </ul>

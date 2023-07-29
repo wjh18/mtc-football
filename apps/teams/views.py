@@ -1,6 +1,5 @@
 from django.apps import apps
 from django.contrib import messages
-from django.db.models import Q
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
@@ -130,45 +129,5 @@ class DepthChartView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, Detail
         context["players"] = players.filter(position=position).order_by(
             "-overall_rating"
         )
-
-        return context
-
-
-class TeamScheduleView(IsLeagueOwner, LeagueContextMixin, ListView):
-    """
-    View the schedule of matchups for an individual team's current season.
-    """
-
-    model = apps.get_model("matchups.Matchup")
-    context_object_name = "matchups"
-    template_name = "teams/schedule.html"
-
-    def get_queryset(self):
-        League = apps.get_model("leagues.League")
-        Matchup = apps.get_model("matchups.Matchup")
-        Season = apps.get_model("seasons.Season")
-
-        league = League.objects.get(slug=self.kwargs["league"])
-        team = Team.objects.get(league=league, slug=self.kwargs["team"])
-        season = Season.objects.get(league=league, is_current=True)
-        matchups = Matchup.objects.filter(
-            Q(home_team=team) | Q(away_team=team), season=season
-        ).order_by("week_number")
-
-        return matchups
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        Team = apps.get_model("teams.Team")
-        league = context["league"]
-
-        team_slug = self.kwargs.get("team")
-        if team_slug is not None:
-            team = Team.objects.get(league=league, slug=team_slug)
-
-        context["team"] = team
-        context["bye_week"] = team.bye_week
-        context["teams"] = Team.objects.filter(league=league)
 
         return context

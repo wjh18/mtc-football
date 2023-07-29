@@ -16,6 +16,4 @@ urlpatterns = [
          views.DepthChartView.as_view(), name='depth_chart'),
     path('<slug:league>/teams/<slug:slug>/depth-chart/<str:position>/',
          views.DepthChartView.as_view(), name='depth_chart_pos'),
-    path('<slug:league>/teams/<slug:team>/schedule/',
-         views.TeamScheduleView.as_view(), name='team_schedule'),
 ]
