@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.db.models import F, Q
+from django.http import Http404
 from django.utils.functional import cached_property
 
 from apps.matchups.models import Matchup
@@ -54,6 +55,20 @@ class Season(models.Model):
 
         teams_with_bye = self.league.teams.exclude(id__in=team_ids)
         return teams_with_bye
+
+    def week_number_from_kwargs(self, week_kw: int) -> int:
+        """Return week number based on kwargs passed from view"""
+        if self.week_number >= 23 and week_kw is None:
+            # Playoffs over, default to showing championship round
+            week_number = self.week_number - 1
+        elif week_kw and (week_kw not in range(1, 23) or week_kw == 0):
+            raise Http404("Invalid week number supplied")
+        elif week_kw is None:
+            week_number = self.week_number  # Default to current week
+        else:
+            week_number = week_kw  # Default to chosen week
+
+        return week_number
 
 
 class TeamStanding(models.Model):
