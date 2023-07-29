@@ -29,7 +29,7 @@ class WeeklyMatchupsView(IsLeagueOwner, LeagueContextMixin, ListView):
         season = super().get_context_data(object_list=queryset)["season"]
         week_kw = self.kwargs.get("week_num")
         week_number = season.week_number_from_kwargs(week_kw)
-        return queryset.with_extras().filter(season=season, week_number=week_number)
+        return queryset.with_cases().filter(season=season, week_number=week_number)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,7 +60,7 @@ class MatchupDetailView(IsLeagueOwner, LeagueContextMixin, DetailView):
         queryset = super().get_queryset()
         league_slug = self.kwargs.get("league")
         if league_slug is not None:
-            return queryset.with_extras().filter(season__league__slug=league_slug)
+            return queryset.with_cases().filter(season__league__slug=league_slug)
         return queryset
 
 
@@ -77,7 +77,7 @@ class PlayoffsView(IsLeagueOwner, LeagueContextMixin, ListView):
         queryset = super().get_queryset()
         season = super().get_context_data(object_list=queryset)["season"]
         return (
-            queryset.with_extras()
+            queryset.with_cases()
             .filter(season=season, week_number__gte=19)
             .order_by("week_number")
         )
