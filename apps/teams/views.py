@@ -103,9 +103,10 @@ class TeamRosterView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, Detail
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        Player = apps.get_model("personnel.Player")
+
         contracts = self.object.contracts.all()
         player_ids = contracts.values("player_id")
-        Player = apps.get_model("personnel.Player")
         context["players"] = Player.objects.filter(id__in=player_ids).order_by(
             "-overall_rating"
         )

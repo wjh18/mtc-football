@@ -41,7 +41,7 @@ def is_div_matchup_case():
     """
     return Case(
         When(
-            query=Q(home_team__division=F("away_team__division")),
+            Q(home_team__division=F("away_team__division")),
             then=True,
         ),
         default=False,
