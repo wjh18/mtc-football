@@ -1,0 +1,104 @@
+{% extends 'leagues/_league_base.html' %}
+
+{% block title %}Standings | Week {{ season.week_number }} - {{ season }}{% endblock title %}
+
+{% block content %}
+
+{% include 'seasons/includes/standings_nav.html' %}
+
+<ul>
+  <li>Division rankings are determined by W/L/T, PF and PA in that order.</li>
+  <li>Z = First round bye &middot; Y = Clinched division &middot; X = Clinched playoff berth &middot; O = Missed playoffs</li>
+</ul>
+
+<div class="mt-5">
+
+  {% regroup standings by team_division as standings_by_division %}
+
+  {% for team_division in standings_by_division %}
+
+    {% ifchanged team_division.grouper.conference %}
+      <h2 class="mt-5">{{ team_division.grouper.conference }}</h2>
+      <hr>
+    {% endifchanged %}
+
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-bordered table-fixed text-nowrap caption-top w-auto">
+        <caption>{{ team_division.grouper }}</caption>
+        <colgroup>
+          <col span="2">
+          <col span="5" class="col-wlt">
+          <col span="3">
+          <col span="2" class="col-ha">
+          <col span="3">
+          <col span="2" class="col-recent">
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Team</th>
+            <th scope="col">W</th>
+            <th scope="col">L</th>
+            <th scope="col">T</th>                
+            <th scope="col">W%</th>
+            <th scope="col">GP</th>
+            <th scope="col">PF</th>
+            <th scope="col">PA</th>
+            <th scope="col">+/-</th>
+            <th scope="col">Home</th>
+            <th scope="col">Away</th>
+            <th scope="col">Div</th>
+            <th scope="col">Conf</th>
+            <th scope="col">Non-Conf</th>
+            <th scope="col">Streak</th>
+            <th scope="col">Last 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for standing in team_division.list %}
+            <tr {% if active_user_team.team == standing.team %}class="table-active bg-warning bg-opacity-25"{% endif %}>
+              <th scope="row">{{ standing.division_ranking }}</th>
+              <td>
+                <a class="standing-team" href="{{ standing.team.get_absolute_url }}">{{ standing.team.location }} {{ standing.team.name }}</a>
+                {% if standing.clinched == "BYE" %}
+                  <span class="clinches">
+                    Z
+                  </span>
+                {% elif standing.clinched == "DIV" %}
+                  <span class="clinches">
+                    Y
+                  </span>
+                {% elif standing.clinched == "BTH" %}
+                  <span class="clinches">
+                    X
+                  </span>
+                {% elif standing.clinched == "OUT" %}
+                  <span class="clinches no-clinch">
+                    O
+                  </span>
+                {% else %}
+                {% endif %}
+              </td>
+              <td>{{ standing.wins }}</td>
+              <td>{{ standing.losses }}</td>
+              <td>{{ standing.ties }}</td>              
+              <td>{{ standing.win_pct|floatformat:3 }}</td>
+              <td>{{ standing.games_played }}</td>
+              <td>{{ standing.points_for }}</td>
+              <td>{{ standing.points_against }}</td>
+              <td>{{ standing.pt_diff }}</td>
+              <td>{{ standing.home_wins }}-{{ standing.home_losses }}-{{ standing.home_ties }}</td>
+              <td>{{ standing.away_wins }}-{{ standing.away_losses }}-{{ standing.away_ties }}</td>
+              <td>{{ standing.div_wins }}-{{ standing.div_losses }}-{{ standing.div_ties }}</td>
+              <td>{{ standing.conf_wins }}-{{ standing.conf_losses }}-{{ standing.conf_ties }}</td>
+              <td>{{ standing.non_conf_wins }}-{{ standing.non_conf_losses }}-{{ standing.non_conf_ties }}</td>
+              <td class="streak-value">{{ standing.streak }}</td>
+              <td>{{ standing.last_5_wins }}-{{ standing.last_5_losses }}-{{ standing.last_5_ties }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
+</div>
+{% endblock content %}

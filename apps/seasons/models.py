@@ -6,7 +6,7 @@ from django.http import Http404
 from django.utils.functional import cached_property
 
 from apps.matchups.models import Matchup
-from apps.seasons.managers import TeamStandingManager
+from apps.seasons.managers import TeamStandingManager, TeamStandingQuerySet
 
 from .services.setup import create_season_details
 
@@ -109,7 +109,7 @@ class TeamStanding(models.Model):
     round_won = models.CharField(
         max_length=3, choices=PLAYOFF_ROUND_WINS, blank=True, null=True
     )
-    objects = TeamStandingManager()
+    objects = TeamStandingManager.from_queryset(TeamStandingQuerySet)()
 
     class Meta:
         constraints = [
@@ -124,6 +124,14 @@ class TeamStanding(models.Model):
     @cached_property
     def league(self):
         return self.season.league
+
+    @cached_property
+    def team_division(self):
+        return self.team.division
+
+    @cached_property
+    def team_conference(self):
+        return self.team.conference
 
     @property
     def home_wins(self):
