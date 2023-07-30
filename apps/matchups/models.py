@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 import random
 from datetime import date
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from apps.teams.models import Team
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from .exceptions import MatchFinalizedError, MatchInProgressError
 from .managers import MatchupManager, MatchupQuerySet
 
 
@@ -64,33 +71,104 @@ class Matchup(models.Model):
     def is_conference(self) -> bool:
         return self.home_team.conference == self.away_team.conference
 
+    def simulate(self):
+        """
+        Simulate the match based on random dice rolls.
+
+        This will be updated in the future to add in additional complexity
+        by taking into account team/player strength and scenario-based results.
+        """
+        if self.is_final:
+            raise MatchFinalizedError(
+                "Unable to simulate match. Match has been finalized."
+            )
+        scoreline = self._generate_score()
+        valid_score = self._check_impossible_scoreline(scoreline)
+        if scoreline != valid_score:
+            self.home_score, self.away_score = valid_score
+
+        # If postseason and a tie, break it with a tiebreaker roll
+        if self.is_postseason and self.home_score == self.away_score:
+            self._tiebreaker()
+
+        self.is_final = True
+        self.save()
+
+    def _generate_score(self) -> tuple:
+        min_score, max_score = 0, 50
+        self.home_score = random.randint(min_score, max_score)
+        self.away_score = random.randint(min_score, max_score)
+        scoreline = (self.home_score, self.away_score)
+        return scoreline
+
+    def _check_impossible_scoreline(self, scoreline: tuple) -> tuple:
+        """
+        Checks whether the generated scoreline is impossible or not
+        and if so, generates a new one.
+
+        Impossible scorelines in American football:
+        1-0, 1-1, 2-1, 3-1, 4-1, 5-1, 7-1 (and their inverses)
+        6-1 is possible with 1-point safety after an opposing TD (very rare)
+        """
+        score_1_to_1 = scoreline[0] == 1 and scoreline[1] == 1
+        score_1_to_any = 1 in scoreline and any(
+            score in scoreline for score in (0, 2, 3, 4, 5, 7)
+        )
+        impossible_score = score_1_to_1 or score_1_to_any
+
+        if impossible_score:
+            # Impossible scoreline based on rules; generate again
+            scoreline = self._generate_score()
+
+        return scoreline
+
+    def _tiebreaker(self):
+        """Tiebreaker for playoff matches that end in a tie."""
+        tiebreak_winner = random.choice((self.home_score, self.away_score))
+        add_score = random.choice((3, 7))  # Field goal or TD
+        if tiebreak_winner == self.home_score:
+            self.home_score += add_score
+            return
+        self.away_score += add_score
+
     def get_score(self):
-        """Obtain match score based on random dice rolls"""
-        if not self.is_final:
-            self.home_score = random.randint(0, 50)
-            self.away_score = random.randint(0, 50)
-
-            # If postseason and a tie, break it with an "overtime" roll
-            if self.is_postseason and self.home_score == self.away_score:
-                overtime_pts = random.choice([self.home_score, self.away_score])
-                if overtime_pts == self.home_score:
-                    self.home_score += random.randint(3, 7)
-                else:
-                    self.away_score += random.randint(3, 7)
-
-            self.is_final = True
-            self.save()
-
+        """Return the current match score, final or not."""
         return {"Home": self.home_score, "Away": self.away_score}
 
-    def get_winner(self):
-        """Determine match winner based on final score"""
-        if self.home_score > self.away_score:
-            return self.home_team
-        elif self.away_score > self.home_score:
-            return self.away_team
-        else:
-            return "Tie"
+    def get_leading_team(self) -> Team | None:
+        """
+        Determine the match leader based on current score. Calling on a match
+        that's already complete results in an exception.
+
+        Returns:
+            The leading team or None if the match is currently tied.
+        """
+        if not self.is_final:
+            return self._get_leading_or_winning_team()
+        raise MatchFinalizedError(
+            "Unable to determine leading team. Match has been finalized."
+        )
+
+    def get_winning_team(self) -> Team | None:
+        """
+        Determine the match winner based on final score. Calling on a match
+        that's still in progress results in an exception.
+
+        Returns:
+            The winning team or None if the match resulted in a tie.
+        """
+        if self.is_final:
+            return self._get_leading_or_winning_team()
+        raise MatchInProgressError(
+            "Unable to determine winning team. Match still in progress."
+        )
+
+    def _get_leading_or_winning_team(self) -> Team | None:
+        home_score, away_score = self.home_score, self.away_score
+        home_team, away_team = self.home_team, self.away_team
+
+        if home_score != away_score:
+            return home_team if home_score > away_score else away_team
 
 
 class PlayerMatchStat(models.Model):

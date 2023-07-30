@@ -5,11 +5,11 @@ from . import views
 leagues_patterns = ([
     path('', views.LeagueListView.as_view(), name='league_list'),
     path('new/', views.LeagueCreateView.as_view(), name='league_create'),
-    path('<slug:league>/',
+    path('<slug:slug>/',
          views.LeagueDetailView.as_view(), name='league_detail'),
-    path('<slug:league>/edit/',
-         views.LeagueUpdateView.as_view(), name='league_edit'),
-    path('<slug:league>/delete/',
+    path('<slug:slug>/edit/',
+         views.LeagueUpdateView.as_view(), name='league_update'),
+    path('<slug:slug>/delete/',
          views.LeagueDeleteView.as_view(), name='league_delete'),
 ], 'leagues')
 

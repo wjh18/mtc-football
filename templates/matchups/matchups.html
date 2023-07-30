@@ -53,11 +53,11 @@
               {% endif %}
             </p>
             <p class="matchup-teams">
-              <span class="team1 {% if matchup.get_winner == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winning_team == matchup.away_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.away_team.abbreviation }}
               </span>
               @
-              <span class="team1 {% if matchup.get_winner == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
+              <span class="team1 {% if matchup.get_winning_team == matchup.home_team %}team-winner fw-bold{% else %}team-not-played{% endif %}">
                 {{ matchup.home_team.abbreviation }}
               </span>
             </p>  
@@ -85,7 +85,7 @@
         <h2 class="matchup-section-header">Bye Weeks</h2>
         {% for bye_team in bye_teams %}
           <div class="matchup-wrapper bye-wrapper {% if bye_team.conference.name == "American" %}conf1-border{% else %}conf2-border{% endif %}">
-            <a class="matchup-link bye-matchup-link" href="{% url 'teams:team_schedule' league.slug bye_team.slug %}">
+            <a class="matchup-link bye-matchup-link" href="{% url 'matchups:team_schedule' league.slug bye_team.slug %}">
               <p class="bye-team"><span>{{ bye_team.abbreviation }}</span></p>
               <p class="matchup-records">
                 <span class="matchup-record bye-matchup-record">{{ bye_team.current_record }}</span>                

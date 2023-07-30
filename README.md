@@ -167,6 +167,8 @@ See the Docker instructions for further details on each step, but run the comman
 
 From the homepage, log in to the superuser you created and make sure you can access `http://localhost:8000/admin`. You can also login via the Django Admin itself or use the signup flow to create a user without admin access.
 
+*Note: Admins bypass the email verification workflow by default. For regular users, you can find email verifications in the console/shell. Unverified accounts will be unable to log in until they confirm their email.*
+
 While in the admin, feel free to update your site domain and name at `http://localhost:8000/admin/sites/site/`. These site fields are provided to the global request context via a context processor. They can be accessed from templates with `site.domain` and `site.name`. In development, setting domain to `localhost:8000` or whatever port you're running the server on is best practice.
 
 Additionally, update your site settings/metadata at `http://localhost:8000/admin/core/sitesettings/`. These site fields can also be accessed from the global request context with `site.settings.*`. They store various bits of metadata used for SEO in the HTML `<head>`.

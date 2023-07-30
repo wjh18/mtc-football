@@ -1,66 +1,69 @@
-from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import FormView, ListView
 
-from apps.leagues.mixins import LeagueOwnerContextMixin
+from apps.leagues.mixins import LeagueContextMixin
+from apps.leagues.permissions import IsLeagueOwner
 
 from .forms import AdvanceSeasonForm
-from .models import Season, TeamStanding
+from .models import TeamStanding
 from .services.season import advance_season_by_weeks
 
 
-class LeagueStandingsView(LeagueOwnerContextMixin, ListView):
+class LeagueStandingsView(IsLeagueOwner, LeagueContextMixin, ListView):
     """
     View team standings by division, conference, or league-wide.
     """
 
     model = TeamStanding
     context_object_name = "standings"
-    template_name = "seasons/standings.html"
+    # template_name = "seasons/standings2.html"
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        entity = self.kwargs.get("entity")
+        if entity is None:
+            names.append("seasons/division_standings.html")
+        elif entity == "conference":
+            names.append("seasons/conference_standings.html")
+        elif entity == "power":
+            names.append("seasons/power_rankings.html")
+        return names
 
     def get_queryset(self):
-        League = apps.get_model("leagues.League")
-        league = League.objects.get(slug=self.kwargs["league"])
-        season = Season.objects.get(league=league, is_current=True)
+        queryset = super().get_queryset()
+        season = super().get_context_data(object_list=queryset)["season"]
 
-        standings = (
-            TeamStanding.objects.with_extras()
-            .filter(season=season)
-            .order_by("power_ranking", "-team__overall_rating")
-        )
+        entity = self.kwargs.get("entity")
+        queryset = queryset.with_extras().filter(season=season)
+        if entity is None:
+            return queryset.order_by(
+                "team__conference",
+                "team__division__id",
+                "division_ranking",
+                "-team__overall_rating",
+            )
+        elif entity == "conference":
+            return queryset.order_by(
+                "team__conference", "conference_ranking", "-team__overall_rating"
+            )
+        elif entity == "power":
+            return queryset.order_by("power_ranking", "-team__overall_rating")
 
-        return standings
+        raise Http404("Invalid standings entity supplied")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        League = apps.get_model("leagues.League")
-        league = League.objects.get(slug=self.kwargs["league"])
-        season = Season.objects.get(league=league, is_current=True)
         entity = self.kwargs.get("entity")
-
-        if entity and entity not in ("conference", "power"):
-            raise Http404("Invalid standings entity supplied")
-        context["entity"] = entity
-
-        context["division_standings"] = (
-            TeamStanding.objects.with_extras()
-            .filter(season=season)
-            .order_by("division_ranking", "-team__overall_rating")
-        )
-
-        context["conference_standings"] = (
-            TeamStanding.objects.with_extras()
-            .filter(season=season)
-            .order_by("conference_ranking", "-team__overall_rating")
-        )
+        if entity is not None:
+            context["entity"] = entity
 
         return context
 
 
-class AdvanceSeasonFormView(LeagueOwnerContextMixin, FormView):
+class AdvanceSeasonFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     """
     Advance the regular season, playoffs or to the next season
     based on the number of weeks submitted in the form.

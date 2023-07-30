@@ -34,7 +34,7 @@
             <th scope="row"><a href="{{ league.get_absolute_url }}">{{ league }}</a></th>            
             <td>{{ league.creation_date }}</td>
             <td>{{ league.gm_name }}</td>
-            <td><a href="{% url 'leagues:league_edit' league.slug %}">Edit Info</a></td>
+            <td><a href="{% url 'leagues:league_update' league.slug %}">Edit Info</a></td>
             <td><a href="{% url 'leagues:league_delete' league.slug %}" class="text-danger">Delete</a></td>
           </tr>
         {% endfor %}

@@ -4,11 +4,11 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .mixins import LeagueOwnerContextObjectMixin
+from .mixins import LeagueOwnerRequiredMixin
 from .models import League
 
 
-class LeagueListView(LoginRequiredMixin, ListView):
+class LeagueListView(LeagueOwnerRequiredMixin, ListView):
     """
     List the logged-in user's active leagues.
     """
@@ -17,11 +17,8 @@ class LeagueListView(LoginRequiredMixin, ListView):
     context_object_name = "leagues"
     template_name = "leagues/league_list.html"
 
-    def get_queryset(self):
-        return League.objects.filter(user=self.request.user)
 
-
-class LeagueDetailView(LeagueOwnerContextObjectMixin, DetailView):
+class LeagueDetailView(LeagueOwnerRequiredMixin, DetailView):
     """
     View an individual league's details.
     """
@@ -51,7 +48,7 @@ class LeagueCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("teams:team_list", args=[self.object.slug])
 
 
-class LeagueUpdateView(LeagueOwnerContextObjectMixin, UpdateView):
+class LeagueUpdateView(LeagueOwnerRequiredMixin, UpdateView):
     """
     Update an individual league's details.
     """
@@ -63,12 +60,11 @@ class LeagueUpdateView(LeagueOwnerContextObjectMixin, UpdateView):
 
     def form_valid(self, form):
         """Overriden to add success message"""
-        form.instance.user = self.request.user
         messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
 
-class LeagueDeleteView(LeagueOwnerContextObjectMixin, DeleteView):
+class LeagueDeleteView(LeagueOwnerRequiredMixin, DeleteView):
     """
     Delete an individual league.
     """

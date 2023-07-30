@@ -1,7 +1,10 @@
 from django.db import models
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.functional import cached_property
+
+from apps.matchups.models import Matchup
 
 from .managers import TeamManager
 
@@ -36,7 +39,7 @@ class Team(models.Model):
     def __str__(self):
         return f"{self.location} {self.name} ({self.abbreviation})"
 
-    def update_team_overall(self):
+    def update_team_overall(self) -> None:
         """
         Called when player ratings are changed to update team rating.
         """
@@ -45,32 +48,27 @@ class Team(models.Model):
         self.save()
 
     @property
-    def current_season(self):
-        return self.league.seasons.get(is_current=True)
+    def bye_week(self) -> int | None:
+        """Find a team's bye week based on their season matchups."""
+        season = self.league.current_season
+        bye_week = None
 
-    @property
-    def bye_week(self):
-        """Find a team's bye week"""
-        season = self.current_season
+        team_matchups = Matchup.objects.filter_by_team(self).filter(season=season)
+        possible_weeks = set(range(1, 19))
+        matchup_weeks = team_matchups.values_list("week_number", flat=True)
+        for m_week in matchup_weeks:
+            possible_weeks.remove(m_week)
 
-        home_matchup_weeks = self.home_matchups.filter(
-            season=season, week_number__lte=18
-        ).values_list("week_number", flat=True)
-        away_matchup_weeks = self.away_matchups.filter(
-            season=season, week_number__lte=18
-        ).values_list("week_number", flat=True)
-
-        matchup_weeks = home_matchup_weeks.union(away_matchup_weeks)
-        weeks_set = {w for w in range(1, 19)}
-        bye_week = list(weeks_set - set(matchup_weeks))[0]
+        if possible_weeks:
+            bye_week = possible_weeks.pop()
 
         return bye_week
 
     @property
-    def current_record(self):
+    def current_record(self) -> str:
         """Get a team's current W/L/T record"""
-        season = self.current_season
-        standing = self.team_standings.get(season=season)
+        season = self.league.current_season
+        standing = get_object_or_404(self.team_standings.all(), season=season)
         return f"({standing.wins}-{standing.losses}-{standing.ties})"
 
     def get_absolute_url(self):

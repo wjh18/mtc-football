@@ -1,34 +1,37 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 from .models import League
 
 
-class LeagueOwnerMixin(LoginRequiredMixin, UserPassesTestMixin):
+class IsLeagueOwner(LoginRequiredMixin, UserPassesTestMixin):
     """
-    Mixin for verifying user league ownership in class-based views.
+    Permission that verifies a user's league ownership in class-based views.
     """
 
     def test_func(self):
-        if self.kwargs.get("league"):
-            league = League.objects.get(slug=self.kwargs["league"])
-            return self.request.user == league.user
+        league_slug = self.kwargs.get("league")
+        if league_slug is not None:
+            league = get_object_or_404(League, slug=league_slug)
         else:
-            # Fallback for generic views where league kwarg is 'object'
-            return self.request.user == self.get_object().user
+            return False
+        return self.request.user == league.user
 
 
+@login_required
 def is_league_owner(func):
     """
-    Decorator permission for function-based views that verifies
-    whether the user is the league owner.
+    Permission that verifies a user's league ownership in function-based views.
     """
 
     def wrap(request, *args, **kwargs):
-        league = League.objects.get(slug=kwargs["league"])
-        if league.user == request.user:
-            return func(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        league_slug = kwargs.get("league")
+        if league_slug is not None:
+            league = get_object_or_404(League, slug=league_slug)
+            if league.user == request.user:
+                return func(request, *args, **kwargs)
+        raise PermissionDenied
 
     return wrap

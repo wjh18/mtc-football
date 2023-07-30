@@ -27,7 +27,7 @@
         Team switcher
       </button>
       <ul class="dropdown-menu" aria-labelledby="filter-by-team">
-        {% for new_team in team_list %}
+        {% for new_team in teams%}
           <li><a class="dropdown-item team-dropdown-item{% if new_team == team %} active{% endif %}" href="{% url 'teams:depth_chart' league.slug new_team.slug %}">{{ new_team.abbreviation }}</a></li>
         {% endfor %}
       </ul>
@@ -75,7 +75,7 @@
     <tbody>
     {% for player in players %}
       <tr>
-        <th scope="row"><a href="{% url 'personnel:player_detail' league.slug team.slug player.slug %}">{{ player.first_name }} {{ player.last_name }}</a></th>
+        <th scope="row"><a href="{{ player.get_absolute_url }}">{{ player.first_name }} {{ player.last_name }}</a></th>
         <td>{{ player.age }}</td>
         <td>{{ player.experience }}</td>
         <td>{{ player.position }}</td>

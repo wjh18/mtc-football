@@ -5,12 +5,12 @@ from django.db.models.functions import Cast
 
 class TeamStandingManager(models.Manager):
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related("team__league", "team__conference", "team__division")
+        return TeamStandingQuerySet(self.model, using=self._db).select_related(
+            "team__league", "team__conference", "team__division"
         )
 
+
+class TeamStandingQuerySet(models.QuerySet):
     def with_extras(self):
         return self.annotate(
             pt_diff=F("points_for") - F("points_against"),

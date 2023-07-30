@@ -1,0 +1,22 @@
+<h1>Standings &middot; Week {{ season.week_number }} &middot; Season {{ season.season_number }}</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'leagues:league_list' %}">Leagues</a></li>
+    <li class="breadcrumb-item"><a href="{{ league.get_absolute_url }}">{{ league.name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Standings</li>
+  </ol>
+</nav>
+<hr>
+<nav>
+  <ul class="pagination pagination d-flex flex-wrap">
+    <li class="page-item{% if not entity %} active" aria-current="page{% endif %}">
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings' league.slug %}">Division</a>
+    </li>
+    <li class="page-item{% if entity == "conference" %} active" aria-current="page{% endif %}">
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings_entity' league.slug "conference"|urlencode %}">Conference</a>
+    </li>
+    <li class="page-item{% if entity == "power" %} active" aria-current="page{% endif %}">
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings_entity' league.slug "power"|urlencode %}">Power</a>
+    </li>
+  </ul>
+</nav>

@@ -3,7 +3,11 @@ from django.db.models import Case, F, Q, When
 from django.db.models.fields import BooleanField
 
 
-def conference_case(conf_name):
+def is_conf_name_case(conf_name: str):
+    """
+    Case for determining whether the teams in a matchup both belong
+    to the passed conference (if it even IS a conference matchup).
+    """
     return Case(
         When(
             home_team__conference__name=conf_name,
@@ -15,21 +19,34 @@ def conference_case(conf_name):
     )
 
 
-def is_conf_or_div_case(conf_or_div):
-    if conf_or_div == "conf":
-        query = Q(home_team__conference=F("away_team__conference"))
-    elif conf_or_div == "div":
-        query = Q(home_team__division=F("away_team__division"))
-
-    case = Case(
+def is_conf_matchup_case():
+    """
+    Case for determining whether the matchup is a conference matchup
+    (both teams belong to the same conference).
+    """
+    return Case(
         When(
-            query,
+            Q(home_team__conference=F("away_team__conference")),
             then=True,
         ),
         default=False,
         output_field=BooleanField(),
     )
-    return case
+
+
+def is_div_matchup_case():
+    """
+    Case for determining whether the matchup is a division matchup
+    (both teams belong to the same division).
+    """
+    return Case(
+        When(
+            Q(home_team__division=F("away_team__division")),
+            then=True,
+        ),
+        default=False,
+        output_field=BooleanField(),
+    )
 
 
 class MatchupManager(models.Manager):
@@ -46,12 +63,12 @@ class MatchupManager(models.Manager):
 
 
 class MatchupQuerySet(models.QuerySet):
-    def with_extras(self):
+    def with_cases(self):
         return self.annotate(
-            is_american=conference_case("American"),
-            is_national=conference_case("National"),
-            is_divisional=is_conf_or_div_case("div"),
-            is_conference=is_conf_or_div_case("conf"),
+            is_american=is_conf_name_case("American"),
+            is_national=is_conf_name_case("National"),
+            is_divisional=is_div_matchup_case(),
+            is_conference=is_conf_matchup_case(),
         ).order_by("-is_american", "-is_national", "-is_divisional", "-is_conference")
 
     def completed_for_season(self, season):
@@ -61,10 +78,10 @@ class MatchupQuerySet(models.QuerySet):
         return self.filter(Q(home_team=team) | Q(away_team=team))
 
     def mark_is_divisional(self):
-        return self.annotate(is_divisional=is_conf_or_div_case("div"))
+        return self.annotate(is_divisional=is_div_matchup_case())
 
     def mark_is_conference(self):
-        return self.annotate(is_conference=is_conf_or_div_case("conf"))
+        return self.annotate(is_conference=is_conf_matchup_case())
 
     def completed_for_season_by_team(self, season, team):
         return (

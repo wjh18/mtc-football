@@ -1,4 +1,6 @@
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
+from django.urls import reverse
 
 
 class Person(models.Model):
@@ -39,6 +41,29 @@ class Player(Person):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def get_absolute_url(self):
+        return reverse("personnel:player_detail", args=[self.league.slug, self.slug])
+
+    @property
+    def active_contract(self):
+        """Get the player's active contract.
+        Returns None if no contract is active.
+        """
+        try:
+            contract = self.contracts.get(is_active=True)
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            contract = None
+        return contract
+
+    @property
+    def current_team(self):
+        """Get the player's current team.
+        Returns None if no contract is active.
+        """
+        contract = self.active_contract
+        if contract is not None:
+            return contract.team
 
 
 class Contract(models.Model):

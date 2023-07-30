@@ -6,14 +6,15 @@ def update_standings(season, matchups):
     Generate scores and results for the current week, update standings.
     """
     for matchup in matchups:
+        matchup.simulate()
         scores = matchup.get_score()
-        result = matchup.get_winner()
+        result = matchup.get_winning_team()
 
         for team in (matchup.home_team, matchup.away_team):
             standing = TeamStanding.objects.get(team=team, season=season)
 
             # Update results and streaks
-            if result == "Tie":
+            if result is None:
                 standing.ties += 1
                 if not standing.streak == 0:
                     standing.streak = 0
