@@ -3,7 +3,7 @@ from django.views.generic.base import ContextMixin
 
 class LeagueTeamsMixin(ContextMixin):
     """
-    Mixin for accessing a league's teams in context data.
+    Mixin for Team views to filter teams by league.
     """
 
     def get_queryset(self, *args, **kwargs):

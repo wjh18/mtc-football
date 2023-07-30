@@ -91,7 +91,7 @@ class TeamScheduleView(IsLeagueOwner, LeagueContextMixin, ListView):
             team = get_object_or_404(Team, league=league, slug=team_slug)
             self.team = team
         else:
-            raise Http404
+            raise Http404("No team specified for schedule.")
 
         return queryset.filter(
             Q(home_team=team) | Q(away_team=team), season=season
@@ -102,7 +102,7 @@ class TeamScheduleView(IsLeagueOwner, LeagueContextMixin, ListView):
 
         context["team"] = self.team
         context["bye_week"] = self.team.bye_week
-        context["teams"] = Team.objects.filter(league=context["league"])
+        context["teams"] = context["league"].teams.all()
 
         return context
 

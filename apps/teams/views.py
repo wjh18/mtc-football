@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.contrib import messages
+from django.db import IntegrityError
 from django.http import Http404
 from django.views.generic import DetailView, FormView, ListView
 
@@ -21,21 +22,33 @@ class TeamSelectFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     template_name = "teams/forms/team_select_form.html"
 
     def form_valid(self, form):
-        # Get League context provided by LeagueContextMixin
         context = self.get_context_data()
-        league = context["league"]
+        league = context["league"]  # From LeagueContextMixin
 
-        # Create UserTeam based on selected Team in form data.
         team = form.cleaned_data["team"]
-        selected_team = league.teams.get(pk=team.pk)
-        UserTeam.objects.create(league=league, team=selected_team)
+        user_team_exists = True
 
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            f"You are now the GM of the \
-            {selected_team.location} {selected_team.name}.",
-        )
+        try:
+            user_team = UserTeam.objects.get(league=league, is_active_team=True)
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                f"You're already the GM of the {user_team.team}.",
+            )
+        except UserTeam.DoesNotExist:
+            user_team_exists = False
+
+        if not user_team_exists:
+            try:
+                UserTeam.objects.create(league=league, team=team)
+            except IntegrityError:
+                raise Http404("There was an error selecting your team.")
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                f"You are now the GM of the {team}.",
+            )
+
         return super().form_valid(form)
 
     def get_form_kwargs(self):
