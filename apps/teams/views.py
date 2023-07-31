@@ -133,7 +133,7 @@ class DepthChartView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, Detail
         players = Player.objects.filter(id__in=player_ids)
 
         positions = list(dict.fromkeys([player.position for player in players]))
-        position = self.kwargs.get("position", "QB")
+        position = self.request.GET.get("position", "QB")
 
         if position not in positions:
             raise Http404("Position does not exist")

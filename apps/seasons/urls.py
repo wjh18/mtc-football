@@ -9,6 +9,4 @@ urlpatterns = [
          views.AdvanceSeasonFormView.as_view(), name='advance_season'),
     path('<slug:league>/standings/',
          views.LeagueStandingsView.as_view(), name='league_standings'),
-    path('<slug:league>/standings/<str:entity>/',
-         views.LeagueStandingsView.as_view(), name='league_standings_entity'),
 ]

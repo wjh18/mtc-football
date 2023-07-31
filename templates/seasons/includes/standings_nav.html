@@ -9,14 +9,14 @@
 <hr>
 <nav>
   <ul class="pagination pagination d-flex flex-wrap">
-    <li class="page-item{% if not entity %} active" aria-current="page{% endif %}">
-      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings' league.slug %}">Division</a>
+    <li class="page-item{% if entity == "division" %} active" aria-current="page{% endif %}">
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings' league.slug %}?entity=division">Division</a>
     </li>
     <li class="page-item{% if entity == "conference" %} active" aria-current="page{% endif %}">
-      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings_entity' league.slug "conference"|urlencode %}">Conference</a>
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings' league.slug %}?entity=conference">Conference</a>
     </li>
     <li class="page-item{% if entity == "power" %} active" aria-current="page{% endif %}">
-      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings_entity' league.slug "power"|urlencode %}">Power</a>
+      <a class="page-link" aria-current="page" href="{% url 'seasons:league_standings' league.slug %}?entity=power">Power</a>
     </li>
   </ul>
 </nav>

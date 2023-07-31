@@ -39,7 +39,7 @@
   <ul class="pagination pagination-sm d-flex flex-wrap">
     {% for position in positions %}
       <li class="page-item{% if active_position == position %} active" aria-current="page{% endif %}">
-        <a class="page-link" aria-current="page" href="{% url 'teams:depth_chart_pos' league.slug team.slug position|urlencode %}">{{ position }}</a>
+        <a class="page-link" aria-current="page" href="{% url 'teams:depth_chart' league.slug team.slug %}?position={{ position }}">{{ position }}</a>
       </li>
     {% endfor %}
   </ul>

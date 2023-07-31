@@ -22,44 +22,48 @@ class LeagueStandingsView(IsLeagueOwner, LeagueContextMixin, ListView):
 
     def get_template_names(self):
         names = super().get_template_names()
-        entity = self.kwargs.get("entity")
-        if entity is None:
-            names.append("seasons/division_standings.html")
-        elif entity == "conference":
-            names.append("seasons/conference_standings.html")
-        elif entity == "power":
-            names.append("seasons/power_rankings.html")
+        entity = self.request.GET.get("entity", "division")
+
+        entity_tmpls = {
+            "division": "seasons/division_standings.html",
+            "conference": "seasons/conference_standings.html",
+            "power": "seasons/power_rankings.html",
+        }
+        try:
+            names.append(entity_tmpls[entity])
+        except KeyError:
+            names.append(entity_tmpls["division"])
         return names
 
     def get_queryset(self):
         queryset = super().get_queryset()
         season = super().get_context_data(object_list=queryset)["season"]
 
-        entity = self.kwargs.get("entity")
         queryset = queryset.with_extras().with_wlt().filter(season=season)
-        if entity is None:
-            return queryset.order_by(
+        entity = self.request.GET.get("entity", "division")
+
+        entity_qs = {
+            "division": queryset.order_by(
                 "team__conference",
                 "team__division__id",
                 "division_ranking",
                 "-team__overall_rating",
-            )
-        elif entity == "conference":
-            return queryset.order_by(
+            ),
+            "conference": queryset.order_by(
                 "team__conference", "conference_ranking", "-team__overall_rating"
-            )
-        elif entity == "power":
-            return queryset.order_by("power_ranking", "-team__overall_rating")
+            ),
+            "power": queryset.order_by("power_ranking", "-team__overall_rating"),
+        }
 
-        raise Http404("Invalid standings entity supplied")
+        try:
+            return entity_qs[entity]
+        except KeyError:
+            raise Http404("Invalid standings entity supplied")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        entity = self.kwargs.get("entity")
-        if entity is not None:
-            context["entity"] = entity
-
+        context["entity"] = self.request.GET.get("entity", "division")
         return context
 
 
