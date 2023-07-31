@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.core.mail import mail_admins
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
 from .forms import ContactForm
@@ -16,12 +16,16 @@ def contact_view(request):
             email_message = form.cleaned_data["message"]
             mail_admins(email_subject, email_message)
             messages.add_message(request, messages.SUCCESS, "Message sent.")
-            return render(request, "web/success.html")
+            return redirect("web:success")
     else:
         form = ContactForm()
 
     context = {"form": form}
     return render(request, "web/contact.html", context)
+
+
+class ContactSuccessView(TemplateView):
+    template_name = "web/success.html"
 
 
 class HomePageView(TemplateView):

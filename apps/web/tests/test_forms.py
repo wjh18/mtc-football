@@ -36,11 +36,7 @@ class ContactFormViewTest(TestCase):
 
     def test_post_valid_form_status_code(self):
         response = self.p_response_valid
-        self.assertEqual(response.status_code, 200)
-
-    def test_post_valid_form_template_used(self):
-        response = self.p_response_valid
-        self.assertTemplateUsed(response, "web/success.html")
+        self.assertEqual(response.status_code, 302)
 
     def test_post_invalid_form_in_context(self):
         response = self.p_response_invalid

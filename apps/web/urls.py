@@ -12,6 +12,7 @@ urlpatterns = [
     path('400/', TemplateView.as_view(template_name='400.html'), name='400'),
     path('about/', views.AboutPageView.as_view(), name='about'),
     path('contact/', views.contact_view, name='contact'),
+    path('contact/success/', views.ContactSuccessView.as_view(), name='success'),
     path('terms/', views.TermsPageView.as_view(), name='terms'),
     path('privacy/', views.PrivacyPageView.as_view(), name='privacy'),
 ]
