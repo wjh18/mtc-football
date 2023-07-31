@@ -53,7 +53,9 @@ class Team(models.Model):
         season = self.league.current_season
         bye_week = None
 
-        team_matchups = Matchup.objects.filter_by_team(self).filter(season=season)
+        team_matchups = Matchup.objects.filter_by_team(self).filter_by_reg_season(
+            season
+        )
         possible_weeks = set(range(1, 19))
         matchup_weeks = team_matchups.values_list("week_number", flat=True)
         for m_week in matchup_weeks:

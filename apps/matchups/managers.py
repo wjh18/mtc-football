@@ -70,3 +70,9 @@ class MatchupQuerySet(models.QuerySet):
             is_divisional=is_div_matchup_case(),
             is_conference=is_conf_matchup_case(),
         ).order_by("-is_american", "-is_national", "-is_divisional", "-is_conference")
+
+    def filter_by_team(self, team):
+        return self.filter(Q(home_team=team) | Q(away_team=team))
+
+    def filter_by_reg_season(self, season):
+        return self.filter(season=season, week_number__lte=18)
