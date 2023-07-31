@@ -26,6 +26,7 @@ class LeagueDetailView(LeagueOwnerRequiredMixin, DetailView):
     model = League
     context_object_name = "league"
     template_name = "leagues/league_detail.html"
+    slug_url_kwarg = "league"
 
 
 class LeagueCreateView(LoginRequiredMixin, CreateView):
@@ -57,6 +58,7 @@ class LeagueUpdateView(LeagueOwnerRequiredMixin, UpdateView):
     fields = ["name", "gm_name"]
     template_name = "leagues/league_update.html"
     success_message = "Your league has been updated successfully."
+    slug_url_kwarg = "league"
 
     def form_valid(self, form):
         """Overriden to add success message"""
@@ -73,6 +75,7 @@ class LeagueDeleteView(LeagueOwnerRequiredMixin, DeleteView):
     success_url = reverse_lazy("leagues:league_list")
     template_name = "leagues/league_delete.html"
     success_message = "Your league has been deleted sucessfully."
+    slug_url_kwarg = "league"
 
     def form_valid(self, form):
         """Overriden to add success message"""
