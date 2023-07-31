@@ -36,7 +36,7 @@ class LeagueStandingsView(IsLeagueOwner, LeagueContextMixin, ListView):
         season = super().get_context_data(object_list=queryset)["season"]
 
         entity = self.kwargs.get("entity")
-        queryset = queryset.with_extras().filter(season=season)
+        queryset = queryset.with_extras().with_wlt().filter(season=season)
         if entity is None:
             return queryset.order_by(
                 "team__conference",
