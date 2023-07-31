@@ -80,7 +80,7 @@ class TeamListView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, ListView
         return context
 
 
-class TeamDetailView(IsLeagueOwner, LeagueContextMixin, DetailView):
+class TeamDetailView(IsLeagueOwner, LeagueTeamsMixin, LeagueContextMixin, DetailView):
     """
     View additional details about an individual team.
     """
