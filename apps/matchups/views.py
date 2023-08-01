@@ -30,16 +30,14 @@ class WeeklyMatchupsView(IsLeagueOwner, LeagueContextMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         season = super().get_context_data(object_list=queryset)["season"]
-        week_kw = self.kwargs.get("week_num")
-        week_number = season.week_number_from_kwargs(week_kw)
+        week_number = self._process_week_param(season)
         return queryset.with_cases().filter(season=season, week_number=week_number)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         season = context["season"]
-        week_kw = self.kwargs.get("week_num")
-        week_number = season.week_number_from_kwargs(week_kw)
+        week_number = self._process_week_param(season)
 
         context["week_num"] = week_number
         context["num_weeks"] = range(1, 23)
@@ -48,6 +46,15 @@ class WeeklyMatchupsView(IsLeagueOwner, LeagueContextMixin, ListView):
             context["bye_teams"] = season.get_byes(week_number)
 
         return context
+
+    def _process_week_param(self, season):
+        week_kw = self.request.GET.get("week")
+        if week_kw is not None:
+            try:
+                week_kw = int(week_kw)
+            except ValueError:
+                week_kw = None
+        return season.week_number_from_param(week_kw)
 
 
 class MatchupDetailView(IsLeagueOwner, LeagueContextMixin, DetailView):
