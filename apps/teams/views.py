@@ -2,6 +2,8 @@ from django.apps import apps
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, FormView, ListView
 
 from apps.leagues.mixins import LeagueContextMixin
@@ -12,6 +14,7 @@ from .mixins import LeagueTeamsMixin
 from .models import Team, UserTeam
 
 
+@method_decorator(require_POST, name="dispatch")
 class TeamSelectFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     """
     Create the league's user-controlled team based on the

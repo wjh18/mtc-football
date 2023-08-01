@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
 from django.views.generic import FormView, ListView
 
 from apps.leagues.mixins import LeagueContextMixin
@@ -67,6 +69,7 @@ class LeagueStandingsView(IsLeagueOwner, LeagueContextMixin, ListView):
         return context
 
 
+@method_decorator(require_POST, name="dispatch")
 class AdvanceSeasonFormView(IsLeagueOwner, LeagueContextMixin, FormView):
     """
     Advance the regular season, playoffs or to the next season
